@@ -133,7 +133,36 @@ struct NotificationMirrorServiceTests {
         await service.poll()
         let alert = try #require(alerts.current)
         #expect(alert.title == "Ahmet · Proje Grubu")
-        #expect(alert.subtitle == "Yeni mesaj")
+        #expect(alert.subtitle == "İçerik gizlendi")
+        #expect(alert.displayedSubtitle == "İçerik gizlendi")
+        #expect(alert.isContentConcealed)
+        alerts.revealContent()
+        #expect(alerts.current?.displayedSubtitle == "gizli")
+    }
+
+    @Test func perAppOverrideBeatsGlobalToggle() async throws {
+        let service = await makeBaselinedService()
+        let whatsapp = try #require(NotificationAppIdentity(bundleID: "net.whatsapp.WhatsApp", name: "WhatsApp"))
+        let zoom = try #require(NotificationAppIdentity(bundleID: nil, name: "Zoom"))
+        service.privacy.setVisibility(.hidden, for: whatsapp)
+        service.privacy.setVisibility(.shown, for: zoom)
+        service.showsMessageText = false
+
+        reader.show([InsightsBanners.make("w1")])
+        await service.poll()
+        let hidden = try #require(alerts.current)
+        #expect(hidden.isContentConcealed)
+        #expect(hidden.appName == "WhatsApp")
+        #expect(hidden.title == "Ahmet Yılmaz")
+        alerts.dismiss()
+
+        reader.show([InsightsBanners.make("z1", app: "zoom.us", title: "Ayşe", body: "Toplantı başladı")])
+        await service.poll()
+        let shown = try #require(alerts.current)
+        #expect(!shown.isContentConcealed)
+        #expect(shown.subtitle == "Toplantı başladı")
+        #expect(service.privacy.recentApps.map(\.name) == ["Zoom", "WhatsApp"])
+        #expect(service.privacy.recentApps.last?.bundleID == "net.whatsapp.WhatsApp")
     }
 
     @Test func untrustedNeverReadsAndResetsBaseline() async {

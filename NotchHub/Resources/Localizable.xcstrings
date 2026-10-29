@@ -3801,6 +3801,16 @@
         }
       }
     },
+    "Gizlenen içeriği göster": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Show hidden content"
+          }
+        }
+      }
+    },
     "Gizlilik göstergesi": {
       "localizations": {
         "en": {
@@ -4217,6 +4227,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "No endpoints yet. Add staging, localhost or API health URLs."
+          }
+        }
+      }
+    },
+    "Henüz yansıtılan bildirim yok. Bildirim gelen uygulamalar burada listelenir.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No mirrored notifications yet. Apps that send notifications are listed here."
           }
         }
       }
@@ -7865,12 +7885,32 @@
         }
       }
     },
+    "Uygulama bazlı gizlilik": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Per-app privacy"
+          }
+        }
+      }
+    },
     "Uygulama bundle ID eşittir": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "App bundle ID equals"
+          }
+        }
+      }
+    },
+    "Uygulama ekle": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add app"
           }
         }
       }
@@ -7891,6 +7931,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Hide When an App Is Full Screen"
+          }
+        }
+      }
+    },
+    "Uygulamalar klasöründen seç…": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choose from Applications…"
           }
         }
       }
@@ -8191,6 +8241,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Connect to VPN"
+          }
+        }
+      }
+    },
+    "Varsayılan": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Default"
           }
         }
       }
@@ -8809,6 +8869,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "active"
+          }
+        }
+      }
+    },
+    "gizlenir": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "hidden"
+          }
+        }
+      }
+    },
+    "gösterilir": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "shown"
           }
         }
       }
@@ -9661,6 +9741,36 @@
         }
       }
     },
+    "İçerik gizlendi": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Content hidden"
+          }
+        }
+      }
+    },
+    "İçeriği gizle": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hide content"
+          }
+        }
+      }
+    },
+    "İçeriği göster": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Show content"
+          }
+        }
+      }
+    },
     "İş Akışı": {
       "localizations": {
         "en": {
@@ -9863,6 +9973,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "“%@” isn't an absolute path"
+          }
+        }
+      }
+    },
+    "“Varsayılan” genel ayarı izler (şu an içerik %@). Gizlenen bildirimlerde çentikte yalnızca uygulama ve gönderici görünür; içeriği “Göster” ile açabilirsiniz.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "“Default” follows the global setting (content is currently %@). For hidden notifications the notch shows only the app and sender; press “Show” to reveal the content."
           }
         }
       }

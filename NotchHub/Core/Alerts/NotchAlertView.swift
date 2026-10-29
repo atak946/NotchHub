@@ -61,17 +61,29 @@ struct NotchAlertView: View {
                     .font(.system(size: 14, weight: .semibold))
                     .foregroundStyle(.white)
                     .lineLimit(1)
-                if let subtitle = alert.subtitle {
+                if alert.isContentConcealed {
+                    AlertConcealedLine(text: alert.subtitle)
+                        .transition(.opacity)
+                } else if let subtitle = alert.displayedSubtitle {
                     Text(subtitle)
                         .font(.system(size: 12))
                         .foregroundStyle(.white.opacity(0.62))
                         .lineLimit(2)
                         .contentTransition(.numericText())
+                        .transition(.blurReplace)
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
+            .animation(.smooth(duration: 0.3), value: alert.isContentRevealed)
             .accessibilityElement(children: .combine)
             .accessibilityLabel(accessibilityText)
+
+            if alert.isContentConcealed {
+                Button("Göster") { center.revealContent() }
+                    .buttonStyle(AlertActionButtonStyle(tint: alert.style.tint))
+                    .help("Gizlenen içeriği göster")
+                    .accessibilityLabel("İçeriği göster")
+            }
 
             if let actionTitle = alert.actionTitle {
                 Button(actionTitle) { center.performAction() }
@@ -83,9 +95,27 @@ struct NotchAlertView: View {
     }
 
     private var accessibilityText: String {
-        [alert.style.accessibilityName, alert.sender ?? alert.sourceLabel, alert.title, alert.subtitle]
+        [alert.style.accessibilityName, alert.sender ?? alert.sourceLabel, alert.title, alert.displayedSubtitle]
             .compactMap { $0 }
             .joined(separator: ", ")
+    }
+}
+
+/// "İçerik gizlendi" with an eye.slash glyph, styled quieter than real message text.
+private struct AlertConcealedLine: View {
+    let text: String?
+
+    var body: some View {
+        Label {
+            Text(text ?? String(localized: "İçerik gizlendi"))
+        } icon: {
+            Image(systemName: "eye.slash")
+                .font(.system(size: 10, weight: .semibold))
+        }
+        .labelStyle(.titleAndIcon)
+        .font(.system(size: 12).italic())
+        .foregroundStyle(.white.opacity(0.42))
+        .lineLimit(1)
     }
 }
 

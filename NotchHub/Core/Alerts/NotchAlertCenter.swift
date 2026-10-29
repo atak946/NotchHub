@@ -77,6 +77,17 @@ final class NotchAlertCenter {
         action?()
     }
 
+    /// "Göster": reveals the concealed text of the current alert and restarts its countdown
+    /// (at least the default duration) so there is time to read it.
+    func revealContent() {
+        guard let alert = current, alert.isContentConcealed else { return }
+        current = alert.revealingContent()
+        guard let total = alert.autoDismissAfter else { return }
+        countdown = AlertCountdown.started(total: max(total, NotchAlert.defaultDuration), at: now())
+        if isHovered { countdown = countdown?.paused(at: now()) }
+        scheduleDismiss()
+    }
+
     private func show(_ alert: NotchAlert) {
         current = alert
         countdown = alert.autoDismissAfter.map { AlertCountdown.started(total: $0, at: now()) }

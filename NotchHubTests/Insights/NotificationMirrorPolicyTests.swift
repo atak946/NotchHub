@@ -30,7 +30,9 @@ struct NotificationMirrorPolicyTests {
         #expect(shown.coalescingKey == "insights.mirror.whatsapp.ahmet yılmaz")
         #expect(shown.messagingKey == "whatsapp")
         let hidden = NotificationMirrorPolicy.content(for: banner, keywords: keywords, showsMessageText: false)
-        #expect(hidden.subtitle == "Yeni mesaj")
+        #expect(hidden.subtitle == "İçerik gizlendi")
+        #expect(hidden.concealedSubtitle == "Toplantı linkini atar mısın?")
+        #expect(shown.concealedSubtitle == nil)
     }
 
     @Test func genericAppUsesTitleAndSubtitleOrBody() {
@@ -44,7 +46,11 @@ struct NotificationMirrorPolicyTests {
         #expect(NotificationMirrorPolicy.content(for: noSubtitle, keywords: keywords, showsMessageText: true)
             .subtitle == "10:00")
         #expect(NotificationMirrorPolicy.content(for: noSubtitle, keywords: keywords, showsMessageText: false)
-            .subtitle == "Yeni bildirim")
+            .subtitle == "İçerik gizlendi")
+        let empty = InsightsBanners.make("3", app: "Takvim", title: "Toplantı", body: nil)
+        let emptyHidden = NotificationMirrorPolicy.content(for: empty, keywords: keywords, showsMessageText: false)
+        #expect(emptyHidden.subtitle == "Yeni bildirim")
+        #expect(emptyHidden.concealedSubtitle == nil)
     }
 
     @Test func longBodyIsTruncatedToLimit() {

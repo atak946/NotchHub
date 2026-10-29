@@ -22,6 +22,8 @@ struct NotificationMirrorSettingsSection: View {
                 .font(.caption)
                 .foregroundStyle(.secondary)
         }
+        NotificationPrivacySettingsSection(privacy: mirror.privacy, globalShowsText: mirror.showsMessageText)
+            .disabled(!mirror.isEnabled)
         Section("Mesajlaşma uygulamaları") {
             ForEach(mirror.keywords, id: \.self) { keyword in
                 HStack {

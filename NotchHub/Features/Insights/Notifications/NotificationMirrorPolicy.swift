@@ -27,7 +27,10 @@ enum NotificationMirrorDecision: Equatable, Sendable {
 struct MirroredAlertContent: Equatable, Sendable {
     let systemImage: String
     let title: String
+    /// The text, a placeholder ("Yeni mesaj") when there is none, or "İçerik gizlendi" when it is hidden.
     let subtitle: String
+    /// The hidden text, kept for the alert's "Göster" action; `nil` when shown or when there is none.
+    let concealedSubtitle: String?
     let coalescingKey: String
     /// Canonical messaging key when the banner came from a watched messaging app.
     let messagingKey: String?
@@ -45,6 +48,7 @@ enum NotificationMirrorPolicy {
     static let maxTitleLength = 60
     static var newMessageText: String { String(localized: "Yeni mesaj") }
     static var newNotificationText: String { String(localized: "Yeni bildirim") }
+    static var hiddenContentText: String { String(localized: "İçerik gizlendi") }
     static let separator = " · "
     private static let ellipsis = "…"
 
@@ -77,24 +81,37 @@ enum NotificationMirrorPolicy {
     ) -> MirroredAlertContent {
         let appName = MessagingApp.displayName(for: banner.app)
         guard matches(app: banner.app, keywords: keywords) else {
-            let text = showsMessageText ? (banner.subtitle ?? banner.body) : nil
+            let text = visibleText(banner.subtitle ?? banner.body, shows: showsMessageText, placeholder: newNotificationText)
             return MirroredAlertContent(
                 systemImage: MessagingApp.fallbackSystemImage,
                 title: truncated(banner.title.isEmpty ? appName : banner.title, limit: maxTitleLength),
-                subtitle: subtitle(text: text, placeholder: newNotificationText),
+                subtitle: text.subtitle,
+                concealedSubtitle: text.concealed,
                 coalescingKey: "insights.mirror.\(banner.id)",
                 messagingKey: nil
             )
         }
         let sender = NotificationBannerParser.sender(of: banner)
         let key = MessagingApp.canonicalKey(for: banner.app)
+        let text = visibleText(sender.message, shows: showsMessageText, placeholder: newMessageText)
         return MirroredAlertContent(
             systemImage: MessagingApp.systemImage(for: banner.app),
             title: truncated(sender.name.isEmpty ? appName : sender.name, limit: maxTitleLength),
-            subtitle: subtitle(text: showsMessageText ? sender.message : nil, placeholder: newMessageText),
+            subtitle: text.subtitle,
+            concealedSubtitle: text.concealed,
             coalescingKey: "insights.mirror.\(key).\(sender.name.lowercased())",
             messagingKey: key
         )
+    }
+
+    /// Shown: the text (or placeholder). Hidden: "İçerik gizlendi" plus the text kept aside for "Göster";
+    /// with no text at all there is nothing to hide, so the placeholder is used either way.
+    static func visibleText(
+        _ text: String?, shows: Bool, placeholder: String
+    ) -> (subtitle: String, concealed: String?) {
+        let shownSubtitle = subtitle(text: text, placeholder: placeholder)
+        guard !shows, NotificationBannerParser.clean(text) != nil else { return (shownSubtitle, nil) }
+        return (hiddenContentText, shownSubtitle)
     }
 
     /// The truncated text, or the placeholder ("Yeni mesaj") when there is none to show.

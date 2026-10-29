@@ -67,6 +67,9 @@ final class NotificationMirrorService {
 
     var isAccessibilityTrusted: Bool { permission.isTrusted }
 
+    /// Per-app "Varsayılan / İçeriği göster / İçeriği gizle" overrides of `showsMessageText`.
+    let privacy: NotificationPrivacySettings
+
     @ObservationIgnored private let alerts: NotchAlertCenter
     @ObservationIgnored private let permission: AccessibilityPermission
     @ObservationIgnored private let reader: any NotificationBannerReading
@@ -94,8 +97,10 @@ final class NotificationMirrorService {
         ledger: NotificationMirrorLedger = NotificationMirrorLedger(),
         clock: any InsightsClock = SystemInsightsClock(),
         defaults: UserDefaults = .standard,
-        power: (any PowerConditionsProviding)? = nil
+        power: (any PowerConditionsProviding)? = nil,
+        privacy: NotificationPrivacySettings? = nil
     ) {
+        self.privacy = privacy ?? NotificationPrivacySettings(defaults: defaults)
         self.alerts = alerts
         self.permission = permission
         self.reader = reader
@@ -207,10 +212,11 @@ final class NotificationMirrorService {
     }
 
     private func post(_ banner: NotificationBanner) {
-        let content = NotificationMirrorPolicy.content(
-            for: banner, keywords: keywords, showsMessageText: showsMessageText
-        )
         let app = banner.app
+        let bundleID = KnownApps.bundleID(forName: app)
+        let content = NotificationMirrorPolicy.content(
+            for: banner, keywords: keywords, showsMessageText: showsContent(app: app, bundleID: bundleID)
+        )
         var openAction: (@MainActor () -> Void)?
         if NotificationMirrorPolicy.canOpen(app: app) {
             openAction = { [weak self] in self?.open(app: app) }
@@ -230,10 +236,20 @@ final class NotificationMirrorService {
             autoDismissAfter: Self.alertDuration,
             actionTitle: openAction == nil ? nil : String(localized: "Aç"),
             action: openAction,
-            appBundleID: KnownApps.bundleID(forName: app),
+            appBundleID: bundleID,
             appName: MessagingApp.displayName(for: app),
-            sender: content.messagingKey == nil ? nil : content.title
+            sender: content.messagingKey == nil ? nil : content.title,
+            concealedSubtitle: content.concealedSubtitle
         ))
+    }
+
+    /// Records the app as recently seen and resolves its per-app override against the global toggle.
+    private func showsContent(app: String, bundleID: String?) -> Bool {
+        guard let identity = NotificationAppIdentity(bundleID: bundleID, name: MessagingApp.displayName(for: app)) else {
+            return showsMessageText
+        }
+        privacy.recordSeen(identity)
+        return privacy.showsContent(for: identity, globalShowsText: showsMessageText)
     }
 
     private func dismiss(_ banner: NotificationBanner) async {

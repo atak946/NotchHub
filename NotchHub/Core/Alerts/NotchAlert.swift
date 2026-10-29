@@ -44,6 +44,11 @@ struct NotchAlert: Identifiable {
     let timestampText: String?
     /// Power alerts: an animated battery ring replaces the leading icon.
     let battery: AlertBatteryGlyph?
+    /// Private text (e.g. a message body) kept only in memory until the user reveals it; `subtitle`
+    /// carries the placeholder meanwhile. Private so no view can render it by accident.
+    private let concealedSubtitle: String?
+    /// Set by `revealingContent()` when the user pressed "Göster".
+    private(set) var isContentRevealed = false
 
     init(
         module: NotchModule?,
@@ -59,7 +64,8 @@ struct NotchAlert: Identifiable {
         appName: String? = nil,
         sender: String? = nil,
         timestampText: String? = nil,
-        battery: AlertBatteryGlyph? = nil
+        battery: AlertBatteryGlyph? = nil,
+        concealedSubtitle: String? = nil
     ) {
         self.module = module
         self.systemImage = systemImage
@@ -75,6 +81,26 @@ struct NotchAlert: Identifiable {
         self.sender = sender.flatMap(Self.cleaned)
         self.timestampText = timestampText.flatMap(Self.cleaned)
         self.battery = battery
+        self.concealedSubtitle = concealedSubtitle.flatMap(Self.cleaned)
+    }
+
+    /// The alert hides private text that the user can reveal.
+    var isContentConcealed: Bool {
+        concealedSubtitle != nil && !isContentRevealed
+    }
+
+    /// The only subtitle views may render: the placeholder while concealed, the real text once revealed.
+    var displayedSubtitle: String? {
+        guard isContentRevealed, let concealedSubtitle else { return subtitle }
+        return concealedSubtitle
+    }
+
+    /// The same alert (same id) with its concealed text revealed; unchanged when nothing is concealed.
+    func revealingContent() -> NotchAlert {
+        guard isContentConcealed else { return self }
+        var copy = self
+        copy.isContentRevealed = true
+        return copy
     }
 
     /// Small label in the left notch wing: the app, the module, or the product name.
