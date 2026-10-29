@@ -19,6 +19,7 @@ struct SettingsView: View {
             Tab("Takvim", systemImage: "calendar") {
                 SettingsForm {
                     CalendarSettingsSection(calendar: services.calendar)
+                    CameraMirrorSettingsSection(reminder: services.cameraMirror.reminder)
                 }
             }
             Tab("İzleyiciler", systemImage: "gauge.with.dots.needle.67percent") {
@@ -111,6 +112,7 @@ private struct GeneralSettingsTab: View {
             }
 
             UpdatesSettingsSection(updater: updater)
+            SupportSettingsSection()
         }
     }
 
@@ -139,7 +141,9 @@ private struct ModulesSettingsTab: View {
                     }
                 }
             }
+            SystemHUDSettingsSection(hud: services.hud)
             ShelfSettingsSection(store: services.shelf)
+            ClipboardSettingsSection(history: services.clipboard)
             TimerSettingsSection(timer: services.timer)
             NotesSettingsSection(store: services.notes)
         }

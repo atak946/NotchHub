@@ -2,12 +2,13 @@ import AppKit
 import Observation
 import OSLog
 
-/// Polls the running players, picks the track to show and forwards playback commands.
+/// Reads the running players on push events (with a slow safety-net poll), picks the track to show
+/// and forwards playback commands.
 @MainActor
 @Observable
 final class MediaService {
-    static let activePollInterval: Duration = .seconds(1)
-    static let idlePollInterval: Duration = .seconds(5)
+    static let activePollInterval = MediaPollPolicy.playingInterval
+    static let idlePollInterval = MediaPollPolicy.idleInterval
     static let defaultCommandRefreshDelay: Duration = .milliseconds(350)
     static let artworkCacheCapacity = 32
 
@@ -28,7 +29,8 @@ final class MediaService {
     @ObservationIgnored private let commandRefreshDelay: Duration
     @ObservationIgnored private let logger = Logger(subsystem: AppIdentity.logSubsystem, category: "Media")
     @ObservationIgnored private var snapshotDate: Date
-    @ObservationIgnored private var pollTask: Task<Void, Never>?
+    @ObservationIgnored private let loop = PowerAwareLoop()
+    @ObservationIgnored private let events: (any MediaPlaybackEventSource)?
     @ObservationIgnored private var artworkTask: Task<Void, Never>?
     @ObservationIgnored private var artworkCache = BoundedCache<String, NSImage>(capacity: MediaService.artworkCacheCapacity)
     @ObservationIgnored private var currentArtworkID: String?
@@ -40,9 +42,11 @@ final class MediaService {
     init(
         providers: [any MediaProvider] = MediaService.defaultProviders,
         clock: any MediaClock = SystemMediaClock(),
-        commandRefreshDelay: Duration = MediaService.defaultCommandRefreshDelay
+        commandRefreshDelay: Duration = MediaService.defaultCommandRefreshDelay,
+        events: (any MediaPlaybackEventSource)? = SystemMediaPlaybackEvents()
     ) {
         self.providers = providers
+        self.events = events
         self.clock = clock
         self.commandRefreshDelay = commandRefreshDelay
         snapshotDate = clock.now
@@ -51,20 +55,18 @@ final class MediaService {
     // MARK: Lifecycle
 
     func start() {
-        guard pollTask == nil else { return }
-        pollTask = Task { [weak self] in
-            while !Task.isCancelled {
-                guard let self else { return }
-                let anyRunning = await self.refresh()
-                let interval = anyRunning ? Self.activePollInterval : Self.idlePollInterval
-                try? await Task.sleep(for: interval)
-            }
+        guard !loop.isActive else { return }
+        events?.start { [weak self] in self?.loop.kick() }
+        loop.start { [weak self] in
+            guard let self else { return nil }
+            let anyRunning = await self.refresh()
+            return MediaPollPolicy.interval(anyPlayerRunning: anyRunning, isPlaying: self.nowPlaying?.isPlaying == true)
         }
     }
 
     func stop() {
-        pollTask?.cancel()
-        pollTask = nil
+        events?.stop()
+        loop.stop()
     }
 
     // MARK: Position

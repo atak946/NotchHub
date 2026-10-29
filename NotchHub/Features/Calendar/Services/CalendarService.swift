@@ -13,6 +13,8 @@ final class CalendarService {
     static let refreshInterval: TimeInterval = 60
     /// Small offset after the minute boundary so the tick lands just past e.g. 09:55:00.
     static let tickSlack: TimeInterval = 0.25
+    /// Lets the minute tick coalesce with other wake-ups; reminders stay within a second of their time.
+    static let tickTolerance: Duration = .seconds(1)
     /// Fired reminders are remembered this long past the event start, then pruned.
     static let firedRetention: TimeInterval = 24 * 60 * 60
 
@@ -140,7 +142,7 @@ final class CalendarService {
                 guard let self else { return }
                 self.refresh()
                 let delay = self.delayUntilNextTick()
-                try? await Task.sleep(for: .seconds(delay))
+                try? await Task.sleep(for: .seconds(delay), tolerance: Self.tickTolerance)
             }
         }
     }

@@ -50,9 +50,9 @@ final class RemoteSessionMonitor {
     @ObservationIgnored private let store: ProfilesStore
     @ObservationIgnored private let alerts: NotchAlertCenter
     @ObservationIgnored private let probe: any RemoteSessionProbing
-    @ObservationIgnored private let sleep: @Sendable (Duration) async throws -> Void
+    /// Critical priority: someone may connect while the screen is locked, so the cadence never slows.
+    @ObservationIgnored private let loop: PowerAwareLoop
     @ObservationIgnored private var debouncer = RemoteSessionDebouncer()
-    @ObservationIgnored private var pollTask: Task<Void, Never>?
     @ObservationIgnored private let logger = Logger(subsystem: AppIdentity.logSubsystem, category: "Profiles")
 
     init(
@@ -64,25 +64,24 @@ final class RemoteSessionMonitor {
         self.store = store
         self.alerts = alerts
         self.probe = probe
-        self.sleep = sleep
+        loop = PowerAwareLoop(priority: .critical, sleep: sleep)
     }
 
-    var isRunning: Bool { pollTask != nil }
+    var isRunning: Bool { loop.isActive }
 
     func start() {
-        guard pollTask == nil else { return }
-        pollTask = Task { [weak self] in
-            while !Task.isCancelled {
-                await self?.poll()
-                guard let sleep = self?.sleep else { return }
-                try? await sleep(Self.pollInterval)
-            }
+        guard !loop.isActive else { return }
+        loop.start { [weak self] in
+            guard let self else { return nil }
+            await self.poll()
+            // While the monitor is off the loop idles; toggling it back on kicks the loop.
+            self.kickWhenSettingChanges()
+            return self.store.remoteMonitorEnabled ? Self.pollInterval : nil
         }
     }
 
     func stop() {
-        pollTask?.cancel()
-        pollTask = nil
+        loop.stop()
         debouncer = RemoteSessionDebouncer()
         assessment = .idle
         isSessionActive = false
@@ -99,6 +98,15 @@ final class RemoteSessionMonitor {
         let snapshots = await Task.detached(priority: .utility) { probe.snapshots() }.value
         isSessionOnConsole = Self.readConsoleFlag()
         apply(RemoteSessionClassifier.classify(snapshots), forceInactive: false)
+    }
+
+    private func kickWhenSettingChanges() {
+        guard !store.remoteMonitorEnabled else { return }
+        withObservationTracking {
+            _ = store.remoteMonitorEnabled
+        } onChange: { [weak self] in
+            Task { @MainActor in self?.loop.kick() }
+        }
     }
 
     private func apply(_ newAssessment: RemoteSessionAssessment, forceInactive: Bool) {

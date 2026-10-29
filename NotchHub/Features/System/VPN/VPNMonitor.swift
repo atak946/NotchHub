@@ -8,8 +8,8 @@ import OSLog
 final class VPNMonitor {
     /// A state must hold this long before it is committed (≥ 5 s per spec).
     static let debounceInterval: TimeInterval = 5
-    /// Backup poll in case a change notification is missed.
-    static let pollInterval: TimeInterval = 15
+    /// Backup poll in case a change notification is missed (SCDynamicStore and NWPathMonitor are primary).
+    static let pollInterval: TimeInterval = 30
     static let alertKey = "vpn.state"
     static let reconnectedAlertDuration: Duration = .seconds(4)
 

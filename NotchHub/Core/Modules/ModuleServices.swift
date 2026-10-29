@@ -4,6 +4,8 @@ import Observation
 @MainActor
 final class ModuleServices {
     let shelf = ShelfStore()
+    /// Clipboard history shown in the shelf's "Pano" segment; runs with the shelf module.
+    let clipboard = ClipboardHistoryStore()
     let media = MediaService()
     let audio = AudioOutputService()
     let timer = TimerService()
@@ -18,6 +20,10 @@ final class ModuleServices {
     let profiles: Profiles
     /// External alert API (URL scheme + socket); runs regardless of module toggles.
     let externalAlerts: ExternalAlertService
+    /// Volume/brightness level HUD in the notch; runs regardless of module toggles.
+    let hud: SystemHUD
+    /// Pre-meeting camera mirror and its reminder.
+    let cameraMirror: CameraMirror
 
     private let settings: SettingsStore
     private var runningModules: Set<NotchModule> = []
@@ -32,11 +38,19 @@ final class ModuleServices {
         let noteContext = LiveNoteContextProvider(calendar: calendar, profiles: profiles.store)
         notes.contextProvider = { noteContext.context(at: $0) }
         externalAlerts = ExternalAlertService(alerts: alerts)
+        hud = SystemHUD.live(settings: settings, alerts: alerts)
+        cameraMirror = CameraMirror.live(settings: settings, alerts: alerts, calendar: calendar)
         // Native banners are only taken over (and closed) while notch alerts can actually be shown.
         insights.mirror.shouldPostAlert = { [weak settings] in
             guard let settings else { return false }
             return settings.alertsEnabled && !settings.isPaused && settings.isEnabled(.status)
         }
+        let canPostSystemAlert: @MainActor () -> Bool = { [weak settings] in
+            guard let settings else { return false }
+            return settings.alertsEnabled && !settings.isPaused
+        }
+        system.micMute.canPostAlert = canPostSystemAlert
+        system.headphones.canPostAlert = canPostSystemAlert
     }
 
     var hasCompactMedia: Bool {
@@ -58,12 +72,19 @@ final class ModuleServices {
 
     func start() {
         externalAlerts.start()
+        system.micMute.start()
+        hud.start()
+        cameraMirror.start()
         applyModuleStates()
         trackModuleToggles()
     }
 
     func stop() {
         externalAlerts.stop()
+        // Restores a microphone NotchHub muted, so quitting never leaves it silenced.
+        system.micMute.stop()
+        hud.stop()
+        cameraMirror.stop()
         for module in runningModules {
             stop(module)
         }
@@ -99,6 +120,7 @@ final class ModuleServices {
         switch module {
         case .shelf:
             shelf.start()
+            clipboard.start()
         case .media:
             media.start()
             audio.start()
@@ -121,6 +143,7 @@ final class ModuleServices {
         switch module {
         case .shelf:
             shelf.stop()
+            clipboard.stop()
         case .timer:
             timer.cancel()
         case .media:

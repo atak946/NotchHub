@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// Main shelf module: a horizontal row of items that is also a drop destination.
+/// Main shelf module: a horizontal row of items that is also a drop destination, plus the "Pano" history.
 struct ShelfModuleView: View {
     private static let cornerRadius: CGFloat = 14
     private static let tileSpacing: CGFloat = 6
@@ -9,18 +9,25 @@ struct ShelfModuleView: View {
     private static let dropDash: [CGFloat] = [6, 4]
 
     let store: ShelfStore
+    let clipboard: ClipboardHistoryStore?
 
     @State private var selection = ShelfSelection()
     @State private var isDropTargeted = false
+    @State private var segment: ShelfSegment = .shelf
 
-    init(store: ShelfStore) {
+    init(store: ShelfStore, clipboard: ClipboardHistoryStore? = nil) {
         self.store = store
+        self.clipboard = clipboard
     }
+
+    private var showsClipboard: Bool { segment == .clipboard && clipboard != nil }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
             header
-            if store.items.isEmpty {
+            if showsClipboard, let clipboard {
+                ClipboardHistoryView(history: clipboard, shelf: store)
+            } else if store.items.isEmpty {
                 emptyState
             } else {
                 itemRow
@@ -31,7 +38,9 @@ struct ShelfModuleView: View {
         .background(dropHighlight)
         .contentShape(.rect)
         .onDrop(of: ShelfStore.acceptedDropTypes, isTargeted: $isDropTargeted) { providers in
-            store.handleDrop(providers: providers)
+            let accepted = store.handleDrop(providers: providers)
+            if accepted { segment = .shelf }
+            return accepted
         }
         .onChange(of: store.items) { _, items in
             selection.prune(keeping: Set(items.map(\.id)))
@@ -44,16 +53,48 @@ struct ShelfModuleView: View {
 
     private var header: some View {
         HStack(spacing: 6) {
-            Label("Raf", systemImage: "tray.full")
-                .font(.system(size: Self.headerFontSize, weight: .semibold))
-                .foregroundStyle(.primary)
-            if store.hasItems {
-                Text("\(store.count)")
-                    .font(.system(size: Self.headerFontSize - 1, weight: .semibold).monospacedDigit())
-                    .foregroundStyle(.secondary)
-                    .padding(.horizontal, 6)
-                    .background(.quaternary, in: .capsule)
+            if let clipboard {
+                ShelfSegmentPicker(selection: $segment)
+                if segment == .clipboard {
+                    clipboardHeaderControls(clipboard)
+                } else {
+                    shelfHeaderControls
+                }
+            } else {
+                Label("Raf", systemImage: "tray.full")
+                    .font(.system(size: Self.headerFontSize, weight: .semibold))
+                    .foregroundStyle(.primary)
+                shelfHeaderControls
             }
+        }
+    }
+
+    private func clipboardHeaderControls(_ clipboard: ClipboardHistoryStore) -> some View {
+        HStack(spacing: 6) {
+            countBadge(clipboard.entries.count)
+            Spacer(minLength: 0)
+            ShelfHeaderButton(title: "Temizle", systemImage: "trash") {
+                clipboard.clear()
+            }
+            .disabled(!clipboard.hasEntries)
+            .help("Pano geçmişini temizle")
+        }
+    }
+
+    @ViewBuilder
+    private func countBadge(_ count: Int) -> some View {
+        if count > 0 {
+            Text("\(count)")
+                .font(.system(size: Self.headerFontSize - 1, weight: .semibold).monospacedDigit())
+                .foregroundStyle(.secondary)
+                .padding(.horizontal, 6)
+                .background(.quaternary, in: .capsule)
+        }
+    }
+
+    private var shelfHeaderControls: some View {
+        HStack(spacing: 6) {
+            countBadge(store.count)
             Spacer(minLength: 0)
             ShelfHeaderButton(title: "Yapıştır", systemImage: "doc.on.clipboard") {
                 store.pasteFromClipboard()

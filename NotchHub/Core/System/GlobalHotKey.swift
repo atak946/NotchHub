@@ -2,20 +2,23 @@ import Carbon.HIToolbox
 import OSLog
 
 /// System-wide shortcut via Carbon `RegisterEventHotKey`; needs no Accessibility permission.
+/// Each instance needs a distinct `id`: every handler sees every hot key press and ignores foreign ones.
 @MainActor
 final class GlobalHotKey {
-    private static let signature: OSType = 0x4E48_4B59 // "NHKY"
+    nonisolated fileprivate static let signature: OSType = 0x4E48_4B59 // "NHKY"
 
     private let keyCode: UInt32
     private let modifiers: UInt32
+    fileprivate let id: UInt32
     fileprivate let action: @MainActor () -> Void
     private var hotKeyRef: EventHotKeyRef?
     private var handlerRef: EventHandlerRef?
     private let logger = Logger(subsystem: AppIdentity.logSubsystem, category: "HotKey")
 
-    init(keyCode: UInt32, modifiers: UInt32, action: @escaping @MainActor () -> Void) {
+    init(keyCode: UInt32, modifiers: UInt32, id: UInt32 = 1, action: @escaping @MainActor () -> Void) {
         self.keyCode = keyCode
         self.modifiers = modifiers
+        self.id = id
         self.action = action
     }
 
@@ -29,9 +32,24 @@ final class GlobalHotKey {
         let userData = Unmanaged.passUnretained(self).toOpaque()
         let handlerStatus = InstallEventHandler(
             GetApplicationEventTarget(),
-            { _, _, userData in
-                guard let userData else { return OSStatus(eventNotHandledErr) }
+            { _, event, userData in
+                guard let userData, let event else { return OSStatus(eventNotHandledErr) }
                 let hotKey = Unmanaged<GlobalHotKey>.fromOpaque(userData).takeUnretainedValue()
+                var pressedID = EventHotKeyID()
+                let status = GetEventParameter(
+                    event,
+                    EventParamName(kEventParamDirectObject),
+                    EventParamType(typeEventHotKeyID),
+                    nil,
+                    MemoryLayout<EventHotKeyID>.size,
+                    nil,
+                    &pressedID
+                )
+                guard status == noErr, pressedID.signature == GlobalHotKey.signature else {
+                    return OSStatus(eventNotHandledErr)
+                }
+                let isMine = MainActor.assumeIsolated { pressedID.id == hotKey.id }
+                guard isMine else { return OSStatus(eventNotHandledErr) }
                 MainActor.assumeIsolated { hotKey.action() }
                 return noErr
             },
@@ -45,7 +63,7 @@ final class GlobalHotKey {
             return false
         }
 
-        let hotKeyID = EventHotKeyID(signature: Self.signature, id: 1)
+        let hotKeyID = EventHotKeyID(signature: Self.signature, id: id)
         let registerStatus = RegisterEventHotKey(
             keyCode,
             modifiers,

@@ -3,9 +3,11 @@ import SwiftUI
 /// Main calendar module for the expanded notch (~590 × 160 pt).
 struct CalendarModuleView: View {
     private let calendar: CalendarService
+    private let onOpenCameraMirror: (() -> Void)?
 
-    init(calendar: CalendarService) {
+    init(calendar: CalendarService, onOpenCameraMirror: (() -> Void)? = nil) {
         self.calendar = calendar
+        self.onOpenCameraMirror = onOpenCameraMirror
     }
 
     var body: some View {
@@ -30,7 +32,8 @@ struct CalendarModuleView: View {
                     event: cardEvent,
                     date: date,
                     onJoin: { calendar.join(cardEvent) },
-                    onOpenCalendar: { calendar.openCalendarApp() }
+                    onOpenCalendar: { calendar.openCalendarApp() },
+                    onOpenCameraMirror: onOpenCameraMirror
                 )
             } else {
                 DayClearCard(upcoming: calendar.nextEvent) { calendar.openCalendarApp() }

@@ -12,6 +12,8 @@ final class NotchViewModel {
     var hoveredMediaControl: MediaControlAction?
     /// Press counters that drive the bounce feedback of the collapsed media controls.
     private(set) var mediaControlPresses: [MediaControlAction: Int] = [:]
+    /// Pointer is over the collapsed meeting mic button.
+    var isMicMuteHovered = false
     private var selectedModule: NotchModule?
     /// Set by the controller: expands the panel on the given module.
     @ObservationIgnored var onOpenModule: ((NotchModule) -> Void)?
@@ -56,9 +58,22 @@ final class NotchViewModel {
         mediaControlPresses = mediaControlPresses.merging([action: 1], uniquingKeysWith: +)
     }
 
+    /// Mic mute button on the right wing while a meeting is detected.
+    var showsMicMuteButton: Bool {
+        let system = services.system
+        return CompactMicMute.isAvailable(
+            isInMeeting: settings.isEnabled(.status) && system.meetingMode.hasCompactIndicator,
+            isControlAvailable: system.micMute.isAvailable
+        )
+    }
+
     /// Widest for the media controls; wider when status glyphs share the right wing with the timer.
     var wingWidth: CGFloat {
         guard hasCompactContent else { return 0 }
+        return CompactMicMute.wingWidth(base: baseWingWidth, isAvailable: showsMicMuteButton)
+    }
+
+    private var baseWingWidth: CGFloat {
         if showsMediaControls { return NotchGeometry.mediaControlsWingWidth }
         return services.hasCompactIndicators ? NotchGeometry.wideCompactWingWidth : NotchGeometry.compactWingWidth
     }

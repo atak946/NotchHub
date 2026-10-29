@@ -4,16 +4,17 @@ import SwiftUI
 struct NotchRootView: View {
     let model: NotchViewModel
     let alerts: NotchAlertCenter
+    let displayID: CGDirectDisplayID
     @Environment(\.colorScheme) private var systemColorScheme
 
-    private enum Presentation: Equatable {
-        case collapsed
-        case alert
-        case expanded
-    }
+    private typealias Presentation = NotchPresentation
 
-    private static let topRadius: [Presentation: CGFloat] = [.collapsed: 6, .alert: 12, .expanded: 14]
-    private static let bottomRadius: [Presentation: CGFloat] = [.collapsed: 10, .alert: 22, .expanded: 26]
+    private static let topRadius: [Presentation: CGFloat] = [
+        .collapsed: 6, .hud: 8, .alert: 12, .expanded: 14, .cameraMirror: 12,
+    ]
+    private static let bottomRadius: [Presentation: CGFloat] = [
+        .collapsed: 10, .hud: 14, .alert: 22, .expanded: 26, .cameraMirror: 24,
+    ]
     private static let morphAnimation = Animation.spring(response: 0.42, dampingFraction: 0.72)
     /// The leading axis of the morph; the other axis follows a beat later.
     private static let morphLeadAnimation = Animation.spring(response: 0.38, dampingFraction: 0.78)
@@ -32,9 +33,12 @@ struct NotchRootView: View {
     @State private var morphFollowTask: Task<Void, Never>?
 
     private var presentation: Presentation {
-        if model.isExpanded { return .expanded }
-        if alerts.current != nil { return .alert }
-        return .collapsed
+        .resolve(
+            isCameraMirrorShown: model.services.cameraMirror.service.isShown(on: displayID),
+            isExpanded: model.isExpanded,
+            hasAlert: alerts.current != nil,
+            hasHUD: model.services.hud.center.current != nil
+        )
     }
 
     private var topRadius: CGFloat { Self.topRadius[presentation] ?? 6 }
@@ -47,15 +51,20 @@ struct NotchRootView: View {
             return geometry.expandedRect.size
         case .alert:
             return geometry.alertRect.size
+        case .hud:
+            return geometry.hudRect.size
+        case .cameraMirror:
+            return geometry.cameraMirrorRect.size
         case .collapsed:
             let collapsed = geometry.collapsedRect(wingWidth: model.wingWidth)
             return CGSize(width: collapsed.width + topRadius * 2, height: collapsed.height)
         }
     }
 
-    /// Alerts are part of the notch, so they stay black and dark in both themes.
+    /// Alerts, the HUD and the mirror are part of the notch, so they stay black and dark in both themes.
     private var contentColorScheme: ColorScheme {
-        if presentation == .alert || model.settings.theme == .dark { return .dark }
+        let isNotchOverlay = presentation == .alert || presentation == .hud || presentation == .cameraMirror
+        if isNotchOverlay || model.settings.theme == .dark { return .dark }
         return systemColorScheme
     }
 
@@ -136,11 +145,29 @@ struct NotchRootView: View {
                 .frame(width: alertSize.width, height: alertSize.height)
                 .transition(.alertContent(reduceMotion: reduceMotion))
             }
+        case .hud:
+            if let reading = model.services.hud.center.current {
+                NotchHUDView(reading: reading, layout: hudLayout)
+                    .frame(width: model.geometry.hudRect.width, height: model.geometry.hudRect.height)
+                    .transition(.alertContent(reduceMotion: reduceMotion))
+            }
+        case .cameraMirror:
+            CameraMirrorView(service: model.services.cameraMirror.service, notchHeight: notchHeight)
+                .frame(width: model.geometry.cameraMirrorRect.width, height: model.geometry.cameraMirrorRect.height)
+                .transition(.alertContent(reduceMotion: reduceMotion))
         case .collapsed:
             CompactWingsView(model: model)
                 .padding(.horizontal, topRadius)
                 .transition(.opacity)
         }
+    }
+
+    private var hudLayout: NotchHUDView.Layout {
+        NotchHUDView.Layout(
+            notchHeight: model.geometry.notchSize.height,
+            notchWidth: model.geometry.notchSize.width,
+            sideInset: topRadius + Self.alertContentInset
+        )
     }
 
     private func alertLayout(notchHeight: CGFloat) -> NotchAlertView.Layout {

@@ -12,7 +12,8 @@ struct SystemStatusTiles: View {
     var body: some View {
         Group {
             MeetingModeStatusTile(controller: monitors.meetingMode)
-            MicCameraStatusTile(monitor: monitors.micCamera)
+            MicCameraStatusTile(monitor: monitors.micCamera, micMute: monitors.micMute)
+            HeadphoneBatteryStatusTile(monitor: monitors.headphones)
             VPNStatusTile(monitor: monitors.vpn)
             NetworkStatusTile(monitor: monitors.network)
             SystemPressureStatusTile(monitor: monitors.pressure)
@@ -55,6 +56,8 @@ struct SystemSettingsSection: View {
     var body: some View {
         MeetingModeSettingsSection(controller: monitors.meetingMode)
         MicCameraSettingsSection(monitor: monitors.micCamera)
+        MicMuteSettingsSection(controller: monitors.micMute)
+        HeadphoneBatterySettingsSection(monitor: monitors.headphones)
         VPNSettingsSection(monitor: monitors.vpn)
         NetworkSettingsSection(monitor: monitors.network)
         SystemPressureSettingsSection(monitor: monitors.pressure)

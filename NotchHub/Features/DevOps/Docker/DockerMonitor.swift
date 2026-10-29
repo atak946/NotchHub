@@ -21,8 +21,10 @@ final class SystemDevOpsPasteboard: DevOpsPasteboard {
 @MainActor
 @Observable
 final class DockerMonitor {
-    /// Periodic recount; events keep counts fresh in between.
+    /// Periodic recount; events keep counts fresh in between (and trigger a recount each).
     static let refreshInterval: Duration = .seconds(15)
+    /// The recount backs off to this while the counts stay the same.
+    static let maxRefreshInterval: Duration = .seconds(60)
     /// How long a died/OOM container keeps the compact badge red.
     static let recentFailureWindow: TimeInterval = 10 * 60
     static let logTailLines = 100
@@ -41,7 +43,9 @@ final class DockerMonitor {
     @ObservationIgnored private let pasteboard: any DevOpsPasteboard
     @ObservationIgnored private var policy: DockerAlertPolicy
     @ObservationIgnored private var runTask: Task<Void, Never>?
-    @ObservationIgnored private var refreshTask: Task<Void, Never>?
+    @ObservationIgnored private let refreshLoop: PowerAwareLoop
+    /// Recounts in a row that found the same counts; drives the back-off.
+    @ObservationIgnored private var unchangedRecounts = 0
     @ObservationIgnored private let logger = Logger(subsystem: DevOpsConstants.logSubsystem, category: "Docker")
 
     private(set) var daemonState: DockerDaemonState = .stopped
@@ -83,6 +87,7 @@ final class DockerMonitor {
         self.client = client
         self.fileSystem = fileSystem
         self.clock = clock
+        refreshLoop = PowerAwareLoop(sleep: { try await clock.sleep(for: $0) })
         self.pasteboard = pasteboard ?? SystemDevOpsPasteboard()
         let ignoreStops = defaults.object(forKey: Keys.ignoreStopExits) as? Bool ?? true
         isEnabled = defaults.object(forKey: Keys.isEnabled) as? Bool ?? true
@@ -199,27 +204,31 @@ final class DockerMonitor {
 
     private func startRefreshing(socketPath: String) {
         stopRefreshing()
-        let clock = clock
-        refreshTask = Task { [weak self] in
-            while !Task.isCancelled {
-                do {
-                    try await clock.sleep(for: Self.refreshInterval)
-                } catch {
-                    return
-                }
-                await self?.refreshCounts(socketPath: socketPath)
+        // The session just listed the containers, so the first loop run only schedules the next recount.
+        var isFirstRun = true
+        refreshLoop.start { [weak self] in
+            guard let self else { return nil }
+            if isFirstRun {
+                isFirstRun = false
+            } else {
+                await self.refreshCounts(socketPath: socketPath)
             }
+            return PowerAwareScheduler.backoff(
+                base: Self.refreshInterval, maximum: Self.maxRefreshInterval, unchangedCount: self.unchangedRecounts
+            )
         }
     }
 
     private func stopRefreshing() {
-        refreshTask?.cancel()
-        refreshTask = nil
+        refreshLoop.stop()
+        unchangedRecounts = 0
     }
 
     private func refreshCounts(socketPath: String) async {
         do {
-            counts = DockerContainerCounts(try await client.containers(socketPath: socketPath))
+            let fresh = DockerContainerCounts(try await client.containers(socketPath: socketPath))
+            unchangedRecounts = fresh == counts ? unchangedRecounts + 1 : 0
+            counts = fresh
         } catch {
             logger.debug("Docker recount failed: \(String(describing: error), privacy: .public)")
         }

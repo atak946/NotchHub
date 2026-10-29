@@ -33,6 +33,7 @@ final class EndpointMonitor {
     @ObservationIgnored private var certificatePolicy: CertificateExpiryWarningPolicy
     @ObservationIgnored private var pollTasks: [UUID: Task<Void, Never>] = [:]
     @ObservationIgnored private var isStarted = false
+    @ObservationIgnored private let power: any PowerConditionsProviding
     @ObservationIgnored private let logger = Logger(subsystem: DevOpsConstants.logSubsystem, category: "Endpoints")
 
     private(set) var endpoints: [MonitoredEndpoint]
@@ -56,7 +57,8 @@ final class EndpointMonitor {
         prober: any EndpointProber = URLSessionEndpointProber(),
         vpn: any VPNDetector = InterfaceVPNDetector(),
         clock: any DevOpsClock = SystemDevOpsClock(),
-        calendar: Calendar = .current
+        calendar: Calendar = .current,
+        power: (any PowerConditionsProviding)? = nil
     ) {
         self.alerts = alerts
         self.defaults = defaults
@@ -64,6 +66,7 @@ final class EndpointMonitor {
         self.vpn = vpn
         self.clock = clock
         self.calendar = calendar
+        self.power = power ?? PowerConditionsMonitor.shared
         store = EndpointStore(defaults: defaults)
         endpoints = store.load()
         isEnabled = defaults.object(forKey: Keys.isEnabled) as? Bool ?? true
@@ -254,8 +257,10 @@ final class EndpointMonitor {
             while !Task.isCancelled {
                 guard let self else { return }
                 await self.check(id)
+                // No immediate re-check on wake: the network may not be up yet, which would read as "down".
+                let delay = PowerAwareScheduler.interval(interval, conditions: self.power.conditions, priority: .standard)
                 do {
-                    try await clock.sleep(for: interval)
+                    try await clock.sleep(for: delay)
                 } catch {
                     return
                 }

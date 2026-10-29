@@ -1,7 +1,8 @@
 import SwiftUI
 
 /// Live indicators beside the hardware notch while the panel is closed:
-/// left wing = now playing (plus media controls when enabled), right wing = timer and status glyphs.
+/// left wing = now playing (plus media controls when enabled),
+/// right wing = meeting mic button, timer and status glyphs.
 struct CompactWingsView: View {
     let model: NotchViewModel
 
@@ -32,6 +33,12 @@ struct CompactWingsView: View {
                 Spacer(minLength: model.geometry.notchSize.width)
 
                 HStack(spacing: 6) {
+                    if model.showsMicMuteButton {
+                        // Leading edge must match NotchGeometry.micMuteButtonRect (the click hit rect).
+                        MicMuteWingButton(isMuted: services.system.micMute.isMuted, isHovered: model.isMicMuteHovered)
+                            .padding(.leading, NotchGeometry.micMuteNotchInset)
+                            .transition(.opacity)
+                    }
                     Spacer(minLength: 0)
                     if services.hasCompactTimer {
                         TimerCompactView(timer: services.timer)

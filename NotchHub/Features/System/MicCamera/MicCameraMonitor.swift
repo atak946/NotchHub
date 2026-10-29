@@ -8,8 +8,8 @@ import OSLog
 final class MicCameraMonitor {
     static let idleAlertMinuteOptions = [5, 10, 15, 30, 60]
     static let defaultIdleAlertMinutes = 10
-    /// Backup poll in case a HAL listener is missed (e.g. after sleep).
-    static let pollInterval: TimeInterval = 10
+    /// Backup poll in case a HAL listener is missed; waking from sleep also re-reads at once (SystemPoller).
+    static let pollInterval: TimeInterval = 30
     static let idleAlertKey = "micCamera.idle"
 
     private static let secondsPerMinute: TimeInterval = 60

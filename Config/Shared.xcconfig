@@ -11,4 +11,7 @@ OTHER_CODE_SIGN_FLAGS =
 SU_FEED_URL =
 SU_PUBLIC_ED_KEY =
 
+// GitHub repo for "Sorun bildir…" (owner/repo or https URL); empty only copies the report.
+NH_ISSUE_URL =
+
 #include? "Local.xcconfig"

@@ -14,8 +14,10 @@ struct LibprocRemoteSessionProbe: RemoteSessionProbing {
     static let maxPathLength = 4 * 1024 // PROC_PIDPATHINFO_MAXSIZE
 
     func snapshots() -> [RemoteProcessSnapshot] {
-        allPIDs().compactMap { pid in
-            guard let path = executablePath(of: pid), let source = Self.source(forExecutablePath: path) else { return nil }
+        // One path buffer for the whole scan instead of a 4 KB allocation per process.
+        var buffer = [CChar](repeating: 0, count: Self.maxPathLength)
+        return allPIDs().compactMap { pid in
+            guard let path = executablePath(of: pid, buffer: &buffer), let source = Self.source(forExecutablePath: path) else { return nil }
             let sockets = tcpSockets(of: pid).map(RemoteProcessSnapshot.Sockets.inspected) ?? .unavailable
             return RemoteProcessSnapshot(source: source, pid: pid, sockets: sockets)
         }
@@ -45,8 +47,7 @@ struct LibprocRemoteSessionProbe: RemoteSessionProbing {
         return Array(pids.prefix(Int(count))).filter { $0 > 0 }
     }
 
-    private func executablePath(of pid: pid_t) -> String? {
-        var buffer = [CChar](repeating: 0, count: Self.maxPathLength)
+    private func executablePath(of pid: pid_t, buffer: inout [CChar]) -> String? {
         let length = proc_pidpath(pid, &buffer, UInt32(buffer.count))
         guard length > 0 else { return nil }
         return String(decoding: buffer.prefix(Int(length)).map { UInt8(bitPattern: $0) }, as: UTF8.self)

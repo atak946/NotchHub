@@ -7,6 +7,8 @@ import OSLog
 @Observable
 final class LocalLLMMonitor {
     static let pollInterval: Duration = .seconds(15)
+    /// The poll backs off to this while neither server changes (e.g. both stay down all day).
+    static let maxPollInterval: Duration = .seconds(30)
     static let portRange = 1...65535
 
     private enum Keys {
@@ -20,7 +22,9 @@ final class LocalLLMMonitor {
     @ObservationIgnored private let defaults: UserDefaults
     @ObservationIgnored private let fetcher: any LocalLLMHTTPFetching
     @ObservationIgnored private let clock: any DevOpsClock
-    @ObservationIgnored private var pollTask: Task<Void, Never>?
+    @ObservationIgnored private let loop: PowerAwareLoop
+    /// Polls in a row where neither server changed; drives the back-off.
+    @ObservationIgnored private var unchangedPolls = 0
     @ObservationIgnored private let logger = Logger(subsystem: DevOpsConstants.logSubsystem, category: "LocalLLM")
 
     private(set) var lmStudio = LocalLLMServerStatus()
@@ -67,6 +71,7 @@ final class LocalLLMMonitor {
         self.defaults = defaults
         self.fetcher = fetcher
         self.clock = clock
+        loop = PowerAwareLoop(sleep: { try await clock.sleep(for: $0) })
         isEnabled = defaults.object(forKey: Keys.isEnabled) as? Bool ?? true
         alertsEnabled = defaults.object(forKey: Keys.alertsEnabled) as? Bool ?? false
         lmStudioPort = Self.clampPort(defaults.object(forKey: Keys.lmStudioPort) as? Int ?? LocalLLMServerKind.defaultLMStudioPort)
@@ -94,23 +99,19 @@ final class LocalLLMMonitor {
     // MARK: - Lifecycle
 
     func start() {
-        guard isEnabled, pollTask == nil else { return }
-        let clock = clock
-        pollTask = Task { [weak self] in
-            while !Task.isCancelled {
-                await self?.refresh()
-                do {
-                    try await clock.sleep(for: Self.pollInterval)
-                } catch {
-                    return
-                }
-            }
+        guard isEnabled, !loop.isActive else { return }
+        loop.start { [weak self] in
+            guard let self else { return nil }
+            await self.refresh()
+            return PowerAwareScheduler.backoff(
+                base: Self.pollInterval, maximum: Self.maxPollInterval, unchangedCount: self.unchangedPolls
+            )
         }
     }
 
     func stop() {
-        pollTask?.cancel()
-        pollTask = nil
+        loop.stop()
+        unchangedPolls = 0
         lmStudio = LocalLLMServerStatus()
         ollama = LocalLLMServerStatus()
     }
@@ -120,6 +121,8 @@ final class LocalLLMMonitor {
         async let lmStudioResult = fetchLMStudio(port: lmStudioPort)
         async let ollamaResult = fetchOllama(port: ollamaPort)
         let (newLMStudio, newOllama) = await (lmStudioResult, ollamaResult)
+        let isUnchanged = newLMStudio == lmStudio && newOllama == ollama
+        unchangedPolls = isUnchanged ? unchangedPolls + 1 : 0
         update(.lmStudio, to: newLMStudio)
         update(.ollama, to: newOllama)
     }

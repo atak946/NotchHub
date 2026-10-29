@@ -1,11 +1,15 @@
 import SwiftUI
 
-/// Status tile: microphone / camera usage.
+/// Status tile: microphone / camera usage, with the system-wide mute toggle in the corner.
 struct MicCameraStatusTile: View {
-    let monitor: MicCameraMonitor
+    private static let muteButtonInset: CGFloat = 6
 
-    init(monitor: MicCameraMonitor) {
+    let monitor: MicCameraMonitor
+    let micMute: MicMuteController?
+
+    init(monitor: MicCameraMonitor, micMute: MicMuteController? = nil) {
         self.monitor = monitor
+        self.micMute = micMute
     }
 
     var body: some View {
@@ -18,6 +22,12 @@ struct MicCameraStatusTile: View {
             help: "Mikrofon gizlilik ayarlarını aç",
             action: { monitor.openPrivacySettings() }
         )
+        .overlay(alignment: .topTrailing) {
+            if let micMute {
+                MicMuteTileButton(controller: micMute)
+                    .padding(Self.muteButtonInset)
+            }
+        }
     }
 
     private var systemImage: String {

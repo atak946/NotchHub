@@ -9,6 +9,12 @@ protocol NotificationCenterEventObserving: AnyObject {
     /// Idempotent; re-attaches when Notification Center was relaunched with a new pid.
     func attach(onEvent: @escaping @MainActor () -> Void)
     func detach()
+    /// True while push events are expected, so the safety-net poll may back off.
+    var isAttached: Bool { get }
+}
+
+extension NotificationCenterEventObserving {
+    var isAttached: Bool { false }
 }
 
 /// AXObserver on `com.apple.notificationcenterui` for window/element creation and layout changes.
@@ -31,6 +37,8 @@ final class AXNotificationCenterObserver: NotificationCenterEventObserving {
 
     private var observer: AXObserver?
     private var observedPID: pid_t?
+
+    var isAttached: Bool { observer != nil }
     private var handler: Handler?
     private let logger = Logger(subsystem: AppIdentity.logSubsystem, category: "Insights")
 

@@ -9,12 +9,15 @@ struct NotchHubApp: App {
             MenuBarContent(
                 settings: appDelegate.settings,
                 windowManager: appDelegate.windowManager,
-                updater: appDelegate.updater
+                updater: appDelegate.updater,
+                micMute: appDelegate.services.system.micMute
             )
+            .environment(\.supportActions, appDelegate.supportActions)
         }
 
         Settings {
             SettingsView(settings: appDelegate.settings, services: appDelegate.services, updater: appDelegate.updater)
+                .environment(\.supportActions, appDelegate.supportActions)
         }
     }
 }

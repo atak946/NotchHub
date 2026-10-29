@@ -22,6 +22,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         self?.windowManager.present(module)
     }
     private var hotKey: GlobalHotKey?
+    private lazy var micMuteHotKey = MicMuteHotKey(controller: services.system.micMute)
 
     // MARK: Updates (Sparkle; inert unless the build defines a feed and key)
     private(set) lazy var updater: UpdaterService = {
@@ -29,6 +30,20 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         updater.canPostAlert = { [settings] in settings.alertsEnabled && !settings.isPaused }
         return updater
     }()
+
+    // MARK: Onboarding and diagnostics
+    let permissions = PermissionsModel()
+    private(set) lazy var onboarding = OnboardingWindowController(permissions: permissions)
+    private(set) lazy var diagnostics = DiagnosticsReporter(settings: settings, permissions: permissions, alerts: alerts)
+    var supportActions: SupportActions {
+        SupportActions(
+            openOnboarding: { [weak self] in self?.onboarding.show() },
+            reportIssue: { [weak self] in
+                guard let diagnostics = self?.diagnostics else { return }
+                Task { await diagnostics.report() }
+            }
+        )
+    }
 
     private let logger = Logger(subsystem: AppIdentity.logSubsystem, category: "App")
 
@@ -43,13 +58,22 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         services.start()
         alertRouter.start()
         windowManager.start()
+        IntentServicesBridge.shared.configure(
+            LiveIntentRoutes(services: services, settings: settings, alerts: alerts, panel: windowManager)
+        )
         registerHotKey()
+        micMuteHotKey.start()
         updater.start()
+        permissions.onGranted = { [weak self] permission in
+            if permission == .calendar { self?.services.calendar.refresh() }
+        }
+        onboarding.showIfNeeded()
         logger.info("NotchHub started")
     }
 
     func applicationWillTerminate(_ notification: Notification) {
         hotKey?.unregister()
+        micMuteHotKey.stop()
         services.stop()
     }
 

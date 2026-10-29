@@ -14,11 +14,11 @@ struct MirroredNotification: Equatable, Sendable {
 @MainActor
 @Observable
 final class NotificationMirrorService {
-    /// Safety-net poll while no banner window exists.
-    static let idlePollInterval: Duration = .seconds(1)
+    /// Safety-net poll while no banner window exists (backs off while AX events flow, see the poll policy).
+    static let idlePollInterval = NotificationMirrorPollPolicy.idleInterval
     /// Faster poll while Notification Center shows a banner window (fallback if AX events are missed).
-    static let activePollInterval: Duration = .milliseconds(250)
-    static let untrustedRecheckInterval: Duration = .seconds(10)
+    static let activePollInterval = NotificationMirrorPollPolicy.activeInterval
+    static let untrustedRecheckInterval = NotificationMirrorPollPolicy.untrustedRecheckInterval
     static let alertDuration: Duration = .seconds(6)
     static let maxSeenIDs = 200
 
@@ -37,6 +37,7 @@ final class NotificationMirrorService {
         didSet {
             defaults.set(isEnabled, forKey: Keys.isEnabled)
             if !isEnabled { resetBaseline() }
+            if isEnabled, !oldValue { loop.kick() }
         }
     }
 
@@ -79,7 +80,9 @@ final class NotificationMirrorService {
     @ObservationIgnored private var hasBannerWindow = false
     @ObservationIgnored private var isPolling = false
     @ObservationIgnored private var needsRepoll = false
-    @ObservationIgnored private var pollTask: Task<Void, Never>?
+    @ObservationIgnored private let loop: PowerAwareLoop
+    /// Consecutive polls without a banner window or a new banner; drives the idle back-off.
+    @ObservationIgnored private var quietPolls = 0
     @ObservationIgnored private let logger = Logger(subsystem: AppIdentity.logSubsystem, category: "Insights")
 
     init(
@@ -90,7 +93,8 @@ final class NotificationMirrorService {
         activator: any InsightsAppActivating = SystemInsightsAppActivator(),
         ledger: NotificationMirrorLedger = NotificationMirrorLedger(),
         clock: any InsightsClock = SystemInsightsClock(),
-        defaults: UserDefaults = .standard
+        defaults: UserDefaults = .standard,
+        power: (any PowerConditionsProviding)? = nil
     ) {
         self.alerts = alerts
         self.permission = permission
@@ -100,6 +104,7 @@ final class NotificationMirrorService {
         self.ledger = ledger
         self.clock = clock
         self.defaults = defaults
+        loop = PowerAwareLoop(power: power, sleep: { try await clock.sleep(for: $0) })
         isEnabled = defaults.object(forKey: Keys.isEnabled) as? Bool ?? true
         showsMessageText = defaults.object(forKey: Keys.showsMessageText) as? Bool ?? true
         hidesNativeBanners = defaults.object(forKey: Keys.hidesNativeBanners) as? Bool ?? true
@@ -112,22 +117,17 @@ final class NotificationMirrorService {
     // MARK: - Lifecycle
 
     func start() {
-        guard pollTask == nil else { return }
+        guard !loop.isActive else { return }
         isRunning = true
-        let clock = self.clock
-        pollTask = Task { [weak self] in
-            while !Task.isCancelled {
-                guard let self else { return }
-                await self.poll()
-                let delay = self.nextDelay()
-                try? await clock.sleep(for: delay)
-            }
+        loop.start { [weak self] in
+            guard let self else { return nil }
+            await self.poll()
+            return self.nextDelay()
         }
     }
 
     func stop() {
-        pollTask?.cancel()
-        pollTask = nil
+        loop.stop()
         observer?.detach()
         isRunning = false
         resetBaseline()
@@ -172,7 +172,12 @@ final class NotificationMirrorService {
         }
         observer?.attach { [weak self] in
             guard let self, self.isRunning else { return }
-            Task { await self.poll() }
+            self.quietPolls = 0
+            if self.loop.isActive {
+                self.loop.kick()
+            } else {
+                Task { await self.poll() }
+            }
         }
         let reader = self.reader
         guard let snapshot = await Task.detached(operation: { reader.readSnapshot() }).value else {
@@ -185,6 +190,7 @@ final class NotificationMirrorService {
     private func apply(_ snapshot: NotificationCenterSnapshot) async {
         hasBannerWindow = snapshot.hasBannerWindow
         let fresh = snapshot.banners.filter { seen.insert($0.id) }
+        quietPolls = hasBannerWindow || !fresh.isEmpty ? 0 : quietPolls + 1
         guard hasBaseline else {
             hasBaseline = true
             return
@@ -241,10 +247,17 @@ final class NotificationMirrorService {
         seen.removeAll()
         hasBaseline = false
         hasBannerWindow = false
+        quietPolls = 0
     }
 
-    private func nextDelay() -> Duration {
-        guard permission.isTrusted else { return Self.untrustedRecheckInterval }
-        return hasBannerWindow ? Self.activePollInterval : Self.idlePollInterval
+    /// `nil` idles the loop while mirroring is off; enabling it kicks the loop again.
+    private func nextDelay() -> Duration? {
+        guard isEnabled else { return nil }
+        return NotificationMirrorPollPolicy.delay(
+            isTrusted: permission.isTrusted,
+            hasBannerWindow: hasBannerWindow,
+            isObserverAttached: observer?.isAttached ?? false,
+            quietPolls: quietPolls
+        )
     }
 }

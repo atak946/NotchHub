@@ -9,9 +9,6 @@ final class TimerService {
     static let presets: [TimeInterval] = [5, 15, 25, 45].map { $0 * secondsPerMinute }
     static let customMinutesRange = 1...180
     static let defaultCustomMinutes = 10
-    /// Pace of the UI refresh while running; correctness comes from absolute end dates.
-    static let tickInterval: Duration = .milliseconds(250)
-
     private static let secondsPerMinute: TimeInterval = 60
 
     private enum Keys {
@@ -34,6 +31,16 @@ final class TimerService {
     private(set) var remaining: TimeInterval = 0
     /// Incremented on every natural finish; drive shake animations with it.
     private(set) var finishCount = 0
+
+    /// Set by the expanded timer view while it is on screen; it shows seconds, the closed glyph mostly does not.
+    @ObservationIgnored var isDetailVisible = false {
+        didSet {
+            guard isDetailVisible != oldValue else { return }
+            tickTask?.cancel()
+            tickTask = nil
+            refresh()
+        }
+    }
 
     /// Called on the main actor whenever a phase finishes on its own (not on skip/cancel).
     @ObservationIgnored var onFinish: (@MainActor () -> Void)?
@@ -182,8 +189,9 @@ final class TimerService {
         let clock = clock
         tickTask = Task { [weak self] in
             while !Task.isCancelled {
+                guard let delay = self?.nextTickDelay() else { return }
                 do {
-                    try await clock.sleep(for: Self.tickInterval)
+                    try await clock.sleep(for: delay)
                 } catch {
                     return
                 }
@@ -191,6 +199,15 @@ final class TimerService {
                 self.refresh()
             }
         }
+    }
+
+    private func nextTickDelay() -> Duration {
+        let seconds = TimerTickPolicy.delay(
+            remaining: engine.remaining(at: clock.now),
+            phaseDuration: engine.phaseDuration,
+            showsSeconds: isDetailVisible
+        )
+        return .seconds(seconds)
     }
 
     private static func state(for engine: TimerEngine) -> TimerState {

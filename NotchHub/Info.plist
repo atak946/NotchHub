@@ -39,6 +39,8 @@
 	<string>public.app-category.productivity</string>
 	<key>LSUIElement</key>
 	<true/>
+	<key>NHIssueURL</key>
+	<string>$(NH_ISSUE_URL)</string>
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSAllowsLocalNetworking</key>
@@ -48,6 +50,8 @@
 	<string>NotchHub, Spotify ve Music oynatmasını çentikten denetler.</string>
 	<key>NSCalendarsFullAccessUsageDescription</key>
 	<string>NotchHub bir sonraki toplantını çentikte gösterir.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>NotchHub, toplantı öncesi kameranı kontrol etmen için çentikte kısa bir ayna önizlemesi gösterir.</string>
 	<key>SUEnableAutomaticChecks</key>
 	<true/>
 	<key>SUFeedURL</key>

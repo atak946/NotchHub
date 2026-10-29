@@ -32,13 +32,13 @@ struct NotchContentView: View {
         let services = model.services
         switch model.activeModule {
         case .shelf:
-            ShelfModuleView(store: services.shelf)
+            ShelfModuleView(store: services.shelf, clipboard: services.clipboard)
         case .media:
             MediaModuleView(media: services.media, audio: services.audio)
         case .timer:
             TimerModuleView(timer: services.timer)
         case .calendar:
-            CalendarModuleView(calendar: services.calendar)
+            CalendarModuleView(calendar: services.calendar) { services.cameraMirror.service.open() }
         case .notes:
             NotesModuleView(store: services.notes, shelf: services.shelf)
         case .status:

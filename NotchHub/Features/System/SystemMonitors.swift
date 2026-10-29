@@ -10,6 +10,9 @@ final class SystemMonitors {
     let network: NetworkMonitor
     let pressure: SystemPressureMonitor
     let meetingMode: MeetingModeController
+    /// System-wide mic mute; started by `ModuleServices` regardless of module toggles.
+    let micMute: MicMuteController
+    let headphones: HeadphoneBatteryMonitor
 
     private var isStarted = false
 
@@ -26,6 +29,8 @@ final class SystemMonitors {
             media: media,
             defaults: defaults
         )
+        micMute = MicMuteController(alerts: alerts, defaults: defaults)
+        headphones = HeadphoneBatteryMonitor(alerts: alerts, defaults: defaults)
     }
 
     /// True when at least one compact indicator has something to show.
@@ -44,12 +49,14 @@ final class SystemMonitors {
         network.start()
         pressure.start()
         meetingMode.start()
+        headphones.start()
     }
 
     func stop() {
         guard isStarted else { return }
         isStarted = false
         meetingMode.stop()
+        headphones.stop()
         micCamera.stop()
         vpn.stop()
         network.stop()

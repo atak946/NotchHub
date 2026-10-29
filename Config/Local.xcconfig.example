@@ -10,3 +10,6 @@ OTHER_CODE_SIGN_FLAGS[config=Release] = --timestamp
 SU_FEED_URL =
 // Output of Sparkle's generate_keys.
 SU_PUBLIC_ED_KEY =
+
+// GitHub repo for "Sorun bildir" (owner/repo); empty only copies the report.
+NH_ISSUE_URL =

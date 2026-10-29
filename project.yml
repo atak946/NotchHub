@@ -43,6 +43,8 @@ targets:
         CFBundleLocalizations: [tr]
         LSApplicationCategoryType: public.app-category.productivity
         NSCalendarsFullAccessUsageDescription: NotchHub bir sonraki toplantını çentikte gösterir.
+        NSCameraUsageDescription: NotchHub, toplantı öncesi kameranı kontrol etmen için çentikte kısa bir ayna önizlemesi gösterir.
+        NHIssueURL: $(NH_ISSUE_URL)
         NSAppleEventsUsageDescription: NotchHub, Spotify ve Music oynatmasını çentikten denetler.
         CFBundleURLTypes:
           - CFBundleURLName: $(PRODUCT_BUNDLE_IDENTIFIER)
@@ -59,6 +61,7 @@ targets:
       properties:
         com.apple.security.automation.apple-events: true
         com.apple.security.personal-information.calendars: true
+        com.apple.security.device.camera: true
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: $(APP_BUNDLE_ID)

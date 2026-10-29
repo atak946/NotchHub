@@ -10,7 +10,7 @@ struct SystemLiveClock: SystemClock {
     var now: Date { Date() }
 
     func sleep(for duration: Duration) async throws {
-        try await Task.sleep(for: duration)
+        try await PowerAwareScheduler.sleep(for: duration)
     }
 }
 
@@ -47,36 +47,33 @@ final class SystemDelayedAction {
     }
 }
 
-/// Runs an action repeatedly at a fixed interval until stopped.
+/// Runs an action repeatedly at a (power-scaled) interval until stopped. The first run happens after one
+/// interval; returning from away or Low Power Mode runs it immediately (e.g. to catch listeners missed in sleep).
 @MainActor
 final class SystemPoller {
-    private let clock: any SystemClock
-    private var task: Task<Void, Never>?
+    private let loop: PowerAwareLoop
 
-    init(clock: any SystemClock) {
-        self.clock = clock
+    init(clock: any SystemClock, priority: PollingPriority = .standard, power: (any PowerConditionsProviding)? = nil) {
+        loop = PowerAwareLoop(priority: priority, power: power, sleep: { try await clock.sleep(for: $0) })
     }
 
-    var isRunning: Bool { task != nil }
+    var isRunning: Bool { loop.isActive }
 
     func start(every interval: TimeInterval, _ action: @escaping @MainActor @Sendable () -> Void) {
-        guard task == nil else { return }
-        let clock = clock
-        task = Task {
-            while !Task.isCancelled {
-                do {
-                    try await clock.sleep(for: .seconds(interval))
-                } catch {
-                    return
-                }
-                guard !Task.isCancelled else { return }
+        guard !loop.isActive else { return }
+        let period = Duration.seconds(interval)
+        var isFirstRun = true
+        loop.start {
+            if isFirstRun {
+                isFirstRun = false
+            } else {
                 action()
             }
+            return period
         }
     }
 
     func stop() {
-        task?.cancel()
-        task = nil
+        loop.stop()
     }
 }

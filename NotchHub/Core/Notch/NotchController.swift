@@ -15,6 +15,7 @@ final class NotchController {
     private let panel: NotchPanel
     private let dropCatcher: DropCatcherPanel
     private let mediaControls: NotchMediaControlsCoordinator
+    private let micMute: NotchMicMuteCoordinator
     private var monitors: [Any] = []
     private var openTask: Task<Void, Never>?
     private var closeTask: Task<Void, Never>?
@@ -23,6 +24,7 @@ final class NotchController {
     private var isTornDown = false
 
     var isExpanded: Bool { model.isExpanded }
+    var isVisible: Bool { panel.isVisible }
 
     init(
         screen: NSScreen,
@@ -39,8 +41,9 @@ final class NotchController {
         self.panel = NotchPanel(contentRect: geometry.panelRect)
         self.dropCatcher = DropCatcherPanel(contentRect: geometry.collapsedRect)
         self.mediaControls = NotchMediaControlsCoordinator(model: model, alerts: alerts)
+        self.micMute = NotchMicMuteCoordinator(model: model, alerts: alerts)
 
-        let hostingView = NSHostingView(rootView: NotchRootView(model: model, alerts: alerts))
+        let hostingView = NSHostingView(rootView: NotchRootView(model: model, alerts: alerts, displayID: displayID))
         hostingView.frame = CGRect(origin: .zero, size: geometry.panelRect.size)
         panel.contentView = hostingView
         panel.setFrame(geometry.panelRect, display: true)
@@ -59,6 +62,7 @@ final class NotchController {
         }
         installMonitors()
         trackAlerts()
+        trackCameraMirror()
     }
 
     func update(screen: NSScreen) {
@@ -74,13 +78,17 @@ final class NotchController {
         dropCatcher.orderFrontRegardless()
         panel.orderFrontRegardless()
         mediaControls.setHostVisible(true)
+        micMute.setHostVisible(true)
     }
 
     func hide() {
+        // A hidden notch must not keep the camera running.
+        if isCameraMirrorShown { cameraMirror.close() }
         collapse()
         panel.orderOut(nil)
         dropCatcher.orderOut(nil)
         mediaControls.setHostVisible(false)
+        micMute.setHostVisible(false)
     }
 
     func toggle() {
@@ -105,6 +113,7 @@ final class NotchController {
 
     func tearDown() {
         isTornDown = true
+        if isCameraMirrorShown { cameraMirror.close() }
         cancelPendingTasks()
         monitors.forEach(NSEvent.removeMonitor)
         monitors.removeAll()
@@ -116,11 +125,14 @@ final class NotchController {
         dropCatcher.orderOut(nil)
         dropCatcher.close()
         mediaControls.tearDown()
+        micMute.tearDown()
     }
 
     // MARK: - State
 
     private func expand(pinned: Bool = false, makeKey: Bool = false) {
+        // The mirror outranks the panel; opening the panel ends the camera check.
+        if isCameraMirrorShown { cameraMirror.close() }
         cancelPendingTasks()
         isPinnedOpen = pinned
         guard !model.isExpanded else { return }
@@ -161,9 +173,12 @@ final class NotchController {
     }
 
     private var interactiveRect: CGRect? {
-        if model.isExpanded { return model.geometry.expandedRect }
-        if alerts.current != nil { return model.geometry.alertRect }
-        return nil
+        NotchPresentation.resolve(
+            isCameraMirrorShown: isCameraMirrorShown,
+            isExpanded: model.isExpanded,
+            hasAlert: alerts.current != nil,
+            hasHUD: false // The HUD never takes clicks, so it does not affect the rect.
+        ).interactiveRect(in: model.geometry)
     }
 
     private func cancelPendingTasks() {
@@ -243,12 +258,13 @@ final class NotchController {
 
         // The alert banner handles its own hover and clicks; the media controls never start the open timer.
         mediaControls.updateHover(at: point)
+        micMute.updateHover(at: point)
         let isOpenTrigger = geometry.shouldOpen(
             at: point,
             wingWidth: model.wingWidth,
             excludingMediaControls: mediaControls.isInteractive
-        )
-        guard alerts.current == nil, isOpenTrigger else {
+        ) && !micMute.blocksOpen(at: point)
+        guard alerts.current == nil, !isCameraMirrorShown, isOpenTrigger else {
             openTask?.cancel()
             openTask = nil
             return
@@ -275,12 +291,20 @@ final class NotchController {
     }
 
     private func handleOutsideClick(at point: CGPoint) {
+        if isCameraMirrorShown, !model.geometry.cameraMirrorRect.contains(point) {
+            cameraMirror.close()
+            return
+        }
         guard model.isExpanded, model.geometry.shouldClose(at: point) else { return }
         collapse()
     }
 
     private func handleKeyDown(_ keyCode: UInt16) -> Bool {
         guard keyCode == Self.escapeKeyCode else { return false }
+        if isCameraMirrorShown {
+            cameraMirror.close()
+            return true
+        }
         if model.isExpanded {
             collapse()
             return true
@@ -310,6 +334,39 @@ final class NotchController {
             guard !Task.isCancelled else { return }
             self?.closeTask = nil
             self?.collapse()
+        }
+    }
+
+    // MARK: - Camera mirror
+
+    private var cameraMirror: CameraMirrorService { model.services.cameraMirror.service }
+
+    private var isCameraMirrorShown: Bool { cameraMirror.isShown(on: displayID) }
+
+    private func trackCameraMirror() {
+        withObservationTracking {
+            _ = isCameraMirrorShown
+        } onChange: { [weak self] in
+            Task { @MainActor in
+                guard let self, !self.isTornDown else { return }
+                self.handleCameraMirrorChange()
+                self.trackCameraMirror()
+            }
+        }
+    }
+
+    /// The mirror collapses the panel and takes key focus so Esc closes it; closing hands focus back.
+    private func handleCameraMirrorChange() {
+        if isCameraMirrorShown {
+            collapse()
+            updateMouseInteractivity()
+            panel.makeKey()
+        } else {
+            updateMouseInteractivity()
+            if !model.isExpanded, panel.isKeyWindow {
+                panel.orderOut(nil)
+                panel.orderFrontRegardless()
+            }
         }
     }
 }

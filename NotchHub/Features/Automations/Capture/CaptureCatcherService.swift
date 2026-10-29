@@ -10,7 +10,11 @@ final class CaptureCatcherService {
 
     static let alertKey = "captureCatcher.batch"
     static let alertDuration: Duration = .seconds(8)
-    static let pollInterval: Duration = .milliseconds(500)
+    nonisolated static let pollInterval: Duration = .milliseconds(500)
+    /// A file that stays pending without file events (e.g. a stalled download) is re-checked at most this slowly.
+    nonisolated static let maxIdlePollInterval: Duration = .seconds(5)
+    /// Quiet pumps at `pollInterval` before backing off; covers the 1 s stability and 1.5 s burst windows.
+    nonisolated static let idlePumpGrace = 8
 
     private enum Keys {
         static let isEnabled = "CaptureCatcher.isEnabled"
@@ -60,6 +64,8 @@ final class CaptureCatcherService {
     ))
     @ObservationIgnored private var aggregator = CaptureBurstAggregator()
     @ObservationIgnored private var pumpTask: Task<Void, Never>?
+    /// Pumps in a row that found nothing new while files are still pending; drives the back-off.
+    @ObservationIgnored private var idlePumps = 0
     @ObservationIgnored private let alerts: NotchAlertCenter
     @ObservationIgnored private let addToShelf: @MainActor ([URL]) -> Void
     @ObservationIgnored private let watcher: any CaptureFileWatching
@@ -150,13 +156,21 @@ final class CaptureCatcherService {
 
     func handle(_ events: [CaptureFileEvent]) {
         classifier.ingest(events, now: now(), probe: probe)
+        if Self.pumpDelay(idlePumps: idlePumps) > Self.pollInterval {
+            // A backed-off pump would sleep through the new events; restart it at full pace.
+            pumpTask?.cancel()
+            pumpTask = nil
+        }
+        idlePumps = 0
         startPumpIfNeeded()
     }
 
     /// One poll/flush step; the pump task calls it every `pollInterval` while work is outstanding.
     func pump() {
         let date = now()
-        aggregator.add(classifier.poll(now: date, probe: probe), now: date)
+        let detections = classifier.poll(now: date, probe: probe)
+        idlePumps = detections.isEmpty && aggregator.isEmpty ? idlePumps + 1 : 0
+        aggregator.add(detections, now: date)
         if let batch = aggregator.flush(now: date) {
             deliver(batch)
         }
@@ -223,8 +237,9 @@ final class CaptureCatcherService {
         let sleep = sleep
         pumpTask = Task { [weak self] in
             while !Task.isCancelled {
+                guard let delay = self.map({ Self.pumpDelay(idlePumps: $0.idlePumps) }) else { return }
                 do {
-                    try await sleep(Self.pollInterval)
+                    try await sleep(delay)
                 } catch {
                     return
                 }
@@ -232,9 +247,16 @@ final class CaptureCatcherService {
                 self.pump()
                 if !self.hasOutstandingWork {
                     self.pumpTask = nil
+                    self.idlePumps = 0
                     return
                 }
             }
         }
+    }
+
+    nonisolated static func pumpDelay(idlePumps: Int) -> Duration {
+        PowerAwareScheduler.backoff(
+            base: pollInterval, maximum: maxIdlePollInterval, unchangedCount: idlePumps, graceCount: idlePumpGrace
+        )
     }
 }

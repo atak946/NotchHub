@@ -75,7 +75,8 @@ final class TimeTracker {
     @ObservationIgnored private let pasteboard: any InsightsPasteboard
     @ObservationIgnored private let defaults: UserDefaults
     @ObservationIgnored private var lastSampleAt: Date?
-    @ObservationIgnored private var sampleTask: Task<Void, Never>?
+    /// Slowed only while nobody is at the screen; Low Power Mode keeps the cadence the credit math relies on.
+    @ObservationIgnored private let loop: PowerAwareLoop
     @ObservationIgnored private var hasLoaded = false
     @ObservationIgnored private let logger = Logger(subsystem: AppIdentity.logSubsystem, category: "Insights")
 
@@ -87,7 +88,8 @@ final class TimeTracker {
         clock: any InsightsClock = SystemInsightsClock(),
         calendar: Calendar = .autoupdatingCurrent,
         pasteboard: any InsightsPasteboard = SystemInsightsPasteboard(),
-        defaults: UserDefaults = .standard
+        defaults: UserDefaults = .standard,
+        power: (any PowerConditionsProviding)? = nil
     ) {
         self.alerts = alerts
         self.permission = permission
@@ -97,6 +99,7 @@ final class TimeTracker {
         self.calendar = calendar
         self.pasteboard = pasteboard
         self.defaults = defaults
+        loop = PowerAwareLoop(priority: .awayOnly, power: power, sleep: { try await clock.sleep(for: $0) })
         isEnabled = defaults.object(forKey: Keys.isEnabled) as? Bool ?? true
         rules = Self.loadRules(from: defaults)
         idleThresholdMinutes = defaults.object(forKey: Keys.idleThresholdMinutes) as? Int ?? Self.defaultIdleThresholdMinutes
@@ -110,21 +113,18 @@ final class TimeTracker {
     // MARK: - Lifecycle
 
     func start() {
-        guard sampleTask == nil else { return }
+        guard !loop.isActive else { return }
         loadLedgerIfNeeded()
         isRunning = true
-        let clock = self.clock
-        sampleTask = Task { [weak self] in
-            while !Task.isCancelled {
-                await self?.sample()
-                try? await clock.sleep(for: Self.sampleInterval)
-            }
+        loop.start { [weak self] in
+            guard let self else { return nil }
+            await self.sample()
+            return Self.sampleInterval
         }
     }
 
     func stop() {
-        sampleTask?.cancel()
-        sampleTask = nil
+        loop.stop()
         isRunning = false
         resetSampling()
     }

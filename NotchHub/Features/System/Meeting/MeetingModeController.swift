@@ -8,6 +8,7 @@ final class MeetingModeController {
     /// Enter/exit must hold this long so a brief mic blip doesn't toggle meeting mode.
     static let debounceInterval: TimeInterval = 3
     /// Re-check pace so calendar meetings that start while the mic is already on are noticed.
+    /// Only runs while the microphone is in use: without it no meeting can start or end by time alone.
     static let pollInterval: TimeInterval = 30
 
     enum Keys {
@@ -88,6 +89,7 @@ final class MeetingModeController {
             calendarMeeting: MeetingDetector.calendarMeeting(in: inputs.calendarEvents, at: now)
         )
         if let source { candidateSource = source }
+        updatePoller(micInUse: inputs.isMicrophoneInUse)
         let pendingSinceBefore = debouncer.pendingSince
         if let committed = debouncer.observe(source != nil, at: now) {
             apply(committed, since: pendingSinceBefore ?? now)
@@ -148,7 +150,6 @@ final class MeetingModeController {
         if shouldMonitor, !isMonitoring {
             isMonitoring = true
             trackInputs()
-            poller.start(every: Self.pollInterval) { [weak self] in self?.evaluate() }
             evaluate()
         } else if !shouldMonitor, isMonitoring {
             isMonitoring = false
@@ -157,6 +158,14 @@ final class MeetingModeController {
             debouncer.reset()
             if session != nil { exit() }
         }
+    }
+
+    private func updatePoller(micInUse: Bool) {
+        guard isMonitoring, MeetingPollPolicy.needsPolling(micInUse: micInUse) else {
+            poller.stop()
+            return
+        }
+        poller.start(every: Self.pollInterval) { [weak self] in self?.evaluate() }
     }
 
     private func trackInputs() {

@@ -10,7 +10,7 @@ struct SystemDevOpsClock: DevOpsClock {
     var now: Date { Date() }
 
     func sleep(for duration: Duration) async throws {
-        try await Task.sleep(for: duration)
+        try await PowerAwareScheduler.sleep(for: duration)
     }
 }
 

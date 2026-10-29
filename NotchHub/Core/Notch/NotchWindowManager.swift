@@ -28,6 +28,12 @@ final class NotchWindowManager {
     func start() {
         guard !isStarted else { return }
         isStarted = true
+        // The camera mirror opens on the notch under the mouse, like modules opened from alerts.
+        services.cameraMirror.service.displayResolver = { [weak self] in
+            // Never run the camera behind a hidden notch (paused or full screen).
+            guard let controller = self?.activeController(), controller.isVisible else { return nil }
+            return controller.displayID
+        }
 
         observers.append(NotificationCenter.default.addObserver(
             forName: NSApplication.didChangeScreenParametersNotification,
@@ -47,9 +53,19 @@ final class NotchWindowManager {
         activeController()?.toggle()
     }
 
+    /// Whether the panel on the display under the mouse (or any active panel) is open.
+    var isPanelExpanded: Bool {
+        activeController()?.isExpanded ?? false
+    }
+
     /// Opens the panel on a module on the display under the mouse (e.g. from an alert action).
     func present(_ module: NotchModule) {
         activeController()?.open(module, makeKey: false)
+    }
+
+    /// Opens the camera mirror on the display under the mouse (menu bar "Ayna").
+    func openCameraMirror() {
+        services.cameraMirror.service.open()
     }
 
     private func activeController() -> NotchController? {

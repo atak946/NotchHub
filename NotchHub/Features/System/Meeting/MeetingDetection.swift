@@ -51,3 +51,11 @@ enum MeetingMediaPolicy {
         didPause && !isPlaying
     }
 }
+
+/// Time alone can only change the meeting state while the microphone is on (a calendar meeting starting
+/// or ending); otherwise the observed inputs (mic, apps, events) drive every change.
+enum MeetingPollPolicy {
+    static func needsPolling(micInUse: Bool) -> Bool {
+        micInUse
+    }
+}

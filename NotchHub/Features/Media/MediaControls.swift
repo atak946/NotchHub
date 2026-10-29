@@ -76,10 +76,12 @@ struct MediaEqualizerView: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     private static let restingScale: CGFloat = 0.25
+    /// ~30 fps: smooth for 2.5 pt bars without redrawing at the display's full (up to 120 Hz) refresh rate.
+    private static let frameInterval: TimeInterval = 1.0 / 30
     private static let frequencies: [Double] = [5.1, 7.3, 4.2, 6.4, 5.7]
 
     var body: some View {
-        TimelineView(.animation(paused: !isPlaying || reduceMotion)) { context in
+        TimelineView(.animation(minimumInterval: Self.frameInterval, paused: !isPlaying || reduceMotion)) { context in
             HStack(alignment: .center, spacing: spacing) {
                 ForEach(0..<barCount, id: \.self) { index in
                     Capsule()

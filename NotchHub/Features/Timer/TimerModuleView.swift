@@ -21,6 +21,9 @@ struct TimerModuleView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .animation(.spring(response: 0.35, dampingFraction: 0.85), value: timer.state == .idle)
         .timerFinishShake(trigger: timer.finishCount)
+        // Per-second ticks only while this seconds-precise view is on screen (see TimerTickPolicy).
+        .onAppear { timer.isDetailVisible = true }
+        .onDisappear { timer.isDetailVisible = false }
     }
 }
 

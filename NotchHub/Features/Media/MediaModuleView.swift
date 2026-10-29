@@ -32,13 +32,15 @@ struct MediaModuleView: View {
             VStack(alignment: .leading, spacing: 0) {
                 header(track)
                 Spacer(minLength: 6)
-                TimelineView(.periodic(from: .now, by: Self.progressTick)) { context in
+                // Ticks only while playing; a paused position does not move.
+                TimelineView(.periodic(every: Self.progressTick, paused: !track.isPlaying)) { context in
                     MediaProgressBar(
                         position: media.position(at: context.date),
                         duration: track.duration,
                         onSeek: media.seek(to:)
                     )
                 }
+                .id(track.isPlaying)
                 Spacer(minLength: 4)
                 controls(track)
             }

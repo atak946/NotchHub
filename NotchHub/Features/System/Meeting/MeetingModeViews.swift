@@ -9,7 +9,8 @@ struct MeetingModeStatusTile: View {
     }
 
     var body: some View {
-        TimelineView(.periodic(from: .now, by: 1)) { context in
+        // Ticks every second only while a meeting runs; otherwise the text is static.
+        TimelineView(.periodic(every: 1, paused: !controller.isInMeeting)) { context in
             SystemStatusTileView(
                 systemImage: controller.isInMeeting ? "person.wave.2.fill" : "person.wave.2",
                 title: "Toplantı",
@@ -18,6 +19,7 @@ struct MeetingModeStatusTile: View {
                 tint: controller.isEnabled && controller.isInMeeting ? .red : .gray
             )
         }
+        .id(controller.isInMeeting)
     }
 
     private func value(at date: Date) -> String {

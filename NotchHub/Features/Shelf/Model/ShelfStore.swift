@@ -59,7 +59,7 @@ final class ShelfStore {
         guard purgeTask == nil else { return }
         purgeTask = Task { [weak self] in
             while !Task.isCancelled {
-                try? await Task.sleep(for: Self.purgeInterval)
+                try? await PowerAwareScheduler.sleep(for: Self.purgeInterval)
                 guard !Task.isCancelled, let self else { return }
                 self.purgeExpired()
             }

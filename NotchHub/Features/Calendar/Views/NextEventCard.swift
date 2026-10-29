@@ -6,6 +6,8 @@ struct NextEventCard: View {
     let date: Date
     let onJoin: () -> Void
     let onOpenCalendar: () -> Void
+    /// Opens the camera mirror; shown only for meetings with a video link.
+    var onOpenCameraMirror: (() -> Void)?
 
     var body: some View {
         HStack(alignment: .top, spacing: 10) {
@@ -17,6 +19,9 @@ struct NextEventCard: View {
                 HStack(spacing: 6) {
                     RelativeTimePill(event: event, date: date)
                     Spacer(minLength: 0)
+                    if event.meetingLink != nil, let onOpenCameraMirror {
+                        CameraMirrorCardButton(action: onOpenCameraMirror)
+                    }
                     openCalendarButton
                 }
                 Text(event.title)

@@ -38,6 +38,7 @@ final class UnreadBadgeMonitor {
         didSet {
             defaults.set(isEnabled, forKey: Keys.isEnabled)
             if !isEnabled { clearCounts() }
+            if isEnabled, !oldValue { loop.kick() }
         }
     }
 
@@ -50,6 +51,7 @@ final class UnreadBadgeMonitor {
             let valid = Self.clampPollSeconds(pollSeconds)
             if valid != pollSeconds { pollSeconds = valid }
             defaults.set(valid, forKey: Keys.pollSeconds)
+            if valid != oldValue { loop.kick() }
         }
     }
 
@@ -75,7 +77,7 @@ final class UnreadBadgeMonitor {
     @ObservationIgnored private let mirrorLedger: NotificationMirrorLedger
     @ObservationIgnored private var coalescer = UnreadAlertCoalescer()
     @ObservationIgnored private var previousCounts: [String: Int]?
-    @ObservationIgnored private var pollTask: Task<Void, Never>?
+    @ObservationIgnored private let loop: PowerAwareLoop
     @ObservationIgnored private let logger = Logger(subsystem: AppIdentity.logSubsystem, category: "Insights")
 
     init(
@@ -85,7 +87,8 @@ final class UnreadBadgeMonitor {
         activator: any InsightsAppActivating = SystemInsightsAppActivator(),
         clock: any InsightsClock = SystemInsightsClock(),
         defaults: UserDefaults = .standard,
-        mirrorLedger: NotificationMirrorLedger = NotificationMirrorLedger()
+        mirrorLedger: NotificationMirrorLedger = NotificationMirrorLedger(),
+        power: (any PowerConditionsProviding)? = nil
     ) {
         self.alerts = alerts
         self.mirrorLedger = mirrorLedger
@@ -94,6 +97,7 @@ final class UnreadBadgeMonitor {
         self.activator = activator
         self.clock = clock
         self.defaults = defaults
+        loop = PowerAwareLoop(power: power, sleep: { try await clock.sleep(for: $0) })
         isEnabled = defaults.object(forKey: Keys.isEnabled) as? Bool ?? true
         alertsEnabled = defaults.object(forKey: Keys.alertsEnabled) as? Bool ?? true
         pollSeconds = Self.clampPollSeconds(defaults.object(forKey: Keys.pollSeconds) as? Int ?? Self.defaultPollSeconds)
@@ -103,22 +107,17 @@ final class UnreadBadgeMonitor {
     // MARK: - Lifecycle
 
     func start() {
-        guard pollTask == nil else { return }
+        guard !loop.isActive else { return }
         isRunning = true
-        let clock = self.clock
-        pollTask = Task { [weak self] in
-            while !Task.isCancelled {
-                guard let self else { return }
-                await self.poll()
-                let delay = self.nextDelay()
-                try? await clock.sleep(for: delay)
-            }
+        loop.start { [weak self] in
+            guard let self else { return nil }
+            await self.poll()
+            return self.nextDelay()
         }
     }
 
     func stop() {
-        pollTask?.cancel()
-        pollTask = nil
+        loop.stop()
         isRunning = false
         previousCounts = nil
     }
@@ -222,7 +221,9 @@ final class UnreadBadgeMonitor {
         if !counts.isEmpty { counts = [] }
     }
 
-    private func nextDelay() -> Duration {
-        permission.isTrusted ? .seconds(pollSeconds) : Self.untrustedRecheckInterval
+    /// `nil` idles the loop while the monitor is off; enabling it kicks the loop again.
+    private func nextDelay() -> Duration? {
+        guard isEnabled else { return nil }
+        return permission.isTrusted ? .seconds(pollSeconds) : Self.untrustedRecheckInterval
     }
 }
