@@ -22,9 +22,14 @@ struct NotchContentView: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
             Color.clear
                 .frame(width: model.geometry.notchSize.width + Self.notchClearance)
-            HeaderClock()
-                .frame(maxWidth: .infinity, alignment: .trailing)
+            HStack(spacing: Self.headerSpacing) {
+                WeatherHeaderView(weather: model.services.weather)
+                HeaderClock()
+            }
+            .frame(maxWidth: .infinity, alignment: .trailing)
         }
+        // The weather forecast card hangs below the header, over the module content.
+        .zIndex(1)
     }
 
     @ViewBuilder
@@ -40,7 +45,7 @@ struct NotchContentView: View {
         case .calendar:
             CalendarModuleView(calendar: services.calendar) { services.cameraMirror.service.open() }
         case .notes:
-            NotesModuleView(store: services.notes, shelf: services.shelf)
+            NotesModuleView(store: services.notes, shelf: services.shelf, calculator: services.calculator)
         case .status:
             StatusModuleView(services: services)
         case nil:

@@ -87,6 +87,7 @@ private struct GeneralSettingsTab: View {
                 }
                 Toggle("Uygulama tam ekranken gizle", isOn: $settings.hideInFullScreen)
                 Toggle("Kapalıyken medya kontrolleri", isOn: $settings.showsCompactMediaControls)
+                Toggle("Müzik dalgası", isOn: $settings.showsMediaVisualizer)
             }
 
             Section("Çentik Uyarıları") {
@@ -177,10 +178,12 @@ private struct ModulesSettingsTab: View {
                 }
             }
             SystemHUDSettingsSection(hud: services.hud)
+            ChargingSettingsSection(charging: services.charging)
             ShelfSettingsSection(store: services.shelf)
             ClipboardSettingsSection(history: services.clipboard)
             TimerSettingsSection(timer: services.timer)
-            NotesSettingsSection(store: services.notes)
+            NotesSettingsSection(store: services.notes, calculator: services.calculator)
+            WeatherSettingsSection(weather: services.weather)
         }
     }
 

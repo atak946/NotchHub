@@ -53,6 +53,7 @@ Fare çentiğe gelince panel aşağı doğru genişler; uzaklaşınca kapanır.
 | İlerleme çubuğu | Süre + sürükleyerek konum değiştirme | MVP |
 | Kaynaklar | Spotify ve Apple Music (AppleScript / ScriptingBridge) | MVP |
 | Ses çıkışı | AirPods / hoparlör arasında hızlı geçiş | MVP |
+| Müzik dalgası | Kapalı çentikte kapağın yanında, kapak rengine boyanmış animasyonlu ekolayzer çubukları (gerçek ses yakalama yok; duraklatınca, Düşük Güç Modu'nda ve Hareketi Azalt açıkken durur) | 1.5 |
 
 > ⚠️ macOS 15.4+ üçüncü parti uygulamaların özel `MediaRemote` framework'ünü kullanmasını kısıtladı.
 > Bu yüzden MVP'de uygulamaya özel AppleScript köprüsü kullanılacak (Spotify, Music).
@@ -97,6 +98,7 @@ Fare çentiğe gelince panel aşağı doğru genişler; uzaklaşınca kapanır.
 | Kuyruk | Birden fazla uyarı sırayla gösterilir; üzerine gelince otomatik kapanma durur | MVP |
 | Panel açıkken | İlgili sekmeye geçer ve panel titrer | MVP |
 | Ses/parlaklık göstergesi | Ses, sessiz veya ekran parlaklığı değişince çentik ~1,6 sn ince bir göstergeye dönüşür (ikon, seviye çubuğu, yüzde). Tıklamaları geçirir; çentik uyarısı varken veya panel açıkken gösterilmez. Sistem göstergesi de görünür. Ayarlar › Modüller | 1.4 |
+| Şarj animasyonu ve düşük pil | Güç adaptörü takılınca veya şarj başlayınca ~3 sn'lik uyarı: yay animasyonuyla dolan yeşil pil halkası, şimşek, "Şarj oluyor", yüzde ve IOKit verirse "Dolmasına 1 sa 20 dk". Çıkarınca "Pilde · %62", takılıyken %100'e gelince bir kez "Tamamen şarj oldu"; pilde %20 ve %10'da uyarı. Gelip giden adaptörde tekrar etmez (1,5 sn yerleşme, 60 sn tekrar engeli); başka uyarının arkasına sıralanmaz. Pili olmayan Mac'lerde gösterilmez; Hareketi Azalt'a uyar. Ayarlar › Modüller › Pil | 1.5 |
 | Toplantı öncesi kamera aynası | Görüntülü toplantıdan 1/2/5 dk önce "Kamerayı kontrol et" uyarısı; aksiyon, Takvim kartındaki ve menü çubuğundaki "Ayna" çentikten sarkan 240×135 canlı önizlemeyi açar. Kamera yalnızca tıklamayla açılır; dışarı tıklama, Esc veya 60 sn sonra kapanır ve kamera hemen durur. Ayarlar › Takvim | 1.4 |
 
 ### Takvim — Yeni Outlook kaynakları
@@ -120,6 +122,7 @@ Fare çentiğe gelince panel aşağı doğru genişler; uzaklaşınca kapanır.
 | Dışa aktarma | Notu `.md` dosyası olarak sürükle, "Rafa ekle" ile rafa koy, "Kopyala" ile panoya al | v1.2 |
 | Klavye | Düzenleyiciye tıklayınca panel klavye odağını alır; yazarken fare çıkınca kapanmaz, `Esc` kapatır | v1.2 |
 | Saklama | `~/Library/Application Support/NotchHub/notes.json`, atomik ve gecikmeli (debounce) yazma; yalnızca yerel, eşitleme yok | v1.2 |
+| Hızlı hesap | "Notlar \| Hesap" anahtarı: yazdıkça sonuç; parantez, `%`, `^`, yerel ondalık (`12,5*3`); birim çevirme (`5 km mil`, `100 f c`, `3 gb mb`, `2 saat dakika`, `to`/`in`/`->`); döviz (`100 usd try`, `50 eur tl`, open.er-api.com, 12 saat önbellek, kur tarihi gösterilir). `Enter` panoya kopyalar, son 5 hesap geçmişte. Ayarlar › "Hızlı hesap" (varsayılan açık) | v1.5 |
 
 ## 8. Status sekmesi ve izleyiciler (v1.1)
 
@@ -138,6 +141,15 @@ uzak oturum göstergesi, `notchhub://` API + socket + CLI + zsh/Xcode build hook
 | Kontroller | `⌥⌘M` kısayolu (ayarlardan kapatılabilir), menü çubuğunda "Mikrofonu sustur/aç", Mik. ve Kamera kutucuğunda düğme | v1.4 |
 | Çentik göstergesi | Toplantı sırasında sağ kanadın iç kenarında mikrofon: açıkken yeşil, susturulmuşken kırmızı ve çizgili; tıklayınca değişir | v1.4 |
 | Geri bildirim | 1,5 sn'lik "Mikrofon kapalı" / "Mikrofon açık" uyarısı | v1.4 |
+
+### Gizlilik göstergesi (v1.5)
+
+| Özellik | Açıklama | Faz |
+|---|---|---|
+| Çentik noktası | Mikrofon veya kamera kullanılırken kapalı çentiğin sağ kanadında macOS renklerinde küçük nokta: kamera yeşil, yalnızca mikrofon turuncu. Belirdiğinde kısa bir nabız; "Hareketi azalt" açıkken nabız yok | v1.5 |
+| Hangi uygulama | CoreAudio işlem nesneleriyle (`kAudioHardwarePropertyProcessObjectList`, `IsRunningInput`, PID / Bundle ID) mikrofonu kullanan uygulama bulunur; yardımcı süreçler ana uygulamaya bağlanır. Üzerine gelince ve Mik. ve Kamera kutucuğunda "Zoom mikrofonu kullanıyor" + uygulama ikonu | v1.5 |
+| Kamera | Uygulamaya özel genel API yok; yalnızca "Kamera kullanımda" | v1.5 |
+| Ayar | Ayarlar › Mikrofon ve Kamera › "Gizlilik göstergesi" (varsayılan açık) | v1.5 |
 
 ### Kulaklık pili (v1.4)
 

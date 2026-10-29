@@ -36,7 +36,8 @@ struct MicCameraMonitorTests {
         let runningApps = SystemRunningApps(source: { apps })
         runningApps.reload()
         let monitor = MicCameraMonitor(
-            alerts: alerts, runningApps: runningApps, reader: reader, clock: clock,
+            alerts: alerts, runningApps: runningApps, reader: reader,
+            processReader: TestAudioProcessReader(), clock: clock,
             defaults: SystemTestSupport.makeDefaults()
         )
         monitor.start()

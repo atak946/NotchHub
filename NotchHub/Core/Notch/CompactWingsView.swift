@@ -13,7 +13,11 @@ struct CompactWingsView: View {
             HStack(spacing: 0) {
                 HStack {
                     if services.hasCompactMedia {
-                        MediaCompactView(media: services.media)
+                        MediaCompactView(media: services.media, visualizer: MediaVisualizerLayout.placement(
+                            isEnabled: model.settings.showsMediaVisualizer,
+                            wingWidth: wingWidth,
+                            showsMediaControls: model.showsMediaControls
+                        ))
                     }
                     Spacer(minLength: 0)
                     if model.showsMediaControls {

@@ -83,7 +83,7 @@ inactive, and the rest of the app keeps working.
 | Automation (Apple Events) | Reading and controlling Spotify and Music |
 | Notifications | Timer and Pomodoro notifications |
 | Accessibility | Dock unread badges, window titles for time tracking, and reading (and optionally closing) notification banners for mirroring |
-| Location (optional) | Required by macOS to read the Wi-Fi network name for network-change alerts |
+| Location (optional) | Weather for your current city (or pick a city manually), and reading the Wi-Fi network name for network-change alerts |
 | Login item | "Launch at login" |
 
 Microphone and camera *usage* is detected from CoreAudio / CoreMediaIO state. NotchHub never records audio or
@@ -95,10 +95,12 @@ video.
   (ICS links, Microsoft tokens) are kept in the Keychain.
 - **Notification mirroring:** banners are read from Notification Center through the Accessibility API, shown
   in the notch, and then forgotten. You can limit mirroring to messaging apps or hide message text.
+- **Weather:** weather data is fetched from Open-Meteo with approximate coordinates (rounded to about 1 km).
+  No API key or account is used, and you can pick a city instead of sharing your location.
 - **No telemetry:** NotchHub has no analytics, crash reporting or tracking.
 - **Network:** NotchHub only contacts services you configure, such as ICS feeds, Microsoft 365, endpoint
-  checks and a local LLM server. The update check fetches only the appcast from this project's GitHub
-  Releases.
+  checks and a local LLM server, plus Open-Meteo for weather (you can turn it off in Settings > Modules).
+  The update check fetches only the appcast from this project's GitHub Releases.
 
 ## CLI and zsh integration
 

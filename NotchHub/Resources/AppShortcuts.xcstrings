@@ -1,106 +1,161 @@
 {
-  "sourceLanguage": "tr",
-  "strings": {
-    "${applicationName} zamanlayıcı başlat": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Start a ${applicationName} timer"
+  "sourceLanguage" : "tr",
+  "strings" : {
+    "${applicationName} ile ${profile} profilini çalıştır" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Run the ${profile} profile with ${applicationName}"
           }
         }
       }
     },
-    "${applicationName} ile geri sayım başlat": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Start a countdown with ${applicationName}"
+    "${applicationName} ile geri sayım başlat" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Start a countdown with ${applicationName}"
           }
         }
       }
     },
-    "${applicationName} not ekle": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Add a ${applicationName} note"
+    "${applicationName} ile mikrofonu aç kapat" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Toggle the microphone with ${applicationName}"
           }
         }
       }
     },
-    "${applicationName} ile not al": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Take a note with ${applicationName}"
+    "${applicationName} ile not al" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Take a note with ${applicationName}"
           }
         }
       }
     },
-    "${applicationName} profil çalıştır": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Run a ${applicationName} profile"
+    "${applicationName} mikrofonu sustur" : {
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Mute the microphone with ${applicationName}"
+          }
+        },
+        "tr" : {
+          "stringSet" : {
+            "state" : "new",
+            "values" : [
+              "${applicationName} mikrofonu sustur",
+              "${applicationName} ile mikrofonu aç kapat"
+            ]
           }
         }
       }
     },
-    "${applicationName} ile ${profile} profilini çalıştır": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Run the ${profile} profile with ${applicationName}"
+    "${applicationName} not ekle" : {
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Add a ${applicationName} note"
+          }
+        },
+        "tr" : {
+          "stringSet" : {
+            "state" : "new",
+            "values" : [
+              "${applicationName} not ekle",
+              "${applicationName} ile not al"
+            ]
           }
         }
       }
     },
-    "${applicationName} rafı aç": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Open the ${applicationName} shelf"
+    "${applicationName} profil çalıştır" : {
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Run a ${applicationName} profile"
+          }
+        },
+        "tr" : {
+          "stringSet" : {
+            "state" : "new",
+            "values" : [
+              "${applicationName} profil çalıştır",
+              "${applicationName} ile ${profile} profilini çalıştır"
+            ]
           }
         }
       }
     },
-    "${applicationName} rafını göster": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Show the ${applicationName} shelf"
+    "${applicationName} rafı aç" : {
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Open the ${applicationName} shelf"
+          }
+        },
+        "tr" : {
+          "stringSet" : {
+            "state" : "new",
+            "values" : [
+              "${applicationName} rafı aç",
+              "${applicationName} rafını göster"
+            ]
           }
         }
       }
     },
-    "${applicationName} mikrofonu sustur": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Mute the microphone with ${applicationName}"
+    "${applicationName} rafını göster" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Show the ${applicationName} shelf"
           }
         }
       }
     },
-    "${applicationName} ile mikrofonu aç kapat": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Toggle the microphone with ${applicationName}"
+    "${applicationName} zamanlayıcı başlat" : {
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Start a ${applicationName} timer"
+          }
+        },
+        "tr" : {
+          "stringSet" : {
+            "state" : "new",
+            "values" : [
+              "${applicationName} zamanlayıcı başlat",
+              "${applicationName} ile geri sayım başlat"
+            ]
           }
         }
       }
     }
   },
-  "version": "1.0"
+  "version" : "1.0"
 }

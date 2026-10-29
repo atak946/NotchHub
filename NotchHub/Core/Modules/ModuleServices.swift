@@ -11,6 +11,8 @@ final class ModuleServices {
     let timer = TimerService()
     let calendar = CalendarService()
     let notes = NoteStore()
+    /// Quick calculation and conversion in the Notes module's "Hesap" segment.
+    let calculator = QuickCalcService()
 
     // Background monitors shown in the Status tab.
     let system: SystemMonitors
@@ -24,6 +26,10 @@ final class ModuleServices {
     let hud: SystemHUD
     /// Pre-meeting camera mirror and its reminder.
     let cameraMirror: CameraMirror
+    /// Weather beside the header clock; runs with its own setting, regardless of module toggles.
+    let weather = WeatherService()
+    /// Charging / unplug / low-battery presentations in the notch; runs regardless of module toggles.
+    let charging: ChargingPresenter
 
     private let settings: SettingsStore
     private var runningModules: Set<NotchModule> = []
@@ -40,6 +46,7 @@ final class ModuleServices {
         externalAlerts = ExternalAlertService(alerts: alerts)
         hud = SystemHUD.live(settings: settings, alerts: alerts, permission: insights.permission)
         cameraMirror = CameraMirror.live(settings: settings, alerts: alerts, calendar: calendar)
+        charging = ChargingPresenter(alerts: alerts)
         // Native banners are only taken over (and closed) while notch alerts can actually be shown.
         insights.mirror.shouldPostAlert = { [weak settings] in
             guard let settings else { return false }
@@ -51,6 +58,7 @@ final class ModuleServices {
         }
         system.micMute.canPostAlert = canPostSystemAlert
         system.headphones.canPostAlert = canPostSystemAlert
+        charging.canPostAlert = canPostSystemAlert
     }
 
     var hasCompactMedia: Bool {
@@ -75,6 +83,8 @@ final class ModuleServices {
         system.micMute.start()
         hud.start()
         cameraMirror.start()
+        weather.start()
+        charging.start()
         applyModuleStates()
         trackModuleToggles()
     }
@@ -85,6 +95,8 @@ final class ModuleServices {
         system.micMute.stop()
         hud.stop()
         cameraMirror.stop()
+        weather.stop()
+        charging.stop()
         for module in runningModules {
             stop(module)
         }

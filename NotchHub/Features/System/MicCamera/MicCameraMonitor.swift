@@ -19,10 +19,13 @@ final class MicCameraMonitor {
         static let isEnabled = "MicCamera.isEnabled"
         static let alertsEnabled = "MicCamera.alertsEnabled"
         static let idleAlertMinutes = "MicCamera.idleAlertMinutes"
+        static let privacyIndicatorEnabled = "MicCamera.privacyIndicatorEnabled"
     }
 
     private(set) var snapshot: CaptureSnapshot = .idle
     private(set) var microphoneActiveSince: Date?
+    /// Apps capturing audio input, best effort via CoreAudio process objects; empty while the mic is off.
+    private(set) var microphoneApps: [CaptureApp] = []
 
     /// Shows the indicator / tile state and posts alerts.
     var isEnabled: Bool {
@@ -40,6 +43,11 @@ final class MicCameraMonitor {
         didSet { defaults.set(idleAlertMinutes, forKey: Keys.idleAlertMinutes) }
     }
 
+    /// "Gizlilik göstergesi": the green / orange dot in the collapsed notch.
+    var privacyIndicatorEnabled: Bool {
+        didSet { defaults.set(privacyIndicatorEnabled, forKey: Keys.privacyIndicatorEnabled) }
+    }
+
     /// Keeps the HAL listeners alive while meeting mode needs microphone state, even if `isEnabled` is off.
     var keepsMonitoringForMeetings = false {
         didSet { applyRunningState() }
@@ -48,6 +56,8 @@ final class MicCameraMonitor {
     @ObservationIgnored private let alerts: NotchAlertCenter
     @ObservationIgnored private let runningApps: SystemRunningApps
     @ObservationIgnored private let reader: any CaptureDeviceReading
+    @ObservationIgnored private let processReader: any AudioInputProcessReading
+    @ObservationIgnored private let ownBundleID: String?
     @ObservationIgnored private let clock: any SystemClock
     @ObservationIgnored private let defaults: UserDefaults
     @ObservationIgnored private let poller: SystemPoller
@@ -60,17 +70,22 @@ final class MicCameraMonitor {
         alerts: NotchAlertCenter,
         runningApps: SystemRunningApps,
         reader: any CaptureDeviceReading = SystemCaptureDeviceReader(),
+        processReader: any AudioInputProcessReading = SystemAudioProcessReader(),
         clock: any SystemClock = SystemLiveClock(),
-        defaults: UserDefaults = .standard
+        defaults: UserDefaults = .standard,
+        ownBundleID: String? = Bundle.main.bundleIdentifier
     ) {
         self.alerts = alerts
         self.runningApps = runningApps
         self.reader = reader
+        self.processReader = processReader
+        self.ownBundleID = ownBundleID
         self.clock = clock
         self.defaults = defaults
         poller = SystemPoller(clock: clock)
         isEnabled = defaults.object(forKey: Keys.isEnabled) as? Bool ?? true
         alertsEnabled = defaults.object(forKey: Keys.alertsEnabled) as? Bool ?? true
+        privacyIndicatorEnabled = defaults.object(forKey: Keys.privacyIndicatorEnabled) as? Bool ?? true
         let storedMinutes = defaults.object(forKey: Keys.idleAlertMinutes) as? Int
         idleAlertMinutes = storedMinutes.flatMap { Self.idleAlertMinuteOptions.contains($0) ? $0 : nil }
             ?? Self.defaultIdleAlertMinutes
@@ -80,7 +95,24 @@ final class MicCameraMonitor {
     var isCameraInUse: Bool { snapshot.isCameraInUse }
 
     var hasCompactIndicator: Bool {
-        isEnabled && (isMicrophoneInUse || isCameraInUse)
+        isEnabled && privacyIndicatorEnabled && privacyIndicatorKind != nil
+    }
+
+    var privacyIndicatorKind: PrivacyIndicatorKind? {
+        PrivacyIndicatorKind.current(isMicrophoneInUse: isMicrophoneInUse, isCameraInUse: isCameraInUse)
+    }
+
+    /// "Zoom mikrofonu kullanıyor" when the capturing app is known.
+    var microphoneUsageText: String? {
+        isMicrophoneInUse ? PrivacyIndicatorText.microphone(apps: microphoneApps) : nil
+    }
+
+    var privacyIndicatorHelp: String {
+        PrivacyIndicatorText.help(
+            isMicrophoneInUse: isMicrophoneInUse,
+            isCameraInUse: isCameraInUse,
+            microphoneApps: microphoneApps
+        )
     }
 
     var runningMeetingApps: [MeetingApp] {
@@ -103,7 +135,9 @@ final class MicCameraMonitor {
 
     /// Re-reads the HAL state and evaluates the idle-microphone alert.
     func refresh() {
-        apply(reader.snapshot())
+        let newSnapshot = reader.snapshot()
+        apply(newSnapshot)
+        updateMicrophoneApps(isMicrophoneInUse: newSnapshot.isMicrophoneInUse)
     }
 
     func openPrivacySettings() {
@@ -129,7 +163,21 @@ final class MicCameraMonitor {
             didAlertThisSession = false
             logger.info("Microphone released")
         }
+        if !newSnapshot.isMicrophoneInUse, !microphoneApps.isEmpty {
+            microphoneApps = []
+        }
         evaluateIdleAlert()
+    }
+
+    private func updateMicrophoneApps(isMicrophoneInUse: Bool) {
+        let apps = isMicrophoneInUse
+            ? PrivacyAppMapper.apps(
+                from: processReader.inputProcesses(), runningApps: runningApps.apps, ownBundleID: ownBundleID
+            )
+            : []
+        if apps != microphoneApps {
+            microphoneApps = apps
+        }
     }
 
     func evaluateIdleAlert() {
@@ -160,11 +208,13 @@ final class MicCameraMonitor {
         if shouldMonitor, !isMonitoring {
             isMonitoring = true
             reader.startObserving { [weak self] in self?.refresh() }
+            processReader.startObserving { [weak self] in self?.refresh() }
             poller.start(every: Self.pollInterval) { [weak self] in self?.refresh() }
             refresh()
         } else if !shouldMonitor, isMonitoring {
             isMonitoring = false
             reader.stopObserving()
+            processReader.stopObserving()
             poller.stop()
             apply(.idle)
         }

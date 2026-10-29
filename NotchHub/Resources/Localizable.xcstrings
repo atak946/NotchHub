@@ -425,6 +425,16 @@
         }
       }
     },
+    "%@ kaldı": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ left"
+          }
+        }
+      }
+    },
     "%@ kaldır": {
       "localizations": {
         "en": {
@@ -441,6 +451,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "%@ is off"
+          }
+        }
+      }
+    },
+    "%@ mikrofonu kullanıyor": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ is using the microphone"
           }
         }
       }
@@ -587,6 +607,34 @@
           "stringUnit": {
             "state": "new",
             "value": "%1$@ ve %2$lld tane daha"
+          }
+        }
+      }
+    },
+    "%@ ve %lld uygulama daha mikrofonu kullanıyor": {
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%1$@ and %2$lld other app are using the microphone"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%1$@ and %2$lld other apps are using the microphone"
+                }
+              }
+            }
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "new",
+            "value": "%1$@ ve %2$lld uygulama daha mikrofonu kullanıyor"
           }
         }
       }
@@ -773,6 +821,22 @@
           "stringUnit": {
             "state": "new",
             "value": "%1$@, %2$@%3$@"
+          }
+        }
+      }
+    },
+    "%@, %@, en yüksek %@, en düşük %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@, %2$@, high %3$@, low %4$@"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "new",
+            "value": "%1$@, %2$@, en yüksek %3$@, en düşük %4$@"
           }
         }
       }
@@ -1473,6 +1537,16 @@
         }
       }
     },
+    "12,5*3 · 5 km mil · 100 usd tl": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "12.5*3 · 5 km mi · 100 usd try"
+          }
+        }
+      }
+    },
     "7 gün sonra": {
       "localizations": {
         "en": {
@@ -1899,6 +1973,16 @@
         }
       }
     },
+    "Açık hava": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Clear"
+          }
+        }
+      }
+    },
     "Açılan sayfaya yapıştır (⌘V).": {
       "localizations": {
         "en": {
@@ -2129,6 +2213,16 @@
         }
       }
     },
+    "Beklenmeyen karakter: %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unexpected character: %@"
+          }
+        }
+      }
+    },
     "Belge yolu içerir": {
       "localizations": {
         "en": {
@@ -2279,6 +2373,36 @@
         }
       }
     },
+    "Bilinmeyen birim: %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unknown unit: %@"
+          }
+        }
+      }
+    },
+    "Bilinmeyen konum": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unknown location"
+          }
+        }
+      }
+    },
+    "Bilinmeyen para birimi: %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unknown currency: %@"
+          }
+        }
+      }
+    },
     "Bilinmiyor": {
       "localizations": {
         "en": {
@@ -2415,6 +2539,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "On This Mac"
+          }
+        }
+      }
+    },
+    "Bu birimler birbirine çevrilemez": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "These units can't be converted into each other"
           }
         }
       }
@@ -2939,6 +3073,46 @@
         }
       }
     },
+    "Dolmasına %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ until full"
+          }
+        }
+      }
+    },
+    "Dolu ve fırtına": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Thunderstorm with hail"
+          }
+        }
+      }
+    },
+    "Donan yağmur": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Freezing rain"
+          }
+        }
+      }
+    },
+    "Donan çisenti": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Freezing drizzle"
+          }
+        }
+      }
+    },
     "Dosya Rafı": {
       "localizations": {
         "en": {
@@ -3045,6 +3219,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Low Disk Space Threshold"
+          }
+        }
+      }
+    },
+    "Düşük pil": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Low battery"
+          }
+        }
+      }
+    },
+    "Düşük pil uyarısı": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Low battery warning"
           }
         }
       }
@@ -3175,6 +3369,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Integrations"
+          }
+        }
+      }
+    },
+    "Enter ile kopyaladığın son 5 hesap burada durur.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The last 5 calculations you copied with Enter stay here."
           }
         }
       }
@@ -3399,6 +3603,16 @@
         }
       }
     },
+    "Fazladan kapanan parantez": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Extra closing parenthesis"
+          }
+        }
+      }
+    },
     "Finder'da Göster": {
       "localizations": {
         "en": {
@@ -3487,12 +3701,32 @@
         }
       }
     },
+    "Geçersiz sayı: %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Invalid number: %@"
+          }
+        }
+      }
+    },
+    "Geçmiş": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "History"
+          }
+        }
+      }
+    },
     "Geçmişi temizle": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Clear History"
+            "value": "Clear history"
           }
         }
       }
@@ -3567,6 +3801,16 @@
         }
       }
     },
+    "Gizlilik göstergesi": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Privacy indicator"
+          }
+        }
+      }
+    },
     "Gizlilik ve Güvenlik › Takvimler'i Aç": {
       "localizations": {
         "en": {
@@ -3593,6 +3837,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Group"
+          }
+        }
+      }
+    },
+    "Gök gürültülü fırtına": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Thunderstorm"
           }
         }
       }
@@ -3707,6 +3961,16 @@
         }
       }
     },
+    "Güneşli": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sunny"
+          }
+        }
+      }
+    },
     "Günlük komutunu kopyala": {
       "localizations": {
         "en": {
@@ -3723,6 +3987,36 @@
           "stringUnit": {
             "state": "translated",
             "value": "Your day is clear"
+          }
+        }
+      }
+    },
+    "Güç adaptörü takılınca veya çıkarılınca çentikte kısa bir gösterim yapar; pil yüzde 20 ve yüzde 10'a düştüğünde uyarır. Pili olmayan Mac'lerde gösterilmez.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Shows a short presentation in the notch when the power adapter is connected or disconnected, and warns when the battery drops to 20 and 10 percent. Not shown on Macs without a battery."
+          }
+        }
+      }
+    },
+    "Güç adaptörüne bağlı": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Connected to power adapter"
+          }
+        }
+      }
+    },
+    "Güç adaptörünü bağlayın": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Connect the power adapter"
           }
         }
       }
@@ -3807,12 +4101,52 @@
         }
       }
     },
+    "Hava Durumu": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Weather"
+          }
+        }
+      }
+    },
+    "Hava durumu": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Weather"
+          }
+        }
+      }
+    },
+    "Hava durumu Open-Meteo'dan yaklaşık koordinatlarla alınır ve 30 dakikada bir yenilenir.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Weather comes from Open-Meteo using approximate coordinates and refreshes every 30 minutes."
+          }
+        }
+      }
+    },
     "Hazır": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Ready"
+          }
+        }
+      }
+    },
+    "Hedef birimi yaz (ör. 5 km mil)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Type a target unit (e.g. 5 km mi)"
           }
         }
       }
@@ -3927,6 +4261,26 @@
         }
       }
     },
+    "Hesabı yeniden kullan": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reuse calculation"
+          }
+        }
+      }
+    },
+    "Hesap": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Calc"
+          }
+        }
+      }
+    },
     "Hesap bağla": {
       "localizations": {
         "en": {
@@ -3963,6 +4317,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Quick Look"
+          }
+        }
+      }
+    },
+    "Hızlı hesap": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quick calculation"
           }
         }
       }
@@ -4163,12 +4527,52 @@
         }
       }
     },
+    "Kapanmamış parantez": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unclosed parenthesis"
+          }
+        }
+      }
+    },
     "Kapat": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Close"
+          }
+        }
+      }
+    },
+    "Kar sağanağı": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Snow showers"
+          }
+        }
+      }
+    },
+    "Kar taneleri": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Snow grains"
+          }
+        }
+      }
+    },
+    "Karlı": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Snow"
           }
         }
       }
@@ -4349,6 +4753,16 @@
         }
       }
     },
+    "Konum izni yok. Sistem Ayarları > Gizlilik ve Güvenlik > Konum Servisleri'nden izin ver veya bir şehir seç.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No location access. Allow it in System Settings > Privacy & Security > Location Services, or choose a city."
+          }
+        }
+      }
+    },
     "Kopyala": {
       "localizations": {
         "en": {
@@ -4449,6 +4863,16 @@
         }
       }
     },
+    "Kur tarihi: %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rate date: %@"
+          }
+        }
+      }
+    },
     "Kural ekle": {
       "localizations": {
         "en": {
@@ -4465,6 +4889,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Delete Rule"
+          }
+        }
+      }
+    },
+    "Kurlar alınamadı": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn't load exchange rates"
+          }
+        }
+      }
+    },
+    "Kurlar yükleniyor…": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Loading exchange rates…"
           }
         }
       }
@@ -4849,6 +5293,16 @@
         }
       }
     },
+    "Mikrofon veya kamera kullanılırken kapalı çentikte macOS renklerinde bir nokta gösterir.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Shows a dot in macOS colors on the closed notch while the microphone or camera is in use."
+          }
+        }
+      }
+    },
     "Mikrofonu Sustur": {
       "localizations": {
         "en": {
@@ -4975,6 +5429,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Purple"
+          }
+        }
+      }
+    },
+    "Müzik dalgası": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Music visualizer"
           }
         }
       }
@@ -5245,6 +5709,16 @@
         }
       }
     },
+    "Notlar'da \"Hesap\" sekmesi: 12,5*3, 5 km mil, 100 usd tl. Kurlar open.er-api.com'dan alınır ve 12 saat saklanır.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A \"Calc\" segment in Notes: 12.5*3, 5 km mi, 100 usd try. Rates come from open.er-api.com and are cached for 12 hours."
+          }
+        }
+      }
+    },
     "Notu sil": {
       "localizations": {
         "en": {
@@ -5411,6 +5885,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Automation"
+          }
+        }
+      }
+    },
+    "Otomatik": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Automatic"
           }
         }
       }
@@ -5697,6 +6181,16 @@
         }
       }
     },
+    "Parçalı bulutlu": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Partly cloudy"
+          }
+        }
+      }
+    },
     "Pembe": {
       "localizations": {
         "en": {
@@ -5753,6 +6247,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Battery unknown"
+          }
+        }
+      }
+    },
+    "Pilde · %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "On battery · %@"
           }
         }
       }
@@ -6027,6 +6531,16 @@
         }
       }
     },
+    "Sağanak yağış": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rain showers"
+          }
+        }
+      }
+    },
     "Sağlık kontrolü başarılı": {
       "localizations": {
         "en": {
@@ -6179,6 +6693,16 @@
         }
       }
     },
+    "Seçilmedi": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Not selected"
+          }
+        }
+      }
+    },
     "Seç…": {
       "localizations": {
         "en": {
@@ -6215,6 +6739,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Delete?"
+          }
+        }
+      }
+    },
+    "Sisli": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Foggy"
           }
         }
       }
@@ -6413,6 +6947,16 @@
         }
       }
     },
+    "Sonuç tanımsız": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Result is undefined"
+          }
+        }
+      }
+    },
     "Sorulmadı": {
       "localizations": {
         "en": {
@@ -6545,6 +7089,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Hot"
+          }
+        }
+      }
+    },
+    "Sıfıra bölünemez": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Can't divide by zero"
           }
         }
       }
@@ -6745,6 +7299,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "OK"
+          }
+        }
+      }
+    },
+    "Tamamen şarj oldu": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fully charged"
           }
         }
       }
@@ -7843,6 +8407,26 @@
         }
       }
     },
+    "Yazdıkça sonuç burada görünür. Enter sonucu kopyalar.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The result appears here as you type. Enter copies it."
+          }
+        }
+      }
+    },
+    "Yağmurlu": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rain"
+          }
+        }
+      }
+    },
     "Yeni bildirim": {
       "localizations": {
         "en": {
@@ -8209,12 +8793,42 @@
         }
       }
     },
+    "dönüm": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "dunam"
+          }
+        }
+      }
+    },
     "etkin": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "active"
+          }
+        }
+      }
+    },
+    "gün": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "d"
+          }
+        }
+      }
+    },
+    "hafta": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "wk"
           }
         }
       }
@@ -8637,6 +9251,56 @@
         }
       }
     },
+    "Çisenti": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Drizzle"
+          }
+        }
+      }
+    },
+    "Çok bulutlu": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Overcast"
+          }
+        }
+      }
+    },
+    "Çok fazla iç içe parantez": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Too many nested parentheses"
+          }
+        }
+      }
+    },
+    "Çoğunlukla açık": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mostly clear"
+          }
+        }
+      }
+    },
+    "Çoğunlukla güneşli": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mostly sunny"
+          }
+        }
+      }
+    },
     "Çökme, OOM ve sağlık değişikliklerinde uyar": {
       "localizations": {
         "en": {
@@ -8803,6 +9467,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "exit code %d"
+          }
+        }
+      }
+    },
+    "İfade anlaşılamadı": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn't understand the expression"
+          }
+        }
+      }
+    },
+    "İfade eksik": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Incomplete expression"
           }
         }
       }
@@ -9013,6 +9697,66 @@
           "stringUnit": {
             "state": "translated",
             "value": "Back to Work"
+          }
+        }
+      }
+    },
+    "Şarj animasyonu": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Charging animation"
+          }
+        }
+      }
+    },
+    "Şarj oluyor": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Charging"
+          }
+        }
+      }
+    },
+    "Şehir": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "City"
+          }
+        }
+      }
+    },
+    "Şehir ara": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Search for a city"
+          }
+        }
+      }
+    },
+    "Şehir araması başarısız oldu.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "City search failed."
+          }
+        }
+      }
+    },
+    "Şiddetli yağmur": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Heavy rain"
           }
         }
       }

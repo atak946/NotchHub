@@ -1,8 +1,11 @@
+import AppKit
 import SwiftUI
 
 /// Status tile: microphone / camera usage, with the system-wide mute toggle in the corner.
 struct MicCameraStatusTile: View {
     private static let muteButtonInset: CGFloat = 6
+    private static let appIconSize: CGFloat = 16
+    private static let appIconInset: CGFloat = 8
 
     let monitor: MicCameraMonitor
     let micMute: MicMuteController?
@@ -28,6 +31,20 @@ struct MicCameraStatusTile: View {
                     .padding(Self.muteButtonInset)
             }
         }
+        .overlay(alignment: .bottomTrailing) {
+            if let icon = microphoneAppIcon {
+                Image(nsImage: icon)
+                    .resizable()
+                    .frame(width: Self.appIconSize, height: Self.appIconSize)
+                    .padding(Self.appIconInset)
+                    .accessibilityHidden(true)
+            }
+        }
+    }
+
+    private var microphoneAppIcon: NSImage? {
+        guard monitor.isEnabled, monitor.isMicrophoneInUse, let app = monitor.microphoneApps.first else { return nil }
+        return AppIconResolver.shared.icon(bundleID: app.bundleID, appName: app.name)
     }
 
     private var systemImage: String {
@@ -47,18 +64,19 @@ struct MicCameraStatusTile: View {
 
     private var detail: String? {
         guard monitor.isEnabled else { return nil }
-        let names = monitor.snapshot.activeCameras + monitor.snapshot.activeMicrophones
-        return names.first
+        if let usage = monitor.microphoneUsageText { return usage }
+        if monitor.isCameraInUse { return String(localized: "Kamera kullanımda") }
+        return monitor.snapshot.activeMicrophones.first
     }
 
     private var tint: Color {
         guard monitor.isEnabled else { return .gray }
-        if monitor.isMicrophoneInUse { return .red }
-        return monitor.isCameraInUse ? .green : .gray
+        if monitor.isMicrophoneInUse { return Color(nsColor: .systemOrange) }
+        return monitor.isCameraInUse ? Color(nsColor: .systemGreen) : .gray
     }
 }
 
-/// Red mic dot and / or green camera dot beside the closed notch.
+/// macOS-style privacy dot beside the closed notch: green while the camera is on, otherwise orange for the mic.
 struct MicCameraCompactIndicator: View {
     let monitor: MicCameraMonitor
 
@@ -67,15 +85,10 @@ struct MicCameraCompactIndicator: View {
     }
 
     var body: some View {
-        if monitor.hasCompactIndicator {
-            HStack(spacing: 2) {
-                if monitor.isMicrophoneInUse {
-                    SystemIndicatorDot(systemImage: "mic.fill", tint: .red, help: String(localized: "Mikrofon kullanımda"))
-                }
-                if monitor.isCameraInUse {
-                    SystemIndicatorDot(systemImage: "video.fill", tint: .green, help: String(localized: "Kamera kullanımda"))
-                }
-            }
+        if monitor.hasCompactIndicator, let kind = monitor.privacyIndicatorKind {
+            // `.id` restarts the appear pulse when the dot switches between camera and microphone.
+            PrivacyIndicatorDot(kind: kind, help: monitor.privacyIndicatorHelp)
+                .id(kind)
         } else {
             EmptyView()
         }
@@ -93,6 +106,11 @@ struct MicCameraSettingsSection: View {
     var body: some View {
         Section("Mikrofon ve Kamera") {
             Toggle("Mikrofon ve kamera göstergesini göster", isOn: $monitor.isEnabled)
+            Toggle("Gizlilik göstergesi", isOn: $monitor.privacyIndicatorEnabled)
+                .disabled(!monitor.isEnabled)
+            Text("Mikrofon veya kamera kullanılırken kapalı çentikte macOS renklerinde bir nokta gösterir.")
+                .font(.caption)
+                .foregroundStyle(.secondary)
             Toggle("Mikrofon açık kalırsa uyar", isOn: $monitor.alertsEnabled)
                 .disabled(!monitor.isEnabled)
             Picker("Uyarı süresi", selection: $monitor.idleAlertMinutes) {

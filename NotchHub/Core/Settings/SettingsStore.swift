@@ -18,6 +18,7 @@ final class SettingsStore {
         static let alertsEnabled = "alertsEnabled"
         static let showTrackChangeAlerts = "showTrackChangeAlerts"
         static let showsCompactMediaControls = "showsCompactMediaControls"
+        static let showsMediaVisualizer = "showsMediaVisualizer"
     }
 
     @ObservationIgnored private let defaults: UserDefaults
@@ -61,6 +62,11 @@ final class SettingsStore {
         didSet { defaults.set(showsCompactMediaControls, forKey: Keys.showsCompactMediaControls) }
     }
 
+    /// Artwork-tinted equalizer bars beside the collapsed notch's artwork while a track plays.
+    var showsMediaVisualizer: Bool {
+        didSet { defaults.set(showsMediaVisualizer, forKey: Keys.showsMediaVisualizer) }
+    }
+
     /// Session-only: hides every panel until resumed.
     var isPaused = false
 
@@ -76,6 +82,7 @@ final class SettingsStore {
         alertsEnabled = defaults.object(forKey: Keys.alertsEnabled) as? Bool ?? true
         showTrackChangeAlerts = defaults.object(forKey: Keys.showTrackChangeAlerts) as? Bool ?? true
         showsCompactMediaControls = defaults.object(forKey: Keys.showsCompactMediaControls) as? Bool ?? true
+        showsMediaVisualizer = defaults.object(forKey: Keys.showsMediaVisualizer) as? Bool ?? true
 
         if let stored = defaults.stringArray(forKey: Keys.enabledModules) {
             let known = defaults.stringArray(forKey: Keys.knownModules).map { Set($0.compactMap(NotchModule.init)) }

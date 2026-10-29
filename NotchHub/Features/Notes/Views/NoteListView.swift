@@ -3,6 +3,8 @@ import SwiftUI
 /// Left column: "Yeni not", client filter chips and the note rows.
 struct NoteListView: View {
     let store: NoteStore
+    /// "Notlar | Hesap" switch shown in place of the title when quick calculation is enabled.
+    var mode: Binding<NotesMode>?
 
     /// Row currently asking "Sil?"; confirmation is inline, never a modal.
     @State private var pendingDeleteID: Note.ID?
@@ -20,10 +22,14 @@ struct NoteListView: View {
 
     private var header: some View {
         HStack(spacing: 6) {
-            Label("Notlar", systemImage: "note.text")
-                .font(.system(size: NotesStyle.headerFontSize, weight: .semibold))
+            if let mode {
+                NotesModePicker(selection: mode)
+            } else {
+                Label("Notlar", systemImage: "note.text")
+                    .font(.system(size: NotesStyle.headerFontSize, weight: .semibold))
+            }
             Spacer(minLength: 0)
-            NotesCapsuleButton(title: "Yeni not", systemImage: "square.and.pencil") {
+            NotesCapsuleButton(title: "Yeni not", systemImage: "square.and.pencil", showsTitle: mode == nil) {
                 pendingDeleteID = nil
                 store.createNote()
             }

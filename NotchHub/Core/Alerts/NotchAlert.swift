@@ -42,6 +42,8 @@ struct NotchAlert: Identifiable {
     let sender: String?
     /// Overrides the trailing relative time label ("şimdi", "3 dk").
     let timestampText: String?
+    /// Power alerts: an animated battery ring replaces the leading icon.
+    let battery: AlertBatteryGlyph?
 
     init(
         module: NotchModule?,
@@ -56,7 +58,8 @@ struct NotchAlert: Identifiable {
         appBundleID: String? = nil,
         appName: String? = nil,
         sender: String? = nil,
-        timestampText: String? = nil
+        timestampText: String? = nil,
+        battery: AlertBatteryGlyph? = nil
     ) {
         self.module = module
         self.systemImage = systemImage
@@ -71,6 +74,7 @@ struct NotchAlert: Identifiable {
         self.appName = appName.flatMap(Self.cleaned)
         self.sender = sender.flatMap(Self.cleaned)
         self.timestampText = timestampText.flatMap(Self.cleaned)
+        self.battery = battery
     }
 
     /// Small label in the left notch wing: the app, the module, or the product name.

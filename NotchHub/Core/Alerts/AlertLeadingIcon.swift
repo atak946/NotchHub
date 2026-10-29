@@ -10,14 +10,16 @@ struct AlertLeadingIcon: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     private var appIcon: NSImage? {
-        guard alert.appBundleID != nil || alert.appName != nil else { return nil }
+        guard alert.battery == nil, alert.appBundleID != nil || alert.appName != nil else { return nil }
         return AppIconResolver.shared.icon(bundleID: alert.appBundleID, appName: alert.appName)
     }
 
     var body: some View {
         let icon = appIcon
         Group {
-            if let sender = alert.sender, let initials = Monogram.initials(for: sender) {
+            if let battery = alert.battery {
+                BatteryChargeRing(glyph: battery, tint: alert.style.tint)
+            } else if let sender = alert.sender, let initials = Monogram.initials(for: sender) {
                 MonogramAvatar(name: sender, initials: initials, size: Self.size)
                     .overlay(alignment: .bottomTrailing) {
                         badge(icon)
@@ -34,7 +36,7 @@ struct AlertLeadingIcon: View {
         }
         .frame(width: Self.size, height: Self.size)
         .overlay(alignment: .bottomTrailing) {
-            if alert.style == .success, alert.sender == nil {
+            if alert.style == .success, alert.sender == nil, alert.battery == nil {
                 SuccessCheckBadge(size: Self.badgeSize, animates: !reduceMotion)
                     .offset(x: Self.badgeOffset, y: Self.badgeOffset)
             }
