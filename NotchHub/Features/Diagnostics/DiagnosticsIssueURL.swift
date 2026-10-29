@@ -32,15 +32,15 @@ enum DiagnosticsIssueURL {
         return URL(string: "https://\(host)\(issuePath)")
     }
 
-    static func body(summary: String) -> String {
-        "\(pasteInstruction)\n\n```\n\(summary)\n```\n"
+    static func body(summary: String, instruction: String = pasteInstruction) -> String {
+        "\(instruction)\n\n```\n\(summary)\n```\n"
     }
 
     /// The issue URL with title and body, trimmed so `absoluteString` never exceeds `maxLength` bytes.
-    static func make(base: URL, title: String = defaultTitle, summary: String) -> URL? {
+    static func make(base: URL, title: String = defaultTitle, summary: String, instruction: String = pasteInstruction) -> URL? {
         var lines = summary.components(separatedBy: "\n")
         while true {
-            let candidate = url(base: base, title: title, body: body(summary: lines.joined(separator: "\n")))
+            let candidate = url(base: base, title: title, body: body(summary: lines.joined(separator: "\n"), instruction: instruction))
             if let candidate, candidate.absoluteString.utf8.count <= maxLength {
                 return candidate
             }
@@ -50,7 +50,7 @@ enum DiagnosticsIssueURL {
             lines[lines.count - 1] += truncationMarker
         }
         // Even an empty summary does not fit (absurd title): fall back to the instruction alone.
-        let minimal = url(base: base, title: defaultTitle, body: pasteInstruction)
+        let minimal = url(base: base, title: defaultTitle, body: instruction)
         return minimal.flatMap { $0.absoluteString.utf8.count <= maxLength ? $0 : nil }
     }
 

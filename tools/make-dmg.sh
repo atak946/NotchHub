@@ -12,30 +12,10 @@ set -euo pipefail
 ROOT="${0:A:h:h}"
 cd "$ROOT"
 
-NOTARY_PROFILE="${NOTARY_PROFILE:-NotchHub}"
-DEV_ID=$(security find-identity -v -p codesigning | grep -o '"Developer ID Application[^"]*"' | head -1 | tr -d '"' || true)
-SPARKLE_VERSIONED="Contents/Frameworks/Sparkle.framework/Versions/B"
+source tools/lib/signing.sh
 
-# Sparkle's helpers must carry our Developer ID, hardened runtime and a timestamp for notarization.
-# Inside-out order, as in Sparkle's "Code signing" documentation for non-sandboxed apps.
-resign_for_distribution() {
-  local app="$1" sparkle="$1/$SPARKLE_VERSIONED"
-  local -a sign=(codesign --force --sign "$DEV_ID" --options runtime --timestamp)
-  if [[ -d "$sparkle" ]]; then
-    "${sign[@]}" "$sparkle/XPCServices/Installer.xpc"
-    "${sign[@]}" --preserve-metadata=entitlements "$sparkle/XPCServices/Downloader.xpc"
-    "${sign[@]}" "$sparkle/Autoupdate"
-    "${sign[@]}" "$sparkle/Updater.app"
-    "${sign[@]}" "$app/Contents/Frameworks/Sparkle.framework"
-  fi
-  "${sign[@]}" --preserve-metadata=entitlements "$app"
-  codesign --verify --deep --strict "$app"
-}
-
-SIGN_ARGS=()
 if [[ -n "$DEV_ID" ]]; then
   echo "Signing with: $DEV_ID"
-  SIGN_ARGS=(CODE_SIGN_IDENTITY="$DEV_ID" OTHER_CODE_SIGN_FLAGS="--timestamp" CODE_SIGN_INJECT_BASE_ENTITLEMENTS=NO)
 else
   echo "warning: no Developer ID Application certificate; the DMG will not be notarized" >&2
 fi
@@ -58,6 +38,9 @@ trap 'rm -rf "$STAGING"' EXIT
 ditto "$APP" "$STAGING/NotchHub.app"
 if [[ -n "$DEV_ID" ]]; then
   resign_for_distribution "$STAGING/NotchHub.app"
+  # Staple the app itself too, so Gatekeeper accepts it offline after it is copied out of the DMG
+  # (and after Sparkle installs it); a ticket on the DMG alone does not travel with the app.
+  notarize_app "$STAGING/NotchHub.app"
 fi
 ln -s /Applications "$STAGING/Applications"
 cp tools/dmg/KURULUM.txt "$STAGING/KURULUM.txt"

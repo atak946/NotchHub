@@ -61,6 +61,13 @@ enum PermissionStatusMapping {
         return .notDetermined
     }
 
+    /// Apple Events consent can only be read while a player runs. When none does, fall back to the last
+    /// state seen while one was running instead of reporting "not asked" after the user granted it.
+    static func resolvedAutomation(_ statuses: [PermissionStatus?], lastKnown: PermissionStatus?) -> PermissionStatus {
+        guard statuses.contains(where: { $0 != nil }) else { return lastKnown ?? .notDetermined }
+        return combinedAutomation(statuses)
+    }
+
     /// What the UI shows: an Accessibility request that did not lead to trust is treated as a denial,
     /// so the row offers "Ayarları aç" instead of a prompt that macOS no longer shows.
     static func displayed(

@@ -62,6 +62,17 @@ struct PermissionStatusMappingTests {
         #expect(PermissionStatusMapping.combinedAutomation(statuses) == expected)
     }
 
+    @Test func automationFallsBackToLastKnownWhenNoPlayerRuns() {
+        #expect(PermissionStatusMapping.resolvedAutomation([nil, nil], lastKnown: .granted) == .granted)
+        #expect(PermissionStatusMapping.resolvedAutomation([nil, nil], lastKnown: .denied) == .denied)
+        #expect(PermissionStatusMapping.resolvedAutomation([nil, nil], lastKnown: nil) == .notDetermined)
+    }
+
+    @Test func automationPrefersLiveStateOverLastKnown() {
+        #expect(PermissionStatusMapping.resolvedAutomation([nil, .denied], lastKnown: .granted) == .denied)
+        #expect(PermissionStatusMapping.resolvedAutomation([.granted, nil], lastKnown: .denied) == .granted)
+    }
+
     @Test func accessibilityRefusalAfterRequestIsShownAsDenied() {
         #expect(PermissionStatusMapping.displayed(.notDetermined, for: .accessibility, wasRequested: true) == .denied)
         #expect(PermissionStatusMapping.displayed(.notDetermined, for: .accessibility, wasRequested: false) == .notDetermined)

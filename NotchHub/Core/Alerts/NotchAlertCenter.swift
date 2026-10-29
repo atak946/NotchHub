@@ -77,6 +77,12 @@ final class NotchAlertCenter {
         action?()
     }
 
+    func performSecondaryAction() {
+        let action = current?.secondaryAction
+        dismiss()
+        action?()
+    }
+
     /// "Göster": reveals the concealed text of the current alert and restarts its countdown
     /// (at least the default duration) so there is time to read it.
     func revealContent() {

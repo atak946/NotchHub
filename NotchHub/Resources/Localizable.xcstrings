@@ -2353,6 +2353,16 @@
         }
       }
     },
+    "Bildir": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Report"
+          }
+        }
+      }
+    },
     "Bildirim Merkezi'ni okumak ve bildirimleri kapatmak için Erişilebilirlik izni gerekir. Odak veya Rahatsız Etme modunun gizlediği bildirimler okunamaz; macOS bildirimi kapanmadan önce kısa bir an görünebilir. Çentik uyarıları kapalıyken veya duraklatılmışken macOS bildirimlerine dokunulmaz.": {
       "localizations": {
         "en": {
@@ -2953,6 +2963,16 @@
         }
       }
     },
+    "Dahili mikrofon": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Built-in microphone"
+          }
+        }
+      }
+    },
     "Dakika": {
       "localizations": {
         "en": {
@@ -2989,6 +3009,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Pattern"
+          }
+        }
+      }
+    },
+    "Design review": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Design review"
           }
         }
       }
@@ -3753,6 +3783,16 @@
         }
       }
     },
+    "Fikirler\nHUD için daha yumuşak bir animasyon\nBildirimlerde hızlı yanıt": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ideas\nA smoother HUD animation\nQuick reply for notifications"
+          }
+        }
+      }
+    },
     "Finder'da Göster": {
       "localizations": {
         "en": {
@@ -3981,6 +4021,16 @@
         }
       }
     },
+    "Gizliliği koruyan bir çökme raporu göndermek ister misin?": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Would you like to send a privacy-preserving crash report?"
+          }
+        }
+      }
+    },
     "Gri": {
       "localizations": {
         "en": {
@@ -4187,6 +4237,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Weekday Summary Reminder"
+          }
+        }
+      }
+    },
+    "Haftalık retro": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Weekly retro"
           }
         }
       }
@@ -5303,6 +5363,16 @@
         }
       }
     },
+    "Mesajlar": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Messages"
+          }
+        }
+      }
+    },
     "Mesajlaşma uygulamaları": {
       "localizations": {
         "en": {
@@ -5835,6 +5905,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "NotchHub Setup"
+          }
+        }
+      }
+    },
+    "NotchHub beklenmedik şekilde kapandı": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "NotchHub Quit Unexpectedly"
+          }
+        }
+      }
+    },
+    "NotchHub beklenmedik şekilde kapandı. Tam çökme raporunu (.ips) bu sayfaya sürükleyerek elle ekleyebilirsin.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "NotchHub quit unexpectedly. You can attach the full crash report (.ips) manually by dragging it onto this page."
           }
         }
       }
@@ -6811,6 +6901,16 @@
         }
       }
     },
+    "Raporu Finder'da göster": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Show Report in Finder"
+          }
+        }
+      }
+    },
     "Raporu e-postana ya da bir sorun kaydına yapıştırabilirsin.": {
       "localizations": {
         "en": {
@@ -7367,6 +7467,26 @@
         }
       }
     },
+    "Sprint hedefleri\n[x] Backlog'u gözden geçir\n[ ] Tahminleri güncelle\n[ ] Demo tarihini netleştir": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sprint goals\n[x] Review the backlog\n[ ] Update estimates\n[ ] Confirm the demo date"
+          }
+        }
+      }
+    },
+    "Sprint planlama": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sprint planning"
+          }
+        }
+      }
+    },
     "Staging API": {
       "localizations": {
         "en": {
@@ -7403,6 +7523,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Server error (HTTP %lld)."
+          }
+        }
+      }
+    },
+    "Sunum": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Slides"
+          }
+        }
+      }
+    },
+    "Sunumu yarın birlikte gözden geçirelim mi?": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Shall we go over the slides together tomorrow?"
           }
         }
       }
@@ -7653,6 +7793,16 @@
         }
       }
     },
+    "Tam raporu eklemek için dosyayı sayfaya sürükleyebilirsin.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "To attach the full report, drag the file onto the page."
+          }
+        }
+      }
+    },
     "Tam tanılama raporu panoya kopyalandı; lütfen buraya yapıştır (⌘V).": {
       "localizations": {
         "en": {
@@ -7729,6 +7879,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Date"
+          }
+        }
+      }
+    },
+    "Tasarım": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Design"
           }
         }
       }
@@ -7843,12 +8003,32 @@
         }
       }
     },
+    "Toplantı linki: example.com/sprint": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Meeting link: example.com/sprint"
+          }
+        }
+      }
+    },
     "Toplantı modu, kamera aynası, mikrofon ve gizlilik göstergesi.": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Meeting mode, camera mirror, microphone and privacy indicator."
+          }
+        }
+      }
+    },
+    "Toplantı odası 2": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Meeting room 2"
           }
         }
       }
@@ -8857,6 +9037,16 @@
         }
       }
     },
+    "Yayın kontrol listesi\n[x] Sürüm notları\n[ ] Ekran görüntüleri": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Release checklist\n[x] Release notes\n[ ] Screenshots"
+          }
+        }
+      }
+    },
     "Yazdıkça sonuç burada görünür. Enter sonucu kopyalar.": {
       "localizations": {
         "en": {
@@ -9037,6 +9227,16 @@
         }
       }
     },
+    "Yoksay": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ignore"
+          }
+        }
+      }
+    },
     "Yukarı taşı": {
       "localizations": {
         "en": {
@@ -9183,6 +9383,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "connected"
+          }
+        }
+      }
+    },
+    "bildirim": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "notification"
           }
         }
       }
@@ -9811,12 +10021,42 @@
         }
       }
     },
+    "Çökme raporu hazır": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Crash Report Ready"
+          }
+        }
+      }
+    },
+    "Çökme sonrası rapor öner": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Offer a Report After a Crash"
+          }
+        }
+      }
+    },
     "Çökme, OOM ve sağlık değişikliklerinde uyar": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Alert on crashes, OOM and health changes"
+          }
+        }
+      }
+    },
+    "Çökme: ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Crash: "
           }
         }
       }
@@ -9957,6 +10197,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Expensive"
+          }
+        }
+      }
+    },
+    "Ürün demosu": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Product demo"
           }
         }
       }
@@ -10197,6 +10447,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Show content"
+          }
+        }
+      }
+    },
+    "İş": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Work"
           }
         }
       }

@@ -85,6 +85,11 @@ struct NotchAlertView: View {
                     .accessibilityLabel("İçeriği göster")
             }
 
+            if let secondaryTitle = alert.secondaryActionTitle {
+                Button(secondaryTitle) { center.performSecondaryAction() }
+                    .buttonStyle(AlertActionButtonStyle(tint: .white))
+            }
+
             if let actionTitle = alert.actionTitle {
                 Button(actionTitle) { center.performAction() }
                     .buttonStyle(AlertActionButtonStyle(tint: alert.style.tint))

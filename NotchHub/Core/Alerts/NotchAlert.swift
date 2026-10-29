@@ -34,6 +34,9 @@ struct NotchAlert: Identifiable {
     let autoDismissAfter: Duration?
     let actionTitle: String?
     let action: (@MainActor () -> Void)?
+    /// Optional second button (e.g. "Yoksay"), shown before the primary action.
+    let secondaryActionTitle: String?
+    let secondaryAction: (@MainActor () -> Void)?
     /// Source app; its real icon replaces `systemImage` when it can be resolved (e.g. `net.whatsapp.WhatsApp`).
     let appBundleID: String?
     /// Source app display name; shown as the source label and used to find the app when there is no bundle id.
@@ -65,7 +68,9 @@ struct NotchAlert: Identifiable {
         sender: String? = nil,
         timestampText: String? = nil,
         battery: AlertBatteryGlyph? = nil,
-        concealedSubtitle: String? = nil
+        concealedSubtitle: String? = nil,
+        secondaryActionTitle: String? = nil,
+        secondaryAction: (@MainActor () -> Void)? = nil
     ) {
         self.module = module
         self.systemImage = systemImage
@@ -82,6 +87,8 @@ struct NotchAlert: Identifiable {
         self.timestampText = timestampText.flatMap(Self.cleaned)
         self.battery = battery
         self.concealedSubtitle = concealedSubtitle.flatMap(Self.cleaned)
+        self.secondaryActionTitle = secondaryActionTitle
+        self.secondaryAction = secondaryAction
     }
 
     /// The alert hides private text that the user can reveal.

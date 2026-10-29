@@ -16,8 +16,9 @@ extension SettingsSearchCatalog {
             SettingsSearchTerm("Destek", "Support"),
             SettingsSearchTerm("Kurulum sihirbazı…", "Setup Assistant…"),
             SettingsSearchTerm("Sorun bildir…", "Report an Issue…"),
+            SettingsSearchTerm("Çökme sonrası rapor öner", "Offer a Report After a Crash"),
         ],
-        synonyms: ["başlangıç", "oturum açma", "login", "startup", "language", "türkçe", "english", "güncelleme", "update", "version", "duraklat", "pause", "yardım", "help", "onboarding"]
+        synonyms: ["çökme", "crash", "kilitlenme", "başlangıç", "oturum açma", "login", "startup", "language", "türkçe", "english", "güncelleme", "update", "version", "duraklat", "pause", "yardım", "help", "onboarding"]
     )
 
     static let notch = SettingsSearchEntry(

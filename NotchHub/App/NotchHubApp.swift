@@ -6,13 +6,18 @@ struct NotchHubApp: App {
 
     var body: some Scene {
         Settings {
-            SettingsView(
-                settings: appDelegate.settings,
-                language: appDelegate.language,
-                services: appDelegate.services,
-                updater: appDelegate.updater
-            )
-                .environment(\.supportActions, appDelegate.supportActions)
+            // Screenshot rendering must never build the live services (they read the user's stores).
+            if ScreenshotMode.isActive {
+                EmptyView()
+            } else {
+                SettingsView(
+                    settings: appDelegate.settings,
+                    language: appDelegate.language,
+                    services: appDelegate.services,
+                    updater: appDelegate.updater
+                )
+                    .environment(\.supportActions, appDelegate.supportActions)
+            }
         }
         .windowResizability(.contentMinSize)
     }

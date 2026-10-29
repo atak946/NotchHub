@@ -24,12 +24,15 @@ final class SystemPermissionChecker: PermissionChecking {
     static let cameraUsageKey = "NSCameraUsageDescription"
     /// Time for a freshly launched player to accept Apple Events before we ask.
     static let launchSettleDelay: Duration = .milliseconds(1500)
+    static let lastKnownAutomationKey = "Permissions.lastKnownAutomation"
 
     private let accessibility: any AccessibilityTrustChecking
+    private let defaults: UserDefaults
     private let logger = Logger(subsystem: AppIdentity.logSubsystem, category: "Onboarding")
 
-    init(accessibility: any AccessibilityTrustChecking = SystemAccessibilityTrust()) {
+    init(accessibility: any AccessibilityTrustChecking = SystemAccessibilityTrust(), defaults: UserDefaults = .standard) {
         self.accessibility = accessibility
+        self.defaults = defaults
     }
 
     func status(of permission: AppPermission) async -> PermissionStatus {
@@ -127,7 +130,12 @@ final class SystemPermissionChecker: PermissionChecking {
             let code = await Self.determineAutomation(target: target, askUser: false)
             results.append(PermissionStatusMapping.automation(code))
         }
-        return PermissionStatusMapping.combinedAutomation(results)
+        let lastKnown = defaults.string(forKey: Self.lastKnownAutomationKey).flatMap(PermissionStatus.init(rawValue:))
+        let status = PermissionStatusMapping.resolvedAutomation(results, lastKnown: lastKnown)
+        if results.contains(where: { $0 != nil }) {
+            defaults.set(status.rawValue, forKey: Self.lastKnownAutomationKey)
+        }
+        return status
     }
 
     private func runningAutomationTargets() -> [String] {

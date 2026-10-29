@@ -44,6 +44,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     let permissions = PermissionsModel()
     private(set) lazy var onboarding = OnboardingWindowController(permissions: permissions)
     private(set) lazy var diagnostics = DiagnosticsReporter(settings: settings, permissions: permissions, alerts: alerts)
+    private lazy var crashReports = CrashReportMonitor(alerts: alerts)
     var supportActions: SupportActions {
         SupportActions(
             openOnboarding: { [weak self] in self?.onboarding.show() },
@@ -61,7 +62,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     func applicationDidFinishLaunching(_ notification: Notification) {
-        guard !Self.isRunningTests else { return }
+        guard !Self.isRunningTests, !ScreenshotRenderer.runIfRequested() else { return }
 
         fullScreenDetector.start()
         services.start()
@@ -78,10 +79,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             if permission == .calendar { self?.services.calendar.refresh() }
         }
         onboarding.showIfNeeded()
+        crashReports.checkOnLaunch()
         logger.info("NotchHub started")
     }
 
     func applicationWillTerminate(_ notification: Notification) {
+        crashReports.recordCleanExit()
         hotKey?.unregister()
         micMuteHotKey.stop()
         services.stop()

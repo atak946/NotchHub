@@ -14,11 +14,13 @@ extension EnvironmentValues {
 /// "Destek" section for Settings › Genel.
 struct SupportSettingsSection: View {
     @Environment(\.supportActions) private var supportActions
+    @AppStorage(CrashReportLedger.promptEnabledKey) private var offersCrashReports = true
 
     var body: some View {
         Section("Destek") {
             Button("Kurulum sihirbazı…") { supportActions.openOnboarding() }
             Button("Sorun bildir…") { supportActions.reportIssue() }
+            Toggle("Çökme sonrası rapor öner", isOn: $offersCrashReports)
             Text("Rapor gizlilik için temizlenir: e-posta, bağlantı parametreleri, IP adresleri ve ev klasörü yolu çıkarılır.")
                 .font(.caption)
                 .foregroundStyle(.secondary)

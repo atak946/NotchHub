@@ -3,16 +3,16 @@ import Observation
 /// Shared feature services (one instance for all displays), started and stopped with module toggles.
 @MainActor
 final class ModuleServices {
-    let shelf = ShelfStore()
+    let shelf: ShelfStore
     /// Clipboard history shown in the shelf's "Pano" segment; runs with the shelf module.
-    let clipboard = ClipboardHistoryStore()
-    let media = MediaService()
-    let audio = AudioOutputService()
-    let timer = TimerService()
-    let calendar = CalendarService()
-    let notes = NoteStore()
+    let clipboard: ClipboardHistoryStore
+    let media: MediaService
+    let audio: AudioOutputService
+    let timer: TimerService
+    let calendar: CalendarService
+    let notes: NoteStore
     /// Quick calculation and conversion in the Notes module's "Hesap" segment.
-    let calculator = QuickCalcService()
+    let calculator: QuickCalcService
 
     // Background monitors shown in the Status tab.
     let system: SystemMonitors
@@ -27,26 +27,38 @@ final class ModuleServices {
     /// Pre-meeting camera mirror and its reminder.
     let cameraMirror: CameraMirror
     /// Weather beside the header clock; runs with its own setting, regardless of module toggles.
-    let weather = WeatherService()
+    let weather: WeatherService
     /// Charging / unplug / low-battery presentations in the notch; runs regardless of module toggles.
     let charging: ChargingPresenter
 
     private let settings: SettingsStore
     private var runningModules: Set<NotchModule> = []
 
-    init(settings: SettingsStore, alerts: NotchAlertCenter) {
+    /// `core` defaults to the live services; screenshot rendering passes demo ones (see `ModuleCoreServices`).
+    init(settings: SettingsStore, alerts: NotchAlertCenter, core: ModuleCoreServices? = nil) {
+        let core = core ?? ModuleCoreServices.live()
+        let defaults = core.defaults
         self.settings = settings
-        system = SystemMonitors(alerts: alerts, media: media, calendar: calendar)
-        devOps = DevOpsMonitors(alerts: alerts)
-        automations = Automations(alerts: alerts, timer: timer, shelf: shelf)
-        insights = Insights(alerts: alerts)
-        profiles = Profiles(alerts: alerts)
-        let noteContext = LiveNoteContextProvider(calendar: calendar, profiles: profiles.store)
-        notes.contextProvider = { noteContext.context(at: $0) }
-        externalAlerts = ExternalAlertService(alerts: alerts)
+        shelf = core.shelf
+        clipboard = core.clipboard
+        media = core.media
+        audio = core.audio
+        timer = core.timer
+        calendar = core.calendar
+        notes = core.notes
+        calculator = core.calculator
+        weather = core.weather
+        system = SystemMonitors(alerts: alerts, media: core.media, calendar: core.calendar, defaults: defaults)
+        devOps = DevOpsMonitors(alerts: alerts, defaults: defaults)
+        automations = Automations(alerts: alerts, timer: core.timer, shelf: core.shelf, defaults: defaults)
+        insights = Insights(alerts: alerts, defaults: defaults)
+        profiles = Profiles(alerts: alerts, defaults: defaults)
+        let noteContext = LiveNoteContextProvider(calendar: core.calendar, profiles: profiles.store)
+        core.notes.contextProvider = { noteContext.context(at: $0) }
+        externalAlerts = ExternalAlertService(alerts: alerts, defaults: defaults)
         hud = SystemHUD.live(settings: settings, alerts: alerts, permission: insights.permission)
-        cameraMirror = CameraMirror.live(settings: settings, alerts: alerts, calendar: calendar)
-        charging = ChargingPresenter(alerts: alerts)
+        cameraMirror = CameraMirror.live(settings: settings, alerts: alerts, calendar: core.calendar)
+        charging = ChargingPresenter(alerts: alerts, defaults: defaults)
         // Native banners are only taken over (and closed) while notch alerts can actually be shown.
         insights.mirror.shouldPostAlert = { [weak settings] in
             guard let settings else { return false }
