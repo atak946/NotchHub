@@ -213,11 +213,11 @@ enum DockerDaemonState: Equatable, Sendable {
 
     var title: String {
         switch self {
-        case .stopped: "Kapalı"
-        case .socketNotFound: "Çalışmıyor"
-        case .connecting: "Bağlanıyor…"
-        case .running: "Çalışıyor"
-        case .reconnecting: "Yeniden bağlanıyor…"
+        case .stopped: String(localized: "Kapalı")
+        case .socketNotFound: String(localized: "Çalışmıyor")
+        case .connecting: String(localized: "Bağlanıyor…")
+        case .running: String(localized: "Çalışıyor")
+        case .reconnecting: String(localized: "Yeniden bağlanıyor…")
         }
     }
 }

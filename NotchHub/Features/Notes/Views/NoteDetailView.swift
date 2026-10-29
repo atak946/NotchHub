@@ -57,7 +57,7 @@ struct NoteDetailView: View {
             }
             NotesCapsuleButton(title: "Kopyala", systemImage: "doc.on.doc") {
                 store.copyBody(note.id)
-                show("Kopyalandı")
+                show(String(localized: "Kopyalandı"))
             }
             .disabled(note.body.isEmpty)
             NotesCapsuleButton(title: "Rafa ekle", systemImage: "tray.and.arrow.down") {
@@ -134,11 +134,11 @@ struct NoteDetailView: View {
 
     private func addToShelf() {
         guard let url = store.exportMarkdown(note.id) else {
-            show("Dışa aktarılamadı")
+            show(String(localized: "Dışa aktarılamadı"))
             return
         }
         shelf.add(fileURLs: [url])
-        show("Rafa eklendi")
+        show(String(localized: "Rafa eklendi"))
     }
 
     private func show(_ message: String) {

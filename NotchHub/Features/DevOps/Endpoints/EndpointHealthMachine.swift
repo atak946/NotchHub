@@ -10,11 +10,11 @@ enum EndpointHealthState: Equatable, Sendable {
 
     var title: String {
         switch self {
-        case .unknown: "Denetleniyor…"
-        case .up: "Ayakta"
-        case .degraded: "Yavaş"
-        case .down: "Kapalı"
-        case .pausedVPNOff: "Duraklatıldı (VPN kapalı)"
+        case .unknown: String(localized: "Denetleniyor…")
+        case .up: String(localized: "Ayakta")
+        case .degraded: String(localized: "Yavaş")
+        case .down: String(localized: "Kapalı")
+        case .pausedVPNOff: String(localized: "Duraklatıldı (VPN kapalı)")
         }
     }
 }
@@ -45,7 +45,7 @@ enum EndpointCheckOutcome: Equatable, Sendable {
             return .failure(reason: error)
         }
         guard let code = result.statusCode else {
-            return .failure(reason: "Yanıt yok")
+            return .failure(reason: String(localized: "Yanıt yok"))
         }
         guard expected.contains(code) else {
             return .failure(reason: "HTTP \(code)")

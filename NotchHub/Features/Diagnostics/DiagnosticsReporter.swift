@@ -87,11 +87,11 @@ final class DiagnosticsReporter {
               let issueURL = DiagnosticsIssueURL.make(base: base, summary: summary)
         else {
             logger.info("No issue URL configured; report copied only")
-            postToast(subtitle: "Raporu e-postana ya da bir sorun kaydına yapıştırabilirsin.")
+            postToast(subtitle: String(localized: "Raporu e-postana ya da bir sorun kaydına yapıştırabilirsin."))
             return
         }
         urlOpener.open(issueURL)
-        postToast(subtitle: "Açılan sayfaya yapıştır (⌘V).")
+        postToast(subtitle: String(localized: "Açılan sayfaya yapıştır (⌘V)."))
     }
 
     func makeSnapshot() async -> DiagnosticsSnapshot {
@@ -126,7 +126,7 @@ final class DiagnosticsReporter {
         alerts.post(NotchAlert(
             module: nil,
             systemImage: "doc.on.clipboard",
-            title: "Tanılama raporu kopyalandı",
+            title: String(localized: "Tanılama raporu kopyalandı"),
             subtitle: subtitle,
             style: .success
         ))

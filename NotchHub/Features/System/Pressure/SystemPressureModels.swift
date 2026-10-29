@@ -9,9 +9,9 @@ enum MemoryPressureLevel: Int, Comparable, Sendable {
 
     var title: String {
         switch self {
-        case .normal: "Normal"
-        case .warning: "Uyarı"
-        case .critical: "Kritik"
+        case .normal: String(localized: "Normal")
+        case .warning: String(localized: "Uyarı")
+        case .critical: String(localized: "Kritik")
         }
     }
 
@@ -53,10 +53,10 @@ enum SystemThermalLevel: Int, Comparable, Sendable {
 
     var title: String {
         switch self {
-        case .nominal: "Serin"
-        case .fair: "Ilık"
-        case .serious: "Sıcak"
-        case .critical: "Kritik"
+        case .nominal: String(localized: "Serin")
+        case .fair: String(localized: "Ilık")
+        case .serious: String(localized: "Sıcak")
+        case .critical: String(localized: "Kritik")
         }
     }
 

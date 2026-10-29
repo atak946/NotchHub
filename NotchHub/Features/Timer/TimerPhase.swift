@@ -10,10 +10,10 @@ enum TimerPhase: String, CaseIterable, Equatable, Sendable {
 
     var title: String {
         switch self {
-        case .countdown: "Zamanlayıcı"
-        case .work: "Odak"
-        case .shortBreak: "Kısa Mola"
-        case .longBreak: "Uzun Mola"
+        case .countdown: String(localized: "Zamanlayıcı")
+        case .work: String(localized: "Odak")
+        case .shortBreak: String(localized: "Kısa Mola")
+        case .longBreak: String(localized: "Uzun Mola")
         }
     }
 

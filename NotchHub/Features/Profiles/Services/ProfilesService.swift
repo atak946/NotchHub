@@ -160,12 +160,15 @@ final class ProfilesService {
     }
 
     private func postProgress(_ profile: ClientProfile, kind: RunKind, stepCount: Int) {
-        let verb = kind == .activate ? "başlatılıyor" : "devre dışı bırakılıyor"
+        let name = profile.displayName
+        let title = kind == .activate
+            ? String(localized: "\(name) başlatılıyor")
+            : String(localized: "\(name) devre dışı bırakılıyor")
         post(NotchAlert(
             module: .status,
             systemImage: "briefcase",
-            title: "\(profile.displayName) \(verb)",
-            subtitle: "\(stepCount) adım",
+            title: title,
+            subtitle: String(localized: "\(stepCount) adım"),
             style: .info,
             coalescingKey: Self.alertKey(for: profile.id),
             autoDismissAfter: Self.progressAlertDuration
@@ -181,7 +184,7 @@ final class ProfilesService {
             style: .reminder,
             coalescingKey: Self.alertKey(for: profile.id),
             autoDismissAfter: NotchAlert.importantDuration,
-            actionTitle: "Çalışmayı iptal et",
+            actionTitle: String(localized: "Çalışmayı iptal et"),
             action: { [weak self] in self?.cancel() }
         ))
     }
@@ -191,11 +194,11 @@ final class ProfilesService {
         let alert: NotchAlert
         switch report.outcome {
         case .succeeded, .succeededWithWarnings:
-            let warning = report.outcome == .succeededWithWarnings ? " (uyarılarla)" : ""
+            let hasWarnings = report.outcome == .succeededWithWarnings
             alert = NotchAlert(
                 module: .status,
                 systemImage: "checkmark.circle",
-                title: kind == .activate ? "\(name) hazır\(warning)" : "\(name) devre dışı\(warning)",
+                title: Self.successTitle(name: name, kind: kind, hasWarnings: hasWarnings),
                 subtitle: report.firstFailure.map { "\($0.summary): \(Self.message(of: $0.status))" },
                 style: .success,
                 coalescingKey: Self.alertKey(for: profile.id),
@@ -206,12 +209,12 @@ final class ProfilesService {
             alert = NotchAlert(
                 module: .status,
                 systemImage: "exclamationmark.triangle",
-                title: "\(name) başarısız",
+                title: String(localized: "\(name) başarısız"),
                 subtitle: failure.map { "\($0.summary): \(Self.message(of: $0.status))" },
                 style: .urgent,
                 coalescingKey: Self.alertKey(for: profile.id),
                 autoDismissAfter: NotchAlert.importantDuration,
-                actionTitle: "Yeniden dene",
+                actionTitle: String(localized: "Yeniden dene"),
                 action: { [weak self] in
                     _ = kind == .activate ? self?.activate(profile.id) : self?.deactivate(profile.id)
                 }
@@ -220,12 +223,21 @@ final class ProfilesService {
             alert = NotchAlert(
                 module: .status,
                 systemImage: "xmark.circle",
-                title: "\(name) iptal edildi",
+                title: String(localized: "\(name) iptal edildi"),
                 style: .info,
                 coalescingKey: Self.alertKey(for: profile.id)
             )
         }
         post(alert)
+    }
+
+    private static func successTitle(name: String, kind: RunKind, hasWarnings: Bool) -> String {
+        switch (kind, hasWarnings) {
+        case (.activate, false): String(localized: "\(name) hazır")
+        case (.activate, true): String(localized: "\(name) hazır (uyarılarla)")
+        case (_, false): String(localized: "\(name) devre dışı")
+        case (_, true): String(localized: "\(name) devre dışı (uyarılarla)")
+        }
     }
 
     private func post(_ alert: NotchAlert) {
@@ -235,10 +247,10 @@ final class ProfilesService {
 
     static func message(of status: ProfileStepStatus) -> String {
         switch status {
-        case let .succeeded(detail): detail ?? "Bitti"
+        case let .succeeded(detail): detail ?? String(localized: "Bitti")
         case let .failed(message): message
-        case .skipped: "Atlandı"
-        case .cancelled: "İptal edildi"
+        case .skipped: String(localized: "Atlandı")
+        case .cancelled: String(localized: "İptal edildi")
         }
     }
 }

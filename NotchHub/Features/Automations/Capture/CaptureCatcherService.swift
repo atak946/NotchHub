@@ -196,12 +196,12 @@ final class CaptureCatcherService {
         alerts.post(NotchAlert(
             module: .shelf,
             systemImage: batch.systemImage,
-            title: isAllShelved ? "\(batch.title) · Rafta" : batch.title,
+            title: isAllShelved ? String(localized: "\(batch.title) · Rafta") : batch.title,
             subtitle: batch.subtitle,
             style: isAllShelved ? .success : .info,
             coalescingKey: Self.alertKey,
             autoDismissAfter: Self.alertDuration,
-            actionTitle: isAllShelved ? nil : "Rafa ekle",
+            actionTitle: isAllShelved ? nil : String(localized: "Rafa ekle"),
             action: action
         ))
     }

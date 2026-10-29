@@ -38,12 +38,15 @@ struct DevOpsCompactIndicators: View {
 
     private var dockerHelp: String {
         let unhealthy = monitors.docker.counts.unhealthy
-        if unhealthy > 0 { return "\(unhealthy) container sağlıksız" }
-        return "\(monitors.docker.lastFailure?.containerName ?? "Bir container") yakın zamanda başarısız oldu"
+        if unhealthy > 0 { return String(localized: "\(unhealthy) container sağlıksız") }
+        guard let name = monitors.docker.lastFailure?.containerName else {
+            return String(localized: "Bir container yakın zamanda başarısız oldu")
+        }
+        return String(localized: "\(name) yakın zamanda başarısız oldu")
     }
 
     private var endpointHelp: String {
         let names = monitors.endpoints.downEndpoints.map(\.displayName).joined(separator: ", ")
-        return "Kapalı: \(names)"
+        return String(localized: "Kapalı: \(names)")
     }
 }

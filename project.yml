@@ -40,7 +40,7 @@ targets:
         CFBundleVersion: $(CURRENT_PROJECT_VERSION)
         LSUIElement: true
         CFBundleDevelopmentRegion: tr
-        CFBundleLocalizations: [tr]
+        CFBundleLocalizations: [tr, en]
         LSApplicationCategoryType: public.app-category.productivity
         NSCalendarsFullAccessUsageDescription: NotchHub bir sonraki toplantını çentikte gösterir.
         NSCameraUsageDescription: NotchHub, toplantı öncesi kameranı kontrol etmen için çentikte kısa bir ayna önizlemesi gösterir.
@@ -67,6 +67,8 @@ targets:
         PRODUCT_BUNDLE_IDENTIFIER: $(APP_BUNDLE_ID)
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         ENABLE_HARDENED_RUNTIME: YES
+        SWIFT_EMIT_LOC_STRINGS: YES
+        LOCALIZATION_PREFERS_STRING_CATALOGS: YES
         COMBINE_HIDPI_IMAGES: YES
       configs:
         Release:
@@ -97,5 +99,8 @@ schemes:
         NotchHub: all
         NotchHubTests: [test]
     test:
+      # Tests assert the Turkish source strings, so pin the language regardless of the host.
+      language: tr
+      region: TR
       targets:
         - NotchHubTests

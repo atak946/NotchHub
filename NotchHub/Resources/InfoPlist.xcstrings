@@ -1,0 +1,86 @@
+{
+  "sourceLanguage" : "tr",
+  "strings" : {
+    "CFBundleDisplayName" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "NotchHub"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "NotchHub"
+          }
+        }
+      }
+    },
+    "CFBundleName" : {
+      "comment" : "Bundle name",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "tr" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "NotchHub"
+          }
+        }
+      }
+    },
+    "NSAppleEventsUsageDescription" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "NotchHub controls Spotify and Music playback from the notch."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "NotchHub, Spotify ve Music oynatmasını çentikten denetler."
+          }
+        }
+      }
+    },
+    "NSCalendarsFullAccessUsageDescription" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "NotchHub shows your next meeting in the notch."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "NotchHub bir sonraki toplantını çentikte gösterir."
+          }
+        }
+      }
+    },
+    "NSCameraUsageDescription" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "NotchHub shows a quick mirror preview in the notch so you can check your camera before a meeting."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "NotchHub, toplantı öncesi kameranı kontrol etmen için çentikte kısa bir ayna önizlemesi gösterir."
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}

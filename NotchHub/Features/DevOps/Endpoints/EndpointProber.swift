@@ -63,7 +63,7 @@ struct URLSessionEndpointProber: EndpointProber {
 
     func probe(_ endpoint: MonitoredEndpoint) async -> EndpointProbeResult {
         guard let url = endpoint.resolvedURL else {
-            return EndpointProbeResult(errorDescription: "Geçersiz URL")
+            return EndpointProbeResult(errorDescription: String(localized: "Geçersiz URL"))
         }
         let delegate = TrustCaptureDelegate()
         let configuration = URLSessionConfiguration.ephemeral
@@ -108,13 +108,13 @@ struct URLSessionEndpointProber: EndpointProber {
     private static func describe(_ error: Error) -> String {
         guard let urlError = error as? URLError else { return error.localizedDescription }
         switch urlError.code {
-        case .timedOut: return "Zaman aşımı"
-        case .cannotFindHost, .dnsLookupFailed: return "Sunucu bulunamadı"
-        case .cannotConnectToHost: return "Bağlantı reddedildi"
-        case .notConnectedToInternet: return "Çevrimdışı"
+        case .timedOut: return String(localized: "Zaman aşımı")
+        case .cannotFindHost, .dnsLookupFailed: return String(localized: "Sunucu bulunamadı")
+        case .cannotConnectToHost: return String(localized: "Bağlantı reddedildi")
+        case .notConnectedToInternet: return String(localized: "Çevrimdışı")
         case .serverCertificateUntrusted, .serverCertificateHasBadDate, .serverCertificateNotYetValid,
              .serverCertificateHasUnknownRoot, .secureConnectionFailed:
-            return "TLS hatası"
+            return String(localized: "TLS hatası")
         default: return urlError.localizedDescription
         }
     }

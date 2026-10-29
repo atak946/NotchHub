@@ -17,7 +17,7 @@ final class MicrosoftGraphSource: CalendarEventSource {
     static let accountID = "microsoft365.account"
     static let calendarID = "microsoft365.calendar"
     static let defaultAccountTitle = "Microsoft 365"
-    static let calendarTitle = "Outlook Calendar"
+    static let calendarTitle = String(localized: "Outlook Calendar")
     static let calendarColor = CalendarColor(red: 0.0, green: 0.47, blue: 0.84)
 
     enum Keys {
@@ -185,7 +185,7 @@ final class MicrosoftGraphSource: CalendarEventSource {
             signOut(reason: MicrosoftAuthError.invalidGrant.localizedDescription)
         } catch {
             logger.error("Microsoft 365 sync failed: \(error.localizedDescription, privacy: .public)")
-            statusMessage = "Eşitleme başarısız: \(error.localizedDescription)"
+            statusMessage = String(localized: "Eşitleme başarısız: \(error.localizedDescription)")
             changeHandler?()
         }
     }

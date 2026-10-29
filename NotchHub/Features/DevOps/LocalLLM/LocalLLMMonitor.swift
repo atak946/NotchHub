@@ -149,7 +149,7 @@ final class LocalLLMMonitor {
         alerts.post(NotchAlert(
             module: .status,
             systemImage: "cpu",
-            title: "\(kind.title) \(newStatus.isUp ? "başladı" : "durdu")",
+            title: newStatus.isUp ? String(localized: "\(kind.title) başladı") : String(localized: "\(kind.title) durdu"),
             subtitle: newStatus.isUp ? newStatus.loadedModels.first : nil,
             style: newStatus.isUp ? .success : .info,
             coalescingKey: "localllm.\(kind.rawValue)"

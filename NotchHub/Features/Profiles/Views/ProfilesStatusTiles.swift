@@ -68,7 +68,7 @@ struct ProfilesStatusTile: View {
                 Circle()
                     .fill(store.activeProfile == nil && service.runState == nil ? Color.primary.opacity(0.25) : tint)
                     .frame(width: ProfilesMetrics.dotSize, height: ProfilesMetrics.dotSize)
-                Text(focusedProfile?.displayName ?? "Profil yok")
+                Text(focusedProfile?.displayName ?? String(localized: "Profil yok"))
                     .font(.system(size: 13, weight: .semibold))
                     .lineLimit(1)
             }
@@ -108,14 +108,14 @@ struct ProfilesStatusTile: View {
         if let runState = service.runState {
             return "\(runState.progressText) · \(runState.stepSummary)"
         }
-        if store.activeProfile != nil { return "Etkin" }
-        return store.profiles.isEmpty ? "Ayarlar'dan ekleyin" : "Etkin değil · çalıştırmak için tıklayın"
+        if store.activeProfile != nil { return String(localized: "Etkin") }
+        return store.profiles.isEmpty ? String(localized: "Ayarlar'dan ekleyin") : String(localized: "Etkin değil · çalıştırmak için tıklayın")
     }
 
     private var helpText: String {
-        if service.isRunning { return "Profil çalışıyor – iptal için tıklayın" }
-        guard let focusedProfile else { return "Henüz müşteri profili yok" }
-        return "\(focusedProfile.displayName) çalıştır"
+        if service.isRunning { return String(localized: "Profil çalışıyor – iptal için tıklayın") }
+        guard let focusedProfile else { return String(localized: "Henüz müşteri profili yok") }
+        return String(localized: "\(focusedProfile.displayName) çalıştır")
     }
 
     private func primaryAction() {
@@ -166,15 +166,15 @@ struct RemoteSessionStatusTile: View {
         if monitor.isSessionActive {
             return monitor.activeSources.map(\.title).joined(separator: ", ")
         }
-        if monitor.assessment.isDegraded { return "Sınırlı: yalnızca işlem" }
-        return monitor.assessment.runningSources.isEmpty ? "Çalışan uzak uygulama yok" : "İzleniyor"
+        if monitor.assessment.isDegraded { return String(localized: "Sınırlı: yalnızca işlem") }
+        return monitor.assessment.runningSources.isEmpty ? String(localized: "Çalışan uzak uygulama yok") : String(localized: "İzleniyor")
     }
 
     private var helpText: String {
-        var text = "Sezgisel: AnyDesk, Ekran Paylaşımı ve Uzaktan Yönetim'in kurulmuş bağlantılarını arar."
+        var text = String(localized: "Sezgisel: AnyDesk, Ekran Paylaşımı ve Uzaktan Yönetim'in kurulmuş bağlantılarını arar.")
         if monitor.assessment.isDegraded {
             let names = monitor.assessment.uninspectableSources.sorted().map(\.title).joined(separator: ", ")
-            text += " \(names) soketleri root olmadan okunamaz; işlem algılama kullanılıyor."
+            text += String(localized: " \(names) soketleri root olmadan okunamaz; işlem algılama kullanılıyor.")
         }
         return text
     }

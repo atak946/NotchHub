@@ -52,7 +52,7 @@ struct MicrosoftGraphUser: Decodable, Sendable {
 
 /// Maps Graph events to `CalendarEvent`s; meeting links come from `onlineMeeting.joinUrl` or `MeetingLinkParser`.
 enum MicrosoftGraphEventMapper {
-    static let untitledEventTitle = "Untitled event"
+    static let untitledEventTitle = String(localized: "Untitled event")
     private static let dateTimePrefixLength = 19
     private static let secondsPerDay: TimeInterval = 24 * 60 * 60
 

@@ -45,7 +45,7 @@ struct ShelfItem: Identifiable, Equatable, Sendable {
         case .text(let string):
             String(string.split(whereSeparator: \.isNewline).first ?? "").prefix(Self.snippetLength).description
         case .image:
-            "Görsel"
+            String(localized: "Görsel")
         }
     }
 }

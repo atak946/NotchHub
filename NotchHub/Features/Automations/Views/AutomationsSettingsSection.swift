@@ -36,7 +36,9 @@ struct FocusGuardSettingsSection: View {
     }
 
     nonisolated static func title(forCooldown seconds: TimeInterval) -> String {
-        seconds < 60 ? "\(Int(seconds)) saniye" : "\(Int(seconds / 60)) dk"
+        seconds < 60
+            ? String(localized: "\(Int(seconds)) saniye")
+            : String(localized: "\(Int(seconds / 60)) dk")
     }
 }
 
@@ -84,7 +86,7 @@ struct CaptureCatcherSettingsSection: View {
         panel.canChooseDirectories = true
         panel.canChooseFiles = false
         panel.allowsMultipleSelection = false
-        panel.prompt = "Klasörü İzle"
+        panel.prompt = String(localized: "Klasörü İzle")
         guard panel.runModal() == .OK, let url = panel.url else { return }
         service.customScreenshotFolder = url.path
     }

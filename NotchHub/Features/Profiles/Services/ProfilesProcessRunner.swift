@@ -61,7 +61,7 @@ struct LiveProfilesProcessRunner: ProfilesProcessRunning {
                     if Task.isCancelled { box.terminate(timedOut: false) }
                 } catch {
                     process.terminationHandler = nil
-                    continuation.resume(throwing: ProfileStepFailure(message: "\(executable.lastPathComponent) başlatılamadı: \(error.localizedDescription)"))
+                    continuation.resume(throwing: ProfileStepFailure(message: String(localized: "\(executable.lastPathComponent) başlatılamadı: \(error.localizedDescription)")))
                 }
             }
         } onCancel: {
@@ -70,7 +70,7 @@ struct LiveProfilesProcessRunner: ProfilesProcessRunning {
 
         try Task.checkCancellation()
         if box.didTimeOut {
-            throw ProfileStepFailure(message: "\(executable.lastPathComponent) zaman aşımına uğradı")
+            throw ProfileStepFailure(message: String(localized: "\(executable.lastPathComponent) zaman aşımına uğradı"))
         }
         return ProfilesProcessResult(exitCode: exitCode, outputTail: output.text)
     }

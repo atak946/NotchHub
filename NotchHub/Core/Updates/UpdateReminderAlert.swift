@@ -12,12 +12,12 @@ enum UpdateReminderAlert {
         NotchAlert(
             module: nil,
             systemImage: systemImage,
-            title: "NotchHub \(version) hazır",
-            subtitle: "Güncellemek için tıkla",
+            title: String(localized: "NotchHub \(version) hazır"),
+            subtitle: String(localized: "Güncellemek için tıkla"),
             style: .info,
             coalescingKey: coalescingKey,
             autoDismissAfter: duration,
-            actionTitle: "Güncelle",
+            actionTitle: String(localized: "Güncelle"),
             action: onUpdate,
             appName: appName
         )

@@ -7,13 +7,13 @@ import OSLog
 @MainActor
 final class EventKitCalendarSource: CalendarEventSource {
     let sourceID = "eventkit"
-    let sourceName = "macOS Calendar"
+    let sourceName = String(localized: "macOS Calendar")
     let sourceSystemImage = "calendar"
 
     private let store = EKEventStore()
     private let logger = Logger(subsystem: AppIdentity.logSubsystem, category: "Calendar")
     private var changeObserver: NSObjectProtocol?
-    private static let untitledEventTitle = "Untitled event"
+    private static let untitledEventTitle = String(localized: "Untitled event")
 
     var authorization: CalendarAuthorization {
         Self.map(EKEventStore.authorizationStatus(for: .event))

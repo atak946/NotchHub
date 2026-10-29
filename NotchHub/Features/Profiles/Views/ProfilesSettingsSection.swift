@@ -83,10 +83,10 @@ private struct ClientProfilesSection: View {
     }
 
     private func rowSubtitle(_ profile: ClientProfile) -> String {
-        var parts = ["\(profile.steps.count) adım"]
-        if store.activeProfileID == profile.id { parts.append("etkin") }
+        var parts = [String(localized: "\(profile.steps.count) adım")]
+        if store.activeProfileID == profile.id { parts.append(String(localized: "etkin")) }
         if let report = service.lastReports[profile.id], let failure = report.firstFailure {
-            parts.append("son çalıştırma: \(failure.summary) – \(ProfilesService.message(of: failure.status))")
+            parts.append(String(localized: "son çalıştırma: \(failure.summary) – \(ProfilesService.message(of: failure.status))"))
         }
         return parts.joined(separator: " · ")
     }
@@ -155,23 +155,22 @@ private struct RemoteSessionSettingsSection: View {
     }
 
     private var statusText: String {
-        guard store.remoteMonitorEnabled else { return "Kapalı" }
+        guard store.remoteMonitorEnabled else { return String(localized: "Kapalı") }
         if monitor.isSessionActive {
-            return "Etkin: " + monitor.activeSources.map(\.title).joined(separator: ", ")
+            let names = monitor.activeSources.map(\.title).joined(separator: ", ")
+            return String(localized: "Etkin: \(names)")
         }
-        return "Oturum algılanmadı"
+        return String(localized: "Oturum algılanmadı")
     }
 
     private var explanation: String {
-        var text = "Sezgisel, 5 sn'de bir kontrol edilir: AnyDesk, boşta röle bağlantısından (veya 7070 portundan) fazla TCP bağlantısı tuttuğunda bağlı sayılır; "
-            + "Ekran Paylaşımı / Uzaktan Yönetim ise servisleri "
-            + "kurulmuş bağlantılara sahip olduğunda sayılır. Oturumları kaçırabilir veya yanlış bildirebilir."
+        var text = String(localized: "Sezgisel, 5 sn'de bir kontrol edilir: AnyDesk, boşta röle bağlantısından (veya 7070 portundan) fazla TCP bağlantısı tuttuğunda bağlı sayılır; Ekran Paylaşımı / Uzaktan Yönetim ise servisleri kurulmuş bağlantılara sahip olduğunda sayılır. Oturumları kaçırabilir veya yanlış bildirebilir.")
         if monitor.assessment.isDegraded {
             let names = monitor.assessment.uninspectableSources.sorted().map(\.title).joined(separator: ", ")
-            text += " Sınırlı mod: \(names) bağlantıları root olmadan okunamaz, bu yüzden yalnızca çalışan işlem algılanır."
+            text += String(localized: " Sınırlı mod: \(names) bağlantıları root olmadan okunamaz, bu yüzden yalnızca çalışan işlem algılanır.")
         }
         if monitor.isSessionOnConsole == false {
-            text += " Bu oturum konsolda değil."
+            text += String(localized: " Bu oturum konsolda değil.")
         }
         return text
     }
@@ -185,7 +184,7 @@ enum ProfilesFolderPicker {
         panel.canChooseFiles = false
         panel.allowsMultipleSelection = false
         panel.canCreateDirectories = false
-        panel.prompt = "Seç"
+        panel.prompt = String(localized: "Seç")
         if let path, !path.isEmpty {
             panel.directoryURL = URL(filePath: path, directoryHint: .isDirectory)
         }

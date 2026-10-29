@@ -11,18 +11,18 @@ struct SystemPressureStatusTile: View {
     var body: some View {
         SystemStatusTileView(
             systemImage: "gauge.with.dots.needle.67percent",
-            title: "Sistem",
-            value: monitor.isEnabled ? "Bellek \(monitor.memoryPressure.title)" : "Kapalı",
+            title: String(localized: "Sistem"),
+            value: monitor.isEnabled ? String(localized: "Bellek \(monitor.memoryPressure.title)") : String(localized: "Kapalı"),
             detail: detail,
             tint: tint,
-            help: "Etkinlik Monitörü'nü aç",
+            help: String(localized: "Etkinlik Monitörü'nü aç"),
             action: { monitor.openActivityMonitor() }
         )
     }
 
     private var detail: String? {
         guard monitor.isEnabled else { return nil }
-        let disk = monitor.freeDiskBytes.map { "\(SystemFormat.bytes($0)) boş" } ?? "Disk —"
+        let disk = monitor.freeDiskBytes.map { String(localized: "\(SystemFormat.bytes($0)) boş") } ?? String(localized: "Disk —")
         return "\(monitor.thermalLevel.title) · \(disk)"
     }
 

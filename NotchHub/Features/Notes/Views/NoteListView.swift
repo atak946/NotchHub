@@ -70,7 +70,7 @@ private struct NoteClientChips: View {
     var body: some View {
         ScrollView(.horizontal) {
             HStack(spacing: 4) {
-                chip(title: "Tümü", value: nil)
+                chip(title: String(localized: "Tümü"), value: nil)
                 ForEach(store.clientNames, id: \.self) { name in
                     chip(title: name, value: name)
                 }

@@ -123,8 +123,9 @@ private struct MediaEmptyView: View {
 
     private var subtitle: String {
         let denied = MediaSource.allCases.filter(deniedSources.contains).map(\.displayName)
-        guard !denied.isEmpty else { return "Burada denetlemek için Spotify veya Music'te müzik başlat." }
-        return "NotchHub'ın \(denied.joined(separator: " ve ")) uygulamasını denetlemesine Otomasyon ayarlarından izin ver."
+        guard !denied.isEmpty else { return String(localized: "Burada denetlemek için Spotify veya Music'te müzik başlat.") }
+        let names = denied.formatted(.list(type: .and))
+        return String(localized: "NotchHub'ın \(names) uygulamasını denetlemesine Otomasyon ayarlarından izin ver.")
     }
 
     var body: some View {
@@ -187,6 +188,6 @@ private struct OpenPlayerButton: View {
         .opacity(isInstalled ? 1 : 0.4)
         .onHover { isHovered = $0 }
         .animation(.easeOut(duration: 0.15), value: isHovered)
-        .help(isInstalled ? "\(source.displayName) aç" : "\(source.displayName) yüklü değil")
+        .help(isInstalled ? String(localized: "\(source.displayName) aç") : String(localized: "\(source.displayName) yüklü değil"))
     }
 }

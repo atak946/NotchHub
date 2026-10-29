@@ -10,9 +10,9 @@ enum CalendarGrouping: String, CaseIterable, Identifiable, Sendable {
 
     var title: String {
         switch self {
-        case .none: "Tümü"
-        case .account: "Hesaba göre"
-        case .provider: "Uygulamaya göre"
+        case .none: String(localized: "Tümü")
+        case .account: String(localized: "Hesaba göre")
+        case .provider: String(localized: "Uygulamaya göre")
         }
     }
 
@@ -58,8 +58,8 @@ enum MeetingGroupKind: String, CaseIterable, Sendable {
         case .teams: MeetingProvider.teams.displayName
         case .meet: MeetingProvider.meet.displayName
         case .webex: MeetingProvider.webex.displayName
-        case .otherLink: "Diğer bağlantı"
-        case .noLink: "Yüz yüze / bağlantısız"
+        case .otherLink: String(localized: "Diğer bağlantı")
+        case .noLink: String(localized: "Yüz yüze / bağlantısız")
         }
     }
 
@@ -78,7 +78,7 @@ enum MeetingGroupKind: String, CaseIterable, Sendable {
 /// Pure grouping of events. Empty groups are never produced.
 enum CalendarEventGrouper {
     static let allGroupID = "all"
-    static let allGroupTitle = "Bugün"
+    static var allGroupTitle: String { String(localized: "Bugün") }
     static let allGroupImage = "calendar"
     private static let accountPrefix = "account."
     private static let providerPrefix = "provider."

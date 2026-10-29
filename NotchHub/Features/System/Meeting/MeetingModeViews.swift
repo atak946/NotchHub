@@ -13,7 +13,7 @@ struct MeetingModeStatusTile: View {
         TimelineView(.periodic(every: 1, paused: !controller.isInMeeting)) { context in
             SystemStatusTileView(
                 systemImage: controller.isInMeeting ? "person.wave.2.fill" : "person.wave.2",
-                title: "Toplantı",
+                title: String(localized: "Toplantı"),
                 value: value(at: context.date),
                 detail: detail,
                 tint: controller.isEnabled && controller.isInMeeting ? .red : .gray
@@ -23,14 +23,14 @@ struct MeetingModeStatusTile: View {
     }
 
     private func value(at date: Date) -> String {
-        guard controller.isEnabled else { return "Kapalı" }
-        guard controller.isInMeeting else { return "Toplantıda değil" }
+        guard controller.isEnabled else { return String(localized: "Kapalı") }
+        guard controller.isInMeeting else { return String(localized: "Toplantıda değil") }
         return SystemFormat.elapsed(controller.elapsed(at: date))
     }
 
     private var detail: String? {
         guard controller.isEnabled, let session = controller.session else { return nil }
-        return controller.didPauseMedia ? "\(session.source) · Müzik duraklatıldı" : session.source
+        return controller.didPauseMedia ? String(localized: "\(session.source) · Müzik duraklatıldı") : session.source
     }
 }
 
@@ -83,8 +83,7 @@ struct MeetingModeSettingsSection: View {
             Toggle("Toplantıları algıla", isOn: $controller.isEnabled)
             Toggle("Toplantılarda Spotify / Müzik'i duraklat", isOn: $controller.autoPauseMusic)
                 .disabled(!controller.isEnabled)
-            Text("Toplantı; Zoom, Teams, Webex veya FaceTime çalışırken mikrofonun aktif olması "
-                + "ya da toplantı bağlantılı bir takvim etkinliği sırasında sayılır. Müzik yalnızca NotchHub duraklattıysa devam eder.")
+            Text("Toplantı; Zoom, Teams, Webex veya FaceTime çalışırken mikrofonun aktif olması ya da toplantı bağlantılı bir takvim etkinliği sırasında sayılır. Müzik yalnızca NotchHub duraklattıysa devam eder.")
                 .font(.caption)
                 .foregroundStyle(.secondary)
         }

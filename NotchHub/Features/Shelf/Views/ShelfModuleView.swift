@@ -187,8 +187,8 @@ struct ShelfModuleView: View {
     private func contextMenu(for item: ShelfItem) -> NSMenu {
         if !selection.contains(item.id) { selection.select(item.id) }
         let preview = [
-            ShelfTileAction(id: "quickLook", title: "Hızlı Bakış", systemImage: "eye") { quickLook(item) },
-            ShelfTileAction(id: "open", title: "Aç", systemImage: "arrow.up.forward.app") {
+            ShelfTileAction(id: "quickLook", title: String(localized: "Hızlı Bakış"), systemImage: "eye") { quickLook(item) },
+            ShelfTileAction(id: "open", title: String(localized: "Aç"), systemImage: "arrow.up.forward.app") {
                 ShelfActions.open(targets(for: item), store: store)
             },
         ]
@@ -202,14 +202,14 @@ struct ShelfModuleView: View {
             },
         ]
         if item.isFile {
-            actions.append(ShelfTileAction(id: "reveal", title: "Finder'da Göster", systemImage: "folder") {
+            actions.append(ShelfTileAction(id: "reveal", title: String(localized: "Finder'da Göster"), systemImage: "folder") {
                 ShelfActions.revealInFinder(targets(for: item))
             })
         }
-        actions.append(ShelfTileAction(id: "copy", title: "Kopyala", systemImage: "doc.on.doc") {
+        actions.append(ShelfTileAction(id: "copy", title: String(localized: "Kopyala"), systemImage: "doc.on.doc") {
             store.copyToPasteboard(targets(for: item).map(\.id))
         })
-        actions.append(ShelfTileAction(id: "remove", title: "Raftan Kaldır", systemImage: "xmark", isDestructive: true) {
+        actions.append(ShelfTileAction(id: "remove", title: String(localized: "Raftan Kaldır"), systemImage: "xmark", isDestructive: true) {
             store.remove(ids: Set(targets(for: item).map(\.id)))
         })
         return actions
@@ -217,7 +217,7 @@ struct ShelfModuleView: View {
 }
 
 private struct ShelfHeaderButton: View {
-    let title: String
+    let title: LocalizedStringKey
     let systemImage: String
     let action: () -> Void
 

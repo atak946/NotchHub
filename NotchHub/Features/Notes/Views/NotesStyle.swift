@@ -15,7 +15,7 @@ enum NotesStyle {
 
 /// Capsule header button matching the shelf's header buttons.
 struct NotesCapsuleButton: View {
-    let title: String
+    let title: LocalizedStringKey
     let systemImage: String
     var isProminent = false
     var showsTitle = true

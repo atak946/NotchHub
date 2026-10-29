@@ -12,8 +12,8 @@ final class ICSFeedSource: CalendarEventSource {
     static let secretKeyPrefix = "ics.feed."
     private static let requestTimeout: TimeInterval = 30
     private static let calendarMarker = "BEGIN:VCALENDAR"
-    private static let defaultOutlookName = "Outlook calendar"
-    private static let defaultName = "Calendar feed"
+    private static let defaultOutlookName = String(localized: "Outlook calendar")
+    private static let defaultName = String(localized: "Calendar feed")
 
     enum FeedError: Error, Equatable, LocalizedError {
         case missingURL
@@ -24,19 +24,19 @@ final class ICSFeedSource: CalendarEventSource {
 
         var errorDescription: String? {
             switch self {
-            case .missingURL: "Akış bağlantısı Anahtar Zinciri'nde yok. Akışı kaldırıp yeniden ekleyin."
-            case .http(401), .http(403): "Erişim reddedildi (HTTP 401/403). Takvimi yeniden yayınlayıp bağlantıyı güncelleyin."
-            case .http(404): "Akış bulunamadı (HTTP 404). Takvim artık yayında olmayabilir."
-            case let .http(code): "Sunucu hatası (HTTP \(code))."
-            case .notACalendar: "Bağlantı bir iCalendar (.ics) dosyası döndürmedi."
-            case .tooLarge: "Akış çok büyük."
+            case .missingURL: String(localized: "Akış bağlantısı Anahtar Zinciri'nde yok. Akışı kaldırıp yeniden ekleyin.")
+            case .http(401), .http(403): String(localized: "Erişim reddedildi (HTTP 401/403). Takvimi yeniden yayınlayıp bağlantıyı güncelleyin.")
+            case .http(404): String(localized: "Akış bulunamadı (HTTP 404). Takvim artık yayında olmayabilir.")
+            case let .http(code): String(localized: "Sunucu hatası (HTTP \(code)).")
+            case .notACalendar: String(localized: "Bağlantı bir iCalendar (.ics) dosyası döndürmedi.")
+            case .tooLarge: String(localized: "Akış çok büyük.")
             case let .allFeedsFailed(message): message
             }
         }
     }
 
     let sourceID = "ics"
-    let sourceName = "ICS feeds"
+    let sourceName = String(localized: "ICS feeds")
     let sourceSystemImage = "link"
 
     private(set) var feeds: [ICSFeed]

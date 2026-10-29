@@ -16,7 +16,12 @@ struct NotchHubApp: App {
         }
 
         Settings {
-            SettingsView(settings: appDelegate.settings, services: appDelegate.services, updater: appDelegate.updater)
+            SettingsView(
+                settings: appDelegate.settings,
+                language: appDelegate.language,
+                services: appDelegate.services,
+                updater: appDelegate.updater
+            )
                 .environment(\.supportActions, appDelegate.supportActions)
         }
     }

@@ -23,20 +23,22 @@ struct FocusGuardStatusTile: View {
     var body: some View {
         AutomationsTile(
             systemImage: "brain.head.profile",
-            title: "Odak Koruma",
+            title: String(localized: "Odak Koruma"),
             detail: detail,
             tint: tint,
-            help: service.isEnabled ? "Odak Koruma'yı kapat" : "Odak Koruma'yı aç"
+            help: service.isEnabled ? String(localized: "Odak Koruma'yı kapat") : String(localized: "Odak Koruma'yı aç")
         ) {
             service.isEnabled.toggle()
         }
     }
 
     private var detail: String {
-        guard service.isEnabled else { return "Kapalı" }
+        guard service.isEnabled else { return String(localized: "Kapalı") }
         let count = service.distractionsToday
-        let today = count == 1 ? "Bugün 1 dikkat dağınıklığı" : "Bugün \(count) dikkat dağınıklığı"
-        return service.isGuarding ? "Korunuyor · \(today)" : today
+        let today = count == 1
+            ? String(localized: "Bugün 1 dikkat dağınıklığı")
+            : String(localized: "Bugün \(count) dikkat dağınıklığı")
+        return service.isGuarding ? String(localized: "Korunuyor · \(today)") : today
     }
 
     private var tint: Color {
@@ -53,10 +55,12 @@ struct CaptureCatcherStatusTile: View {
     var body: some View {
         AutomationsTile(
             systemImage: service.lastBatch?.systemImage ?? "camera.viewfinder",
-            title: "Yakalananlar",
+            title: String(localized: "Yakalananlar"),
             detail: detail,
             tint: tint,
-            help: service.canShelveLastBatch ? "Rafa ekle" : "Ekran görüntüleri ve indirilenler"
+            help: service.canShelveLastBatch
+                ? String(localized: "Rafa ekle")
+                : String(localized: "Ekran görüntüleri ve indirilenler")
         ) {
             service.shelveLastBatch()
         }
@@ -64,10 +68,10 @@ struct CaptureCatcherStatusTile: View {
     }
 
     private var detail: String {
-        guard service.isEnabled else { return "Kapalı" }
-        guard service.isWatching else { return "İzlenmiyor" }
-        guard let batch = service.lastBatch else { return "İzleniyor" }
-        return service.canShelveLastBatch ? batch.subtitle : "\(batch.subtitle) · Rafta"
+        guard service.isEnabled else { return String(localized: "Kapalı") }
+        guard service.isWatching else { return String(localized: "İzlenmiyor") }
+        guard let batch = service.lastBatch else { return String(localized: "İzleniyor") }
+        return service.canShelveLastBatch ? batch.subtitle : String(localized: "\(batch.subtitle) · Rafta")
     }
 
     private var tint: Color {

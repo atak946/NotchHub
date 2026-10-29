@@ -67,7 +67,7 @@ final class AlertRouter {
             style: .reminder,
             coalescingKey: "calendar.\(event.id)",
             autoDismissAfter: NotchAlert.meetingReminderDuration,
-            actionTitle: link == nil ? "Aç" : "Katıl",
+            actionTitle: link == nil ? String(localized: "Aç") : String(localized: "Katıl"),
             action: { [weak self] in
                 if link == nil {
                     self?.present(.calendar)
@@ -92,8 +92,8 @@ final class AlertRouter {
             alerts.post(NotchAlert(
                 module: .timer,
                 systemImage: phase.systemImage,
-                title: "\(phase.title) başladı",
-                subtitle: "Önceki aşama bitti",
+                title: String(localized: "\(phase.title) başladı"),
+                subtitle: String(localized: "Önceki aşama bitti"),
                 style: .success,
                 coalescingKey: "timer"
             ))
@@ -102,12 +102,12 @@ final class AlertRouter {
             alerts.post(NotchAlert(
                 module: .timer,
                 systemImage: phase.systemImage,
-                title: timer.isPomodoro ? "\(phase.title) bitti" : "Süre doldu",
-                subtitle: next.map { "Sıradaki: \($0.title)" },
+                title: timer.isPomodoro ? String(localized: "\(phase.title) bitti") : String(localized: "Süre doldu"),
+                subtitle: next.map { String(localized: "Sıradaki: \($0.title)") },
                 style: .success,
                 coalescingKey: "timer",
                 autoDismissAfter: NotchAlert.importantDuration,
-                actionTitle: next == nil ? "Tamam" : "\(next?.title ?? "") başlat",
+                actionTitle: Self.timerActionTitle(next: next?.title),
                 action: {
                     if next != nil {
                         timer.startNextPhase()
@@ -157,6 +157,13 @@ final class AlertRouter {
             coalescingKey: Self.trackChangeKey,
             autoDismissAfter: Self.trackChangeDuration
         ))
+    }
+}
+
+private extension AlertRouter {
+    static func timerActionTitle(next: String?) -> String {
+        guard let next else { return String(localized: "Tamam") }
+        return String(localized: "\(next) başlat")
     }
 }
 

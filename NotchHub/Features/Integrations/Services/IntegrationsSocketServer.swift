@@ -99,7 +99,7 @@ final class IntegrationsSocketServer: IntegrationsSocketServing, @unchecked Send
         case .ready:
             if chmod(path, Self.socketPermissions) != 0 {
                 logger.error("chmod 0600 failed for socket, stopping")
-                onState(.failed("Soket izinleri kısıtlanamadı"))
+                onState(.failed(String(localized: "Soket izinleri kısıtlanamadı")))
                 stop()
                 return
             }
@@ -169,8 +169,8 @@ enum IntegrationsSocketError: LocalizedError {
 
     var errorDescription: String? {
         switch self {
-        case .pathTooLong: "Soket yolu çok uzun"
-        case .pathOccupied: "Soket yolunda soket olmayan bir dosya var"
+        case .pathTooLong: String(localized: "Soket yolu çok uzun")
+        case .pathOccupied: String(localized: "Soket yolunda soket olmayan bir dosya var")
         }
     }
 }

@@ -15,7 +15,7 @@ struct ProfilesCompactIndicators: View {
         } else if let runState = profiles.service.runState {
             ProfileRunCompactIndicator(
                 color: profiles.store.profile(id: runState.profileID)?.color.color ?? .white,
-                label: "Profil çalışıyor, adım \(runState.progressText)"
+                label: String(localized: "Profil çalışıyor, adım \(runState.progressText)")
             )
         } else {
             EmptyView()

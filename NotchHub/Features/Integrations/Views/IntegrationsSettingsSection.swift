@@ -16,8 +16,7 @@ struct IntegrationsSettingsSection: View {
             Toggle("Betiklerden ve uygulamalardan gelen uyarıları kabul et", isOn: $service.isEnabled)
             Toggle("Web/URL üzerinden uyarılara izin ver", isOn: $service.urlAlertsEnabled)
                 .disabled(!service.isEnabled)
-                .help("notchhub:// bağlantılarını herhangi bir uygulama veya web sayfası açabilir. "
-                    + "Kapalıyken yalnızca yerel soket ve komut satırı aracı kabul edilir.")
+                .help("notchhub:// bağlantılarını herhangi bir uygulama veya web sayfası açabilir. Kapalıyken yalnızca yerel soket ve komut satırı aracı kabul edilir.")
 
             LabeledContent("Yerel soket") {
                 socketStatus
@@ -45,7 +44,7 @@ struct IntegrationsSettingsSection: View {
             }
 
             HStack {
-                Button(didCopy ? "Kopyalandı" : "zsh kurulum satırını kopyala", systemImage: didCopy ? "checkmark" : "doc.on.doc") {
+                Button(copyButtonTitle, systemImage: didCopy ? "checkmark" : "doc.on.doc") {
                     copySetupLine()
                 }
                 Button("Test uyarısı gönder", systemImage: "bell.badge") {
@@ -66,7 +65,7 @@ struct IntegrationsSettingsSection: View {
             Label("Başlatılıyor…", systemImage: "hourglass")
                 .foregroundStyle(.secondary)
         case .stopped:
-            Text(service.isEnabled ? "Durduruldu" : "Kapalı")
+            Text(service.isEnabled ? String(localized: "Durduruldu") : String(localized: "Kapalı"))
                 .foregroundStyle(.secondary)
         case .failed(let message):
             Label(message, systemImage: "exclamationmark.triangle.fill")
@@ -75,14 +74,21 @@ struct IntegrationsSettingsSection: View {
         }
     }
 
+    private var copyButtonTitle: String {
+        didCopy ? String(localized: "Kopyalandı") : String(localized: "zsh kurulum satırını kopyala")
+    }
+
     private var setupHint: String {
         let location = service.isZshHookBundled
-            ? "Bu satırı ~/.zshrc dosyasına ekleyin"
-            : "Bu satırı ~/.zshrc dosyasına ekleyin, tools/Integrations/notchhub.zsh dosyasını göstersin"
-        return "\(location). \(ExternalAlertService.defaultMinimumCommandSeconds) sn veya daha uzun süren komutlar "
-            + "çentikte uyarı gösterir; değiştirmek için \(ExternalAlertService.minimumSecondsEnvironmentKey) kullanın. "
-            + "\(Int(IntegrationsRateLimiter.defaultWindow)) sn içinde en fazla \(IntegrationsRateLimiter.defaultCapacity) uyarı; "
-            + "URL üzerinden dakikada en fazla \(ExternalAlertService.urlRateLimitCapacity) uyarı."
+            ? String(localized: "Bu satırı ~/.zshrc dosyasına ekleyin")
+            : String(localized: "Bu satırı ~/.zshrc dosyasına ekleyin, tools/Integrations/notchhub.zsh dosyasını göstersin")
+        let minimumSeconds = ExternalAlertService.defaultMinimumCommandSeconds
+        let environmentKey = ExternalAlertService.minimumSecondsEnvironmentKey
+        let window = Int(IntegrationsRateLimiter.defaultWindow)
+        let capacity = IntegrationsRateLimiter.defaultCapacity
+        let urlCapacity = ExternalAlertService.urlRateLimitCapacity
+        // One key so the translation keeps the sentence order.
+        return String(localized: "\(location). \(minimumSeconds) sn veya daha uzun süren komutlar çentikte uyarı gösterir; değiştirmek için \(environmentKey) kullanın. \(window) sn içinde en fazla \(capacity) uyarı; URL üzerinden dakikada en fazla \(urlCapacity) uyarı.")
     }
 
     private func copySetupLine() {

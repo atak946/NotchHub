@@ -57,13 +57,13 @@ enum MicrosoftAuthError: Error, Equatable, LocalizedError {
 
     var errorDescription: String? {
         switch self {
-        case .notConfigured: "Önce geçerli bir Uygulama (istemci) kimliği girin."
-        case .expired: "Giriş kodunun süresi doldu. Tekrar deneyin."
-        case .declined: "Giriş reddedildi."
-        case .invalidGrant: "Microsoft 365 oturumu sona erdi. Tekrar giriş yapın."
-        case let .invalidClient(message): "Uygulama kaydı reddedildi: \(message)"
+        case .notConfigured: String(localized: "Önce geçerli bir Uygulama (istemci) kimliği girin.")
+        case .expired: String(localized: "Giriş kodunun süresi doldu. Tekrar deneyin.")
+        case .declined: String(localized: "Giriş reddedildi.")
+        case .invalidGrant: String(localized: "Microsoft 365 oturumu sona erdi. Tekrar giriş yapın.")
+        case let .invalidClient(message): String(localized: "Uygulama kaydı reddedildi: \(message)")
         case let .server(message): message
-        case .invalidResponse: "Microsoft'tan beklenmeyen yanıt."
+        case .invalidResponse: String(localized: "Microsoft'tan beklenmeyen yanıt.")
         }
     }
 }

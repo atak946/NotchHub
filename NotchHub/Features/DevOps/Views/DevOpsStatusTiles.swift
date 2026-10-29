@@ -14,15 +14,15 @@ struct DockerStatusTile: View {
 
     private var value: String {
         guard docker.isRunning else { return docker.daemonState.title }
-        return "\(docker.counts.running)/\(docker.counts.total) çalışıyor"
+        return String(localized: "\(docker.counts.running)/\(docker.counts.total) çalışıyor")
     }
 
     private var detail: String? {
-        guard docker.isEnabled else { return "İzleme kapalı" }
+        guard docker.isEnabled else { return String(localized: "İzleme kapalı") }
         guard docker.isRunning else { return docker.socketPath.map { ($0 as NSString).lastPathComponent } }
-        if docker.counts.unhealthy > 0 { return "\(docker.counts.unhealthy) sağlıksız" }
-        if docker.hasRecentFailure, let failure = docker.lastFailure { return "\(failure.containerName) başarısız" }
-        return "Hepsi sağlıklı"
+        if docker.counts.unhealthy > 0 { return String(localized: "\(docker.counts.unhealthy) sağlıksız") }
+        if docker.hasRecentFailure, let failure = docker.lastFailure { return String(localized: "\(failure.containerName) başarısız") }
+        return String(localized: "Hepsi sağlıklı")
     }
 
     private var tint: Color {
@@ -44,7 +44,7 @@ struct EndpointStatusTile: View {
     var body: some View {
         DevOpsTileChrome(
             systemImage: "network",
-            title: "Uç Noktalar",
+            title: String(localized: "Uç Noktalar"),
             value: value,
             detail: detail,
             tint: Self.tint(for: endpoints.overallState),
@@ -54,24 +54,24 @@ struct EndpointStatusTile: View {
     }
 
     private var value: String {
-        guard endpoints.isEnabled else { return "Kapalı" }
-        guard !endpoints.endpoints.isEmpty else { return "Yok" }
+        guard endpoints.isEnabled else { return String(localized: "Kapalı") }
+        guard !endpoints.endpoints.isEmpty else { return String(localized: "Yok") }
         let up = endpoints.endpoints.filter {
             let state = endpoints.status(for: $0.id).state
             return state == .up || state == .degraded
         }.count
-        return "\(up)/\(endpoints.endpoints.count) ayakta"
+        return String(localized: "\(up)/\(endpoints.endpoints.count) ayakta")
     }
 
     private var detail: String? {
-        guard endpoints.isEnabled else { return "İzleme kapalı" }
-        guard !endpoints.endpoints.isEmpty else { return "Ayarlar'dan ekle" }
-        if let down = endpoints.downEndpoints.first { return "\(down.displayName) kapalı" }
+        guard endpoints.isEnabled else { return String(localized: "İzleme kapalı") }
+        guard !endpoints.endpoints.isEmpty else { return String(localized: "Ayarlar'dan ekle") }
+        if let down = endpoints.downEndpoints.first { return String(localized: "\(down.displayName) kapalı") }
         if let degraded = endpoints.endpoints.first(where: { endpoints.status(for: $0.id).state == .degraded }) {
-            return "\(degraded.displayName) yavaş"
+            return String(localized: "\(degraded.displayName) yavaş")
         }
-        if endpoints.overallState == .pausedVPNOff { return "Duraklatıldı (VPN kapalı)" }
-        return "Hepsine ulaşılıyor"
+        if endpoints.overallState == .pausedVPNOff { return String(localized: "Duraklatıldı (VPN kapalı)") }
+        return String(localized: "Hepsine ulaşılıyor")
     }
 
     static func tint(for state: EndpointHealthState) -> Color {
@@ -95,20 +95,20 @@ struct LocalLLMStatusTile: View {
     var body: some View {
         DevOpsTileChrome(
             systemImage: "cpu",
-            title: "Yerel LLM",
-            value: localLLM.activeServer?.title ?? (localLLM.isEnabled ? "Çevrimdışı" : "Kapalı"),
+            title: String(localized: "Yerel LLM"),
+            value: localLLM.activeServer?.title ?? (localLLM.isEnabled ? String(localized: "Çevrimdışı") : String(localized: "Kapalı")),
             detail: detail,
             tint: localLLM.activeServer == nil ? .gray : .purple
         )
     }
 
     private var detail: String? {
-        guard localLLM.isEnabled else { return "İzleme kapalı" }
+        guard localLLM.isEnabled else { return String(localized: "İzleme kapalı") }
         guard let server = localLLM.activeServer else { return "LM Studio · Ollama" }
         let status = localLLM.status(for: server)
         if let model = status.loadedModels.first { return model }
-        if let installed = status.installedModelCount { return "\(installed) model, hiçbiri yüklü değil" }
-        return "Model yüklü değil"
+        if let installed = status.installedModelCount { return String(localized: "\(installed) model, hiçbiri yüklü değil") }
+        return String(localized: "Model yüklü değil")
     }
 }
 

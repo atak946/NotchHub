@@ -14,7 +14,7 @@ enum ClipboardPollSchedule {
 
 /// Short relative age for history tiles: "şimdi", "5 dk", "3 sa", "2 g".
 enum ClipboardRelativeTime {
-    static let nowText = "şimdi"
+    static var nowText: String { String(localized: "şimdi") }
     private static let minute: TimeInterval = 60
     private static let hour: TimeInterval = 3600
     private static let day: TimeInterval = 86_400
@@ -22,9 +22,21 @@ enum ClipboardRelativeTime {
     static func text(for date: Date, now: Date) -> String {
         let elapsed = max(now.timeIntervalSince(date), 0)
         if elapsed < minute { return nowText }
-        if elapsed < hour { return "\(Int(elapsed / minute)) dk" }
-        if elapsed < day { return "\(Int(elapsed / hour)) sa" }
-        return "\(Int(elapsed / day)) g"
+        if elapsed < hour { return minutesText(Int(elapsed / minute)) }
+        if elapsed < day { return hoursText(Int(elapsed / hour)) }
+        return daysText(Int(elapsed / day))
+    }
+
+    private static func minutesText(_ minutes: Int) -> String {
+        String(localized: "\(minutes) dk")
+    }
+
+    private static func hoursText(_ hours: Int) -> String {
+        String(localized: "\(hours) sa")
+    }
+
+    private static func daysText(_ days: Int) -> String {
+        String(localized: "\(days) g")
     }
 }
 

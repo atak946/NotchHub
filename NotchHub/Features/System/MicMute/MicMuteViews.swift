@@ -72,8 +72,7 @@ struct MicMuteSettingsSection: View {
     var body: some View {
         Section("Mikrofonu Sustur") {
             Toggle("\(MicMuteHotKey.displayName) ile mikrofonu sustur / aç", isOn: $controller.isHotKeyEnabled)
-            Text("Varsayılan giriş aygıtını sistem genelinde susturur; Zoom, Teams, Meet ve diğer tüm uygulamalarda geçerlidir. "
-                + "Toplantı sırasında çentiğin sağında mikrofon düğmesi görünür. NotchHub kapanınca mikrofon eski haline döner.")
+            Text("Varsayılan giriş aygıtını sistem genelinde susturur; Zoom, Teams, Meet ve diğer tüm uygulamalarda geçerlidir. Toplantı sırasında çentiğin sağında mikrofon düğmesi görünür. NotchHub kapanınca mikrofon eski haline döner.")
                 .font(.caption)
                 .foregroundStyle(.secondary)
         }

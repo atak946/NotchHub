@@ -120,7 +120,7 @@ struct ICSFeedSourceTests {
         let result = await source.testFeed(urlString: Self.feedURL)
 
         #expect(result == .success(eventCount: 2, calendarName: "Work"))
-        #expect(result.message == "Found 2 events")
+        #expect(result.message == "2 etkinlik bulundu")
         #expect(source.feeds.isEmpty)
     }
 

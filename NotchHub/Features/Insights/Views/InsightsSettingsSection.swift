@@ -163,7 +163,7 @@ struct TimeTrackingSettingsSection: View {
             try tracker.exportWeekCSV().write(to: url, atomically: true, encoding: .utf8)
             exportError = nil
         } catch {
-            exportError = "Dışa aktarma başarısız: \(error.localizedDescription)"
+            exportError = String(localized: "Dışa aktarma başarısız: \(error.localizedDescription)")
         }
     }
 }

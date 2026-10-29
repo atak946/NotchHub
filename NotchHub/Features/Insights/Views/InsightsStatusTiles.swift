@@ -74,11 +74,11 @@ struct UnreadStatusTile: View {
     }
 
     private func help(trusted: Bool) -> String {
-        guard trusted else { return "Okunmamış rozetleri için Erişilebilirlik izni gerekir. İzin vermek için tıklayın." }
+        guard trusted else { return String(localized: "Okunmamış rozetleri için Erişilebilirlik izni gerekir. İzin vermek için tıklayın.") }
         let lines = insights.unread.counts.map { "\(UnreadBadgeMonitor.displayName(for: $0.app)): \($0.count)" }
-        let last = insights.mirror.lastMirrored.map { ["Son bildirim: \($0.title) · \($0.appName)"] } ?? []
+        let last = insights.mirror.lastMirrored.map { [String(localized: "Son bildirim: \($0.title) · \($0.appName)")] } ?? []
         let all = lines + last
-        return all.isEmpty ? "İzlenen uygulama yok" : all.joined(separator: "\n")
+        return all.isEmpty ? String(localized: "İzlenen uygulama yok") : all.joined(separator: "\n")
     }
 
     private func action(trusted: Bool) -> (() -> Void)? {
@@ -153,7 +153,8 @@ struct TimeTrackerStatusTile: View {
 
     private func help(_ tracker: TimeTracker) -> String {
         let line = TimeSummaryFormatter.line(totalSeconds: tracker.todayTotalSeconds, totals: tracker.todayClientTotals)
-        let window = tracker.isAccessibilityTrusted ? "" : "\nPencere başlığı kuralları için Erişilebilirlik izni gerekir."
-        return "\(line)\nÖzeti kopyalamak için tıklayın.\(window)"
+        let window = tracker.isAccessibilityTrusted ? "" : "\n" + String(localized: "Pencere başlığı kuralları için Erişilebilirlik izni gerekir.")
+        let hint = String(localized: "Özeti kopyalamak için tıklayın.")
+        return "\(line)\n\(hint)\(window)"
     }
 }

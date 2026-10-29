@@ -11,10 +11,10 @@ enum OnboardingStep: Int, CaseIterable, Identifiable, Sendable {
 
     var title: String {
         switch self {
-        case .welcome: "Hoş geldin"
-        case .permissions: "İzinler"
-        case .calendarSources: "Takvim kaynakları"
-        case .done: "Hazır"
+        case .welcome: String(localized: "Hoş geldin")
+        case .permissions: String(localized: "İzinler")
+        case .calendarSources: String(localized: "Takvim kaynakları")
+        case .done: String(localized: "Hazır")
         }
     }
 }
@@ -43,9 +43,9 @@ struct OnboardingFlow: Equatable, Sendable {
 
     var primaryButtonTitle: String {
         switch step {
-        case .welcome: "Başla"
-        case .permissions, .calendarSources: "Devam"
-        case .done: "Bitir"
+        case .welcome: String(localized: "Başla")
+        case .permissions, .calendarSources: String(localized: "Devam")
+        case .done: String(localized: "Bitir")
         }
     }
 

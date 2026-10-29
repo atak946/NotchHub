@@ -11,26 +11,26 @@ struct NetworkStatusTile: View {
     var body: some View {
         SystemStatusTileView(
             systemImage: monitor.snapshot?.interface.systemImage ?? "network",
-            title: "Ağ",
+            title: String(localized: "Ağ"),
             value: value,
             detail: detail,
             tint: tint,
-            help: "Ağ ayarlarını aç",
+            help: String(localized: "Ağ ayarlarını aç"),
             action: { monitor.openNetworkSettings() }
         )
     }
 
     private var value: String {
-        guard monitor.isEnabled else { return "Kapalı" }
-        return monitor.snapshot?.displayName ?? "Denetleniyor…"
+        guard monitor.isEnabled else { return String(localized: "Kapalı") }
+        return monitor.snapshot?.displayName ?? String(localized: "Denetleniyor…")
     }
 
     private var detail: String? {
         guard monitor.isEnabled, let snapshot = monitor.snapshot, snapshot.isOnline else { return nil }
         var flags: [String] = []
-        if snapshot.isExpensive { flags.append("Ücretli") }
-        if snapshot.isConstrained { flags.append("Düşük Veri") }
-        return flags.isEmpty ? "Çevrimiçi" : flags.joined(separator: " · ")
+        if snapshot.isExpensive { flags.append(String(localized: "Ücretli")) }
+        if snapshot.isConstrained { flags.append(String(localized: "Düşük Veri")) }
+        return flags.isEmpty ? String(localized: "Çevrimiçi") : flags.joined(separator: " · ")
     }
 
     private var tint: Color {
@@ -50,7 +50,7 @@ struct NetworkCompactIndicator: View {
 
     var body: some View {
         if monitor.hasCompactIndicator {
-            SystemIndicatorDot(systemImage: "wifi.slash", tint: .red, help: "Offline")
+            SystemIndicatorDot(systemImage: "wifi.slash", tint: .red, help: String(localized: "Çevrimdışı"))
         } else {
             EmptyView()
         }

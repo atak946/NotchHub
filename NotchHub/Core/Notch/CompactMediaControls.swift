@@ -18,9 +18,9 @@ enum MediaControlAction: Int, CaseIterable, Identifiable, Sendable {
 
     func title(isPlaying: Bool) -> String {
         switch self {
-        case .previous: "Önceki parça"
-        case .playPause: isPlaying ? "Duraklat" : "Oynat"
-        case .next: "Sonraki parça"
+        case .previous: String(localized: "Önceki parça")
+        case .playPause: isPlaying ? String(localized: "Duraklat") : String(localized: "Oynat")
+        case .next: String(localized: "Sonraki parça")
         }
     }
 }

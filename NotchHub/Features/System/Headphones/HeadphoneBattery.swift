@@ -63,23 +63,42 @@ enum HeadphoneConnectPolicy {
     }
 }
 
-/// Turkish labels: "Sol %80 · Sağ %75 · Kutu %40", or "Pil %60" for single-battery headsets.
+/// Localized labels, e.g. "Sol %80 · Sağ %75 · Kutu %40", or "Pil %60" for single-battery headsets.
 enum HeadphoneBatteryFormatter {
     struct Part: Equatable, Sendable {
-        let label: String
+        enum Kind: Equatable, Sendable {
+            case left
+            case right
+            case caseLevel
+            case main
+        }
+
+        let kind: Kind
         let level: Int
 
-        var text: String { "\(label) %\(level)" }
+        var label: String {
+            switch kind {
+            case .left: String(localized: "Sol")
+            case .right: String(localized: "Sağ")
+            case .caseLevel: String(localized: "Kutu")
+            case .main: String(localized: "Pil")
+            }
+        }
+
+        var text: String {
+            let name = label
+            return String(localized: "\(name) %\(level)")
+        }
     }
 
     static func parts(_ levels: HeadphoneBatteryLevels) -> [Part] {
         let buds: [Part] = [
-            levels.left.map { Part(label: "Sol", level: $0) },
-            levels.right.map { Part(label: "Sağ", level: $0) },
-            levels.caseLevel.map { Part(label: "Kutu", level: $0) },
+            levels.left.map { Part(kind: .left, level: $0) },
+            levels.right.map { Part(kind: .right, level: $0) },
+            levels.caseLevel.map { Part(kind: .caseLevel, level: $0) },
         ].compactMap { $0 }
         if !buds.isEmpty { return buds }
-        return levels.main.map { [Part(label: "Pil", level: $0)] } ?? []
+        return levels.main.map { [Part(kind: .main, level: $0)] } ?? []
     }
 
     static func subtitle(_ levels: HeadphoneBatteryLevels) -> String? {

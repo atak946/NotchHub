@@ -26,10 +26,10 @@ extension NotchAlert.Style {
 
     var accessibilityName: String {
         switch self {
-        case .info: "Bilgi"
-        case .reminder: "Hatırlatma"
-        case .success: "Tamamlandı"
-        case .urgent: "Acil"
+        case .info: String(localized: "Bilgi")
+        case .reminder: String(localized: "Hatırlatma")
+        case .success: String(localized: "Tamamlandı")
+        case .urgent: String(localized: "Acil")
         }
     }
 }

@@ -10,9 +10,9 @@ enum InsightsDurationFormatter {
         let hours = totalMinutes / minutesPerHour
         let minutes = totalMinutes % minutesPerHour
         switch (hours, minutes) {
-        case (0, _): return "\(minutes)dk"
-        case (_, 0): return "\(hours)sa"
-        default: return "\(hours)sa \(minutes)dk"
+        case (0, _): return String(localized: "\(minutes)dk")
+        case (_, 0): return String(localized: "\(hours)sa")
+        default: return String(localized: "\(hours)sa \(minutes)dk")
         }
     }
 }

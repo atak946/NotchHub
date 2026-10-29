@@ -155,12 +155,12 @@ final class SystemPressureMonitor {
         case .raise(let severity):
             post(
                 key: AlertKey.memory, systemImage: "memorychip.fill",
-                title: severity == .critical ? "Bellek baskısı kritik" : "Bellek baskısı yüksek",
-                subtitle: "İhtiyacın olmayan uygulamaları kapat",
+                title: severity == .critical ? String(localized: "Bellek baskısı kritik") : String(localized: "Bellek baskısı yüksek"),
+                subtitle: String(localized: "İhtiyacın olmayan uygulamaları kapat"),
                 severity: severity
             )
         case .recovered:
-            postRecovered(key: AlertKey.memory, systemImage: "memorychip", title: "Bellek baskısı normale döndü")
+            postRecovered(key: AlertKey.memory, systemImage: "memorychip", title: String(localized: "Bellek baskısı normale döndü"))
         }
     }
 
@@ -169,12 +169,12 @@ final class SystemPressureMonitor {
         case .raise(let severity):
             post(
                 key: AlertKey.thermal, systemImage: "thermometer.high",
-                title: severity == .critical ? "Mac aşırı ısındı" : "Mac sıcak çalışıyor",
-                subtitle: "Performans düşebilir",
+                title: severity == .critical ? String(localized: "Mac aşırı ısındı") : String(localized: "Mac sıcak çalışıyor"),
+                subtitle: String(localized: "Performans düşebilir"),
                 severity: severity
             )
         case .recovered:
-            postRecovered(key: AlertKey.thermal, systemImage: "thermometer.medium", title: "Mac soğudu")
+            postRecovered(key: AlertKey.thermal, systemImage: "thermometer.medium", title: String(localized: "Mac soğudu"))
         }
     }
 
@@ -183,12 +183,12 @@ final class SystemPressureMonitor {
         case .raise(let severity):
             post(
                 key: AlertKey.disk, systemImage: "internaldrive.fill",
-                title: severity == .critical ? "Disk neredeyse dolu" : "Disk alanı az",
-                subtitle: "\(SystemFormat.bytes(freeBytes)) boş",
+                title: severity == .critical ? String(localized: "Disk neredeyse dolu") : String(localized: "Disk alanı az"),
+                subtitle: String(localized: "\(SystemFormat.bytes(freeBytes)) boş"),
                 severity: severity
             )
         case .recovered:
-            postRecovered(key: AlertKey.disk, systemImage: "internaldrive", title: "Disk alanı düzeldi")
+            postRecovered(key: AlertKey.disk, systemImage: "internaldrive", title: String(localized: "Disk alanı düzeldi"))
         }
     }
 
@@ -203,7 +203,7 @@ final class SystemPressureMonitor {
             style: isCritical ? .urgent : .reminder,
             coalescingKey: key,
             autoDismissAfter: isCritical ? nil : Self.elevatedAlertDuration,
-            actionTitle: "Etkinlik Monitörü",
+            actionTitle: String(localized: "Etkinlik Monitörü"),
             action: { [weak self] in self?.openActivityMonitor() }
         ))
     }

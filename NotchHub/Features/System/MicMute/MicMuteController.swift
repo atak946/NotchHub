@@ -186,7 +186,7 @@ final class MicMuteController {
         alerts.post(NotchAlert(
             module: nil,
             systemImage: isMuted ? "mic.slash.fill" : "mic.fill",
-            title: isMuted ? "Mikrofon kapalı" : "Mikrofon açık",
+            title: isMuted ? String(localized: "Mikrofon kapalı") : String(localized: "Mikrofon açık"),
             subtitle: deviceName,
             style: .info,
             coalescingKey: Self.feedbackAlertKey,

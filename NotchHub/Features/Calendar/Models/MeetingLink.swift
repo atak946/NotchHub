@@ -13,7 +13,7 @@ enum MeetingProvider: String, CaseIterable, Hashable, Sendable {
         case .teams: "Teams"
         case .meet: "Meet"
         case .webex: "Webex"
-        case .other: "Toplantı"
+        case .other: String(localized: "Toplantı")
         }
     }
 

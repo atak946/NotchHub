@@ -246,20 +246,20 @@ final class DockerMonitor {
             return NotchAlert(
                 module: .status,
                 systemImage: "shippingbox.fill",
-                title: "\(name) sonlandı",
-                subtitle: "Çıkış kodu \(exitCode)",
+                title: String(localized: "\(name) sonlandı"),
+                subtitle: String(localized: "Çıkış kodu \(exitCode)"),
                 style: .urgent,
                 coalescingKey: key,
                 autoDismissAfter: NotchAlert.importantDuration,
-                actionTitle: "Günlük komutunu kopyala",
+                actionTitle: String(localized: "Günlük komutunu kopyala"),
                 action: { pasteboard.copy(command) }
             )
         case .outOfMemory:
             return NotchAlert(
                 module: .status,
                 systemImage: "memorychip.fill",
-                title: "\(name) belleği doldurdu",
-                subtitle: "Container OOM nedeniyle sonlandırıldı",
+                title: String(localized: "\(name) belleği doldurdu"),
+                subtitle: String(localized: "Container OOM nedeniyle sonlandırıldı"),
                 style: .urgent,
                 coalescingKey: key,
                 autoDismissAfter: NotchAlert.importantDuration
@@ -268,8 +268,8 @@ final class DockerMonitor {
             return NotchAlert(
                 module: .status,
                 systemImage: "heart.slash.fill",
-                title: "\(name) sağlıksız",
-                subtitle: "Sağlık kontrolü başarısız",
+                title: String(localized: "\(name) sağlıksız"),
+                subtitle: String(localized: "Sağlık kontrolü başarısız"),
                 style: .reminder,
                 coalescingKey: key
             )
@@ -277,8 +277,8 @@ final class DockerMonitor {
             return NotchAlert(
                 module: .status,
                 systemImage: "heart.fill",
-                title: "\(name) düzeldi",
-                subtitle: "Sağlık kontrolü başarılı",
+                title: String(localized: "\(name) düzeldi"),
+                subtitle: String(localized: "Sağlık kontrolü başarılı"),
                 style: .success,
                 coalescingKey: key
             )

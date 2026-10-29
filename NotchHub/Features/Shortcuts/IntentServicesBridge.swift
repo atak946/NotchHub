@@ -32,7 +32,7 @@ enum IntentLimits {
     static let timerMinutes = 1...180
 }
 
-/// Errors Shortcuts shows to the user (Turkish).
+/// Errors Shortcuts shows to the user.
 enum IntentBridgeError: Error, Equatable, LocalizedError, CustomLocalizedStringResourceConvertible {
     case notReady
     case moduleDisabled(NotchModule)
@@ -45,6 +45,11 @@ enum IntentBridgeError: Error, Equatable, LocalizedError, CustomLocalizedStringR
     case micUnavailable
 
     var errorDescription: String? {
+        String(localized: localizedStringResource)
+    }
+
+    /// Localized from the catalog; Shortcuts resolves it in the user's language.
+    var localizedStringResource: LocalizedStringResource {
         switch self {
         case .notReady: "NotchHub henüz hazır değil. Birkaç saniye sonra yeniden dene."
         case .moduleDisabled(let module): "\(module.title) modülü kapalı. Ayarlar'dan açabilirsin."
@@ -57,10 +62,6 @@ enum IntentBridgeError: Error, Equatable, LocalizedError, CustomLocalizedStringR
         case .alertsUnavailable: "Çentik uyarıları kapalı ya da duraklatılmış."
         case .micUnavailable: "Susturulabilecek bir mikrofon bulunamadı."
         }
-    }
-
-    var localizedStringResource: LocalizedStringResource {
-        LocalizedStringResource(stringLiteral: errorDescription ?? "")
     }
 }
 

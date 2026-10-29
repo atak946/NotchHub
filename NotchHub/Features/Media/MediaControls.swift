@@ -4,7 +4,7 @@ import SwiftUI
 /// Icon button with designed hover / press feedback for the media panel.
 struct MediaIconButton: View {
     let systemImage: String
-    let help: String
+    let help: LocalizedStringKey
     var size: CGFloat = 15
     var diameter: CGFloat = 30
     let action: () -> Void

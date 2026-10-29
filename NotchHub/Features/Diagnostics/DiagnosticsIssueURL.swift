@@ -5,8 +5,8 @@ enum DiagnosticsIssueURL {
     static let infoPlistKey = "NHIssueURL"
     /// GitHub and browsers truncate long URLs; the full report goes through the clipboard instead.
     static let maxLength = 6 * 1024
-    static let defaultTitle = "Sorun: "
-    static let pasteInstruction = "Tam tanılama raporu panoya kopyalandı; lütfen buraya yapıştır (⌘V)."
+    static var defaultTitle: String { String(localized: "Sorun: ") }
+    static var pasteInstruction: String { String(localized: "Tam tanılama raporu panoya kopyalandı; lütfen buraya yapıştır (⌘V).") }
     static let truncationMarker = "…"
 
     private static let githubHost = "https://github.com/"

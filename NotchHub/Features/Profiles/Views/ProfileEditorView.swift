@@ -75,13 +75,15 @@ struct ProfileEditorView: View {
     }
 
     private var issueSummary: String {
-        issueCount == 0 ? "Tüm adımlar geçerli" : "\(issueCount) adım dikkat gerektiriyor (kaydetmeye yine de izin var)"
+        issueCount == 0
+            ? String(localized: "Tüm adımlar geçerli")
+            : String(localized: "\(issueCount) adım dikkat gerektiriyor (kaydetmeye yine de izin var)")
     }
 }
 
 /// Editable, reorderable list of steps.
 private struct ProfileStepListSection: View {
-    let title: String
+    let title: LocalizedStringKey
     @Binding var steps: [ProfileStep]
     let validator: ProfileStepValidator
 

@@ -68,9 +68,9 @@ struct OnboardingCalendarSourcesStep: View {
 
     private func sourceCard(
         icon: String,
-        title: String,
-        detail: String,
-        buttonTitle: String,
+        title: LocalizedStringKey,
+        detail: LocalizedStringKey,
+        buttonTitle: LocalizedStringKey,
         action: @escaping () -> Void
     ) -> some View {
         OnboardingCard {
@@ -96,9 +96,9 @@ struct OnboardingCalendarSourcesStep: View {
 
 struct OnboardingDoneStep: View {
     private static let shortcuts: [(keys: String, label: String)] = [
-        ("⌥⌘N", "Paneli aç / kapat"),
-        ("Esc", "Paneli kapat"),
-        ("⌘1…6", "Sekmeler arasında geç"),
+        ("⌥⌘N", String(localized: "Paneli aç / kapat")),
+        ("Esc", String(localized: "Paneli kapat")),
+        ("⌘1…6", String(localized: "Sekmeler arasında geç")),
     ]
 
     @Binding var launchAtLogin: Bool

@@ -3,6 +3,7 @@ import SwiftUI
 
 struct SettingsView: View {
     @Bindable var settings: SettingsStore
+    let language: AppLanguageSettings
     let services: ModuleServices
     let updater: UpdaterService
 
@@ -11,7 +12,7 @@ struct SettingsView: View {
     var body: some View {
         TabView {
             Tab("Genel", systemImage: "gearshape") {
-                GeneralSettingsTab(settings: settings, updater: updater)
+                GeneralSettingsTab(settings: settings, language: language, updater: updater)
             }
             Tab("Modüller", systemImage: "square.grid.2x2") {
                 ModulesSettingsTab(settings: settings, services: services)
@@ -52,6 +53,7 @@ private struct SettingsForm<Content: View>: View {
 
 private struct GeneralSettingsTab: View {
     @Bindable var settings: SettingsStore
+    @Bindable var language: AppLanguageSettings
     let updater: UpdaterService
     @State private var launchAtLogin = LaunchAtLogin.isEnabled
     @State private var launchAtLoginError: String?
@@ -111,6 +113,8 @@ private struct GeneralSettingsTab: View {
                 .pickerStyle(.segmented)
             }
 
+            LanguageSettingsSection(language: language)
+
             UpdatesSettingsSection(updater: updater)
             SupportSettingsSection()
         }
@@ -122,8 +126,39 @@ private struct GeneralSettingsTab: View {
             launchAtLoginError = nil
         } catch {
             logger.error("Launch at login update failed: \(error.localizedDescription)")
-            launchAtLoginError = "Giriş öğesi güncellenemedi: \(error.localizedDescription)"
+            launchAtLoginError = String(localized: "Giriş öğesi güncellenemedi: \(error.localizedDescription)")
             launchAtLogin = LaunchAtLogin.isEnabled
+        }
+    }
+}
+
+private struct LanguageSettingsSection: View {
+    @Bindable var language: AppLanguageSettings
+    @State private var relaunchFailed = false
+
+    var body: some View {
+        Section("Dil") {
+            Picker("Dil", selection: $language.selection) {
+                ForEach(AppLanguage.allCases) { option in
+                    Text(option.title).tag(option)
+                }
+            }
+            if language.needsRelaunch {
+                LabeledContent {
+                    Button("Yeniden başlat") {
+                        relaunchFailed = !AppRelauncher.relaunch()
+                    }
+                } label: {
+                    Text("Dil değişikliği yeniden başlatınca uygulanır.")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+                if relaunchFailed {
+                    Text("Yeniden başlatılamadı. NotchHub'ı kapatıp yeniden aç.")
+                        .font(.caption)
+                        .foregroundStyle(.red)
+                }
+            }
         }
     }
 }

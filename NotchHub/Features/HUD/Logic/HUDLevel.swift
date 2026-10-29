@@ -44,18 +44,18 @@ enum HUDLevel {
         return reading.level
     }
 
-    /// Turkish puts the percent sign first ("%45"); muted volume says so.
+    /// Locale-aware percent ("%45" in Turkish, "45%" in English); muted volume says so.
     static func valueText(of reading: HUDReading) -> String {
-        if reading.kind == .volume, reading.isMuted { return "Sessiz" }
+        if reading.kind == .volume, reading.isMuted { return String(localized: "Sessiz") }
         guard let level = reading.level else { return title(of: reading.kind) }
-        return "%\(percent(level))"
+        return (Double(percent(level)) / 100).formatted(.percent)
     }
 
     static func title(of kind: HUDKind) -> String {
         switch kind {
-        case .volume: "Ses"
-        case .brightness: "Parlaklık"
-        case .keyboardBacklight: "Klavye"
+        case .volume: String(localized: "Ses")
+        case .brightness: String(localized: "Parlaklık")
+        case .keyboardBacklight: String(localized: "Klavye")
         }
     }
 

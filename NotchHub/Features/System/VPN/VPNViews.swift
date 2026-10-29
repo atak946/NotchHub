@@ -12,10 +12,10 @@ struct VPNStatusTile: View {
         SystemStatusTileView(
             systemImage: systemImage,
             title: "VPN",
-            value: monitor.isEnabled ? monitor.state.title : "Kapalı",
+            value: monitor.isEnabled ? monitor.state.title : String(localized: "Kapalı"),
             detail: detail,
             tint: tint,
-            help: "\(monitor.displayName) uygulamasını aç",
+            help: String(localized: "\(monitor.displayName) uygulamasını aç"),
             action: { monitor.openClient() }
         )
     }
@@ -30,7 +30,7 @@ struct VPNStatusTile: View {
 
     private var detail: String? {
         guard monitor.isEnabled else { return nil }
-        if let client = monitor.runningClient { return "\(client.displayName) çalışıyor" }
+        if let client = monitor.runningClient { return String(localized: "\(client.displayName) çalışıyor") }
         return monitor.tunnelInterfaces.first
     }
 
@@ -54,7 +54,7 @@ struct VPNCompactIndicator: View {
 
     var body: some View {
         if monitor.hasCompactIndicator {
-            SystemIndicatorDot(systemImage: "lock.slash.fill", tint: .red, help: "VPN bağlantısı koptu")
+            SystemIndicatorDot(systemImage: "lock.slash.fill", tint: .red, help: String(localized: "VPN bağlantısı koptu"))
         } else {
             EmptyView()
         }
@@ -63,9 +63,10 @@ struct VPNCompactIndicator: View {
 
 /// `Section("VPN")` for the settings Form.
 struct VPNSettingsSection: View {
-    private static let detectionHint = "Bilinen VPN istemcilerini ("
-        + VPNClientCatalog.all.map(\.displayName).joined(separator: ", ")
-        + ") ve IPv4 adresi taşıyan utun/ipsec tünellerini algılar."
+    private static var detectionHint: String {
+        let clients = VPNClientCatalog.all.map(\.displayName).joined(separator: ", ")
+        return String(localized: "Bilinen VPN istemcilerini (\(clients)) ve IPv4 adresi taşıyan utun/ipsec tünellerini algılar.")
+    }
 
     @Bindable var monitor: VPNMonitor
 
@@ -78,7 +79,7 @@ struct VPNSettingsSection: View {
             Toggle("VPN bağlantısını izle", isOn: $monitor.isEnabled)
             Toggle("VPN koptuğunda veya yeniden bağlandığında uyar", isOn: $monitor.alertsEnabled)
                 .disabled(!monitor.isEnabled)
-            LabeledContent("Algılanan istemci", value: monitor.clientDisplayName ?? "Yok")
+            LabeledContent("Algılanan istemci", value: monitor.clientDisplayName ?? String(localized: "Yok"))
             Text(Self.detectionHint)
                 .font(.caption)
                 .foregroundStyle(.secondary)

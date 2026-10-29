@@ -5,6 +5,8 @@ import OSLog
 @MainActor
 final class AppDelegate: NSObject, NSApplicationDelegate {
     let settings = SettingsStore()
+    /// Created at launch so it remembers which language is running.
+    let language = AppLanguageSettings()
     let alerts = NotchAlertCenter()
     private(set) lazy var services = ModuleServices(settings: settings, alerts: alerts)
     private let fullScreenDetector = FullScreenDetector()

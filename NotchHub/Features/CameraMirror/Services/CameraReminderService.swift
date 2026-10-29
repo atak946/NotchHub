@@ -2,7 +2,7 @@ import Foundation
 import Observation
 import OSLog
 
-/// Posts "Kamerayı kontrol et" a few minutes before a video meeting. The alert never starts the camera;
+/// Posts String(localized: "Kamerayı kontrol et") a few minutes before a video meeting. The alert never starts the camera;
 /// only its action button opens the mirror.
 @MainActor
 @Observable
@@ -121,12 +121,12 @@ final class CameraReminderService {
         alerts.post(NotchAlert(
             module: .calendar,
             systemImage: "video.fill",
-            title: "Toplantı yaklaşıyor",
+            title: String(localized: "Toplantı yaklaşıyor"),
             subtitle: [event.title, provider?.displayName].compactMap { $0 }.joined(separator: " · "),
             style: .info,
             coalescingKey: "cameraMirror.\(event.id)",
             autoDismissAfter: Self.alertDuration,
-            actionTitle: "Kamerayı kontrol et",
+            actionTitle: String(localized: "Kamerayı kontrol et"),
             action: { onCheckCamera() },
             appName: "Kamera",
             timestampText: event.start.formatted(date: .omitted, time: .shortened)

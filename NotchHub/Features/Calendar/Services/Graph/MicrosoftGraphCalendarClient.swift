@@ -8,10 +8,10 @@ enum MicrosoftGraphError: Error, Equatable, LocalizedError {
 
     var errorDescription: String? {
         switch self {
-        case .unauthorized: "Microsoft 365 erişim belirtecini reddetti."
-        case let .http(code): "Microsoft Graph hatası (HTTP \(code))."
-        case .invalidResponse: "Microsoft Graph'ten beklenmeyen yanıt."
-        case .untrustedNextLink: "Microsoft Graph beklenmeyen bir sayfalama bağlantısı döndürdü."
+        case .unauthorized: String(localized: "Microsoft 365 erişim belirtecini reddetti.")
+        case let .http(code): String(localized: "Microsoft Graph hatası (HTTP \(code)).")
+        case .invalidResponse: String(localized: "Microsoft Graph'ten beklenmeyen yanıt.")
+        case .untrustedNextLink: String(localized: "Microsoft Graph beklenmeyen bir sayfalama bağlantısı döndürdü.")
         }
     }
 }

@@ -54,7 +54,7 @@ struct FocusAppListEditor: View {
         panel.directoryURL = URL(filePath: "/Applications")
         panel.allowedContentTypes = [.applicationBundle]
         panel.allowsMultipleSelection = true
-        panel.prompt = "Ekle"
+        panel.prompt = String(localized: "Ekle")
         guard panel.runModal() == .OK else { return }
         panel.urls.compactMap(FocusAppCatalog.app(at:)).forEach(service.addApp)
     }

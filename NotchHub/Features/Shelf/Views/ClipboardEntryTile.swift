@@ -36,7 +36,7 @@ struct ClipboardEntryTile: View {
         .animation(.snappy(duration: 0.18), value: isCopied)
         .help(entry.previewText)
         .accessibilityElement(children: .combine)
-        .accessibilityLabel(entry.isImage ? "Görsel, \(timeText)" : "\(entry.previewText), \(timeText)")
+        .accessibilityLabel(entry.isImage ? String(localized: "Görsel, \(timeText)") : "\(entry.previewText), \(timeText)")
     }
 
     private var preview: some View {
@@ -97,7 +97,7 @@ struct ClipboardEntryTile: View {
                 }
                 .transition(.opacity)
             } else {
-                Label(isCopied ? "Kopyalandı" : timeText, systemImage: isCopied ? "checkmark" : (entry.isImage ? "photo" : "text.alignleft"))
+                Label(isCopied ? String(localized: "Kopyalandı") : timeText, systemImage: isCopied ? "checkmark" : (entry.isImage ? "photo" : "text.alignleft"))
                     .labelStyle(.titleAndIcon)
                     .font(.system(size: Self.footerFontSize, weight: .medium).monospacedDigit())
                     .foregroundStyle(isCopied ? AnyShapeStyle(.green) : AnyShapeStyle(.secondary))

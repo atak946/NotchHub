@@ -49,7 +49,8 @@ enum TimeSummaryFormatter {
     static let maxClientsInLine = 3
 
     static func title(totalSeconds: Int) -> String {
-        "Bugün: \(InsightsDurationFormatter.short(seconds: totalSeconds)) takip edildi"
+        let duration = InsightsDurationFormatter.short(seconds: totalSeconds)
+        return String(localized: "Bugün: \(duration) takip edildi")
     }
 
     /// "Northwind 3h, Globex 2h…" — the ellipsis marks clients left out.
@@ -67,7 +68,8 @@ enum TimeSummaryFormatter {
 
     /// Full multi-line text for the clipboard.
     static func clipboardText(day: String, totalSeconds: Int, totals: [ClientTotal]) -> String {
-        let header = "\(day): \(InsightsDurationFormatter.short(seconds: totalSeconds)) takip edildi"
+        let duration = InsightsDurationFormatter.short(seconds: totalSeconds)
+        let header = String(localized: "\(day): \(duration) takip edildi")
         let lines = totals.map { "- \($0.client): \(InsightsDurationFormatter.short(seconds: $0.seconds))" }
         return ([header] + lines).joined(separator: "\n")
     }

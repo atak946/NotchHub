@@ -47,7 +47,7 @@ struct NotchAlertView: View {
         .contentShape(.rect)
         .onTapGesture(perform: onOpen)
         .onHover { center.isHovered = $0 }
-        .help(alert.module.map { "\($0.title) aç" } ?? "")
+        .help(alert.module.map { String(localized: "\($0.title) aç") } ?? "")
         .accessibilityElement(children: .contain)
         .accessibilityAction(named: "Aç", onOpen)
     }

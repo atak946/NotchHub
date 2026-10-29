@@ -55,7 +55,7 @@ struct ClipboardHistoryView: View {
         }
     }
 
-    private func placeholder(systemImage: String, title: String, detail: String) -> some View {
+    private func placeholder(systemImage: String, title: LocalizedStringKey, detail: LocalizedStringKey) -> some View {
         VStack(spacing: 4) {
             Image(systemName: systemImage)
                 .font(.system(size: 22, weight: .medium))
@@ -109,11 +109,11 @@ struct ClipboardHistoryView: View {
 
     private func actions(for entry: ClipboardEntry) -> [ShelfTileAction] {
         [
-            ShelfTileAction(id: "copy", title: "Kopyala", systemImage: "doc.on.doc") { copy(entry) },
-            ShelfTileAction(id: "pin", title: "Rafa Sabitle", systemImage: "pin") {
+            ShelfTileAction(id: "copy", title: String(localized: "Kopyala"), systemImage: "doc.on.doc") { copy(entry) },
+            ShelfTileAction(id: "pin", title: String(localized: "Rafa Sabitle"), systemImage: "pin") {
                 history.pin(entry.id, to: shelf)
             },
-            ShelfTileAction(id: "remove", title: "Geçmişten Sil", systemImage: "xmark", isDestructive: true) {
+            ShelfTileAction(id: "remove", title: String(localized: "Geçmişten Sil"), systemImage: "xmark", isDestructive: true) {
                 history.remove(entry.id)
             },
         ]

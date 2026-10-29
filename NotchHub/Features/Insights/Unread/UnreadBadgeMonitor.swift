@@ -160,7 +160,8 @@ final class UnreadBadgeMonitor {
     }
 
     static func alertTitle(for increase: UnreadIncrease) -> String {
-        "\(displayName(for: increase.app)) · \(increase.newMessages) yeni"
+        let name = displayName(for: increase.app)
+        return String(localized: "\(name) · \(increase.newMessages) yeni")
     }
 
     nonisolated static func displayName(for app: String) -> String {
@@ -200,16 +201,15 @@ final class UnreadBadgeMonitor {
 
     private func postAlert(for increase: UnreadIncrease) {
         let app = increase.app
-        let unit = increase.count == 1 ? "okunmamış mesaj" : "okunmamış mesaj"
         alerts.post(NotchAlert(
             module: .status,
             systemImage: "bubble.left.and.text.bubble.right.fill",
             title: Self.alertTitle(for: increase),
-            subtitle: "\(increase.count) \(unit)",
+            subtitle: String(localized: "\(increase.count) okunmamış mesaj"),
             style: .info,
             coalescingKey: Self.coalescingKey(for: app),
             autoDismissAfter: Self.alertDuration,
-            actionTitle: "Aç",
+            actionTitle: String(localized: "Aç"),
             action: { [weak self] in self?.open(app: app) },
             appBundleID: KnownApps.bundleID(forName: app),
             appName: Self.displayName(for: app)

@@ -32,7 +32,7 @@ struct AudioOutputMenu: View {
         .foregroundStyle(.primary)
         .onHover { isHovered = $0 }
         .animation(.easeOut(duration: 0.15), value: isHovered)
-        .help(audio.defaultDevice.map { "Çıkış: \($0.name)" } ?? "Ses çıkışı")
+        .help(audio.defaultDevice.map { String(localized: "Çıkış: \($0.name)") } ?? String(localized: "Ses çıkışı"))
         .accessibilityLabel("Ses çıkışı")
     }
 }

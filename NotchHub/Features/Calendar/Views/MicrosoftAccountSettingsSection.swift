@@ -34,14 +34,14 @@ struct MicrosoftAccountSettingsSection: View {
         }
     }
 
-    private static let instructions = """
+    private static let instructions = String(localized: """
     1. portal.azure.com › Microsoft Entra ID › Uygulama kayıtları › Yeni kayıt (herhangi bir ad, \
     "Herhangi bir kuruluş dizinindeki hesaplar").
     2. Kimlik doğrulama › Gelişmiş ayarlar › Genel istemci akışlarına izin ver › Evet.
     3. API izinleri › Ekle › Microsoft Graph › Temsilci › Calendars.Read (User.Read varsayılan olarak eklenir). \
     Yöneticinizin onay vermesi gerekebilir.
     4. Uygulama (istemci) kimliğini buraya kopyalayın. Kiracı: dizin kimliğiniz veya alan adınız ya da "organizations".
-    """
+    """)
 
     private var isBusyOrSignedIn: Bool {
         source.state != .signedOut

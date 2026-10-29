@@ -138,12 +138,12 @@ final class NetworkMonitor {
             alerts.post(NotchAlert(
                 module: .status,
                 systemImage: "wifi.slash",
-                title: "Çevrimdışısın",
-                subtitle: "Ağ bağlantısı yok",
+                title: String(localized: "Çevrimdışısın"),
+                subtitle: String(localized: "Ağ bağlantısı yok"),
                 style: .urgent,
                 coalescingKey: Self.alertKey,
                 autoDismissAfter: NotchAlert.importantDuration,
-                actionTitle: "Ayarlar",
+                actionTitle: String(localized: "Ayarlar"),
                 action: { [weak self] in self?.openNetworkSettings() }
             ))
         case .backOnline(let snapshot):
@@ -151,7 +151,7 @@ final class NetworkMonitor {
             alerts.post(NotchAlert(
                 module: .status,
                 systemImage: snapshot.interface.systemImage,
-                title: "Tekrar çevrimiçi",
+                title: String(localized: "Tekrar çevrimiçi"),
                 subtitle: snapshot.displayName,
                 style: .success,
                 coalescingKey: Self.alertKey,
@@ -162,8 +162,8 @@ final class NetworkMonitor {
             alerts.post(NotchAlert(
                 module: .status,
                 systemImage: snapshot.interface.systemImage,
-                title: "Ağ değişti",
-                subtitle: "Şu an: \(snapshot.displayName)",
+                title: String(localized: "Ağ değişti"),
+                subtitle: String(localized: "Şu an: \(snapshot.displayName)"),
                 style: .info,
                 coalescingKey: Self.alertKey,
                 autoDismissAfter: Self.changedAlertDuration

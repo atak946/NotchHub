@@ -11,9 +11,9 @@ struct TrackingRule: Codable, Equatable, Identifiable, Sendable {
 
         var title: String {
             switch self {
-            case .appBundleID: "Uygulama bundle ID eşittir"
-            case .windowTitleContains: "Pencere başlığı içerir"
-            case .pathContains: "Belge yolu içerir"
+            case .appBundleID: String(localized: "Uygulama bundle ID eşittir")
+            case .windowTitleContains: String(localized: "Pencere başlığı içerir")
+            case .pathContains: String(localized: "Belge yolu içerir")
             }
         }
 

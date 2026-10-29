@@ -15,11 +15,11 @@ struct MicCameraStatusTile: View {
     var body: some View {
         SystemStatusTileView(
             systemImage: systemImage,
-            title: "Mik. ve Kamera",
+            title: String(localized: "Mik. ve Kamera"),
             value: value,
             detail: detail,
             tint: tint,
-            help: "Mikrofon gizlilik ayarlarını aç",
+            help: String(localized: "Mikrofon gizlilik ayarlarını aç"),
             action: { monitor.openPrivacySettings() }
         )
         .overlay(alignment: .topTrailing) {
@@ -36,12 +36,12 @@ struct MicCameraStatusTile: View {
     }
 
     private var value: String {
-        guard monitor.isEnabled else { return "Kapalı" }
+        guard monitor.isEnabled else { return String(localized: "Kapalı") }
         switch (monitor.isMicrophoneInUse, monitor.isCameraInUse) {
-        case (true, true): return "Mik. + Kamera açık"
-        case (true, false): return "Mikrofon açık"
-        case (false, true): return "Kamera açık"
-        case (false, false): return "Kullanılmıyor"
+        case (true, true): return String(localized: "Mik. + Kamera açık")
+        case (true, false): return String(localized: "Mikrofon açık")
+        case (false, true): return String(localized: "Kamera açık")
+        case (false, false): return String(localized: "Kullanılmıyor")
         }
     }
 
@@ -70,10 +70,10 @@ struct MicCameraCompactIndicator: View {
         if monitor.hasCompactIndicator {
             HStack(spacing: 2) {
                 if monitor.isMicrophoneInUse {
-                    SystemIndicatorDot(systemImage: "mic.fill", tint: .red, help: "Microphone in use")
+                    SystemIndicatorDot(systemImage: "mic.fill", tint: .red, help: String(localized: "Mikrofon kullanımda"))
                 }
                 if monitor.isCameraInUse {
-                    SystemIndicatorDot(systemImage: "video.fill", tint: .green, help: "Camera in use")
+                    SystemIndicatorDot(systemImage: "video.fill", tint: .green, help: String(localized: "Kamera kullanımda"))
                 }
             }
         } else {

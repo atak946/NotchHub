@@ -14,18 +14,20 @@ struct CaptureBatch: Equatable, Sendable {
         let count = detections.count
         let screenshotCount = screenshots.count
         if count == 1 {
-            return screenshotCount == 1 ? "Ekran görüntüsü kaydedildi" : "İndirme tamamlandı"
+            return screenshotCount == 1
+                ? String(localized: "Ekran görüntüsü kaydedildi")
+                : String(localized: "İndirme tamamlandı")
         }
-        if screenshotCount == count { return "\(count) ekran görüntüsü kaydedildi" }
-        if screenshotCount == 0 { return "\(count) dosya indirildi" }
-        return "\(count) yeni dosya"
+        if screenshotCount == count { return String(localized: "\(count) ekran görüntüsü kaydedildi") }
+        if screenshotCount == 0 { return String(localized: "\(count) dosya indirildi") }
+        return String(localized: "\(count) yeni dosya")
     }
 
     var subtitle: String {
         let names = detections.map(\.fileName)
         let shown = names.prefix(Self.maxNamesInSubtitle).joined(separator: ", ")
         let hidden = names.count - Self.maxNamesInSubtitle
-        return hidden > 0 ? "\(shown) ve \(hidden) tane daha" : shown
+        return hidden > 0 ? String(localized: "\(shown) ve \(hidden) tane daha") : shown
     }
 
     var systemImage: String {

@@ -145,15 +145,16 @@ final class RemoteSessionMonitor {
                 NSWorkspace.shared.openApplication(at: url, configuration: NSWorkspace.OpenConfiguration())
             }
         }
+        let sourceName = names.isEmpty ? String(localized: "Uzak") : names
         alerts.post(NotchAlert(
             module: .status,
             systemImage: "eye.fill",
-            title: "\(names.isEmpty ? "Uzak" : names) oturumu etkin",
-            subtitle: "Biri bu Mac'i görüntülüyor olabilir (sezgisel)",
+            title: String(localized: "\(sourceName) oturumu etkin"),
+            subtitle: String(localized: "Biri bu Mac'i görüntülüyor olabilir (sezgisel)"),
             style: .urgent,
             coalescingKey: Self.alertKey,
             autoDismissAfter: NotchAlert.importantDuration,
-            actionTitle: canOpenAnyDesk ? "AnyDesk'i göster" : nil,
+            actionTitle: canOpenAnyDesk ? String(localized: "AnyDesk'i göster") : nil,
             action: action
         ))
     }
@@ -163,7 +164,7 @@ final class RemoteSessionMonitor {
         alerts.post(NotchAlert(
             module: .status,
             systemImage: "eye.slash",
-            title: "Uzak oturum sona erdi",
+            title: String(localized: "Uzak oturum sona erdi"),
             style: .success,
             coalescingKey: Self.alertKey
         ))

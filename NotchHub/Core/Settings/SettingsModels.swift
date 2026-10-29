@@ -8,10 +8,10 @@ enum DisplayMode: String, CaseIterable, Identifiable, Sendable {
 
     var title: String {
         switch self {
-        case .builtIn: "Yerleşik ekran"
-        case .main: "Ana ekran"
-        case .allScreens: "Tüm ekranlar"
-        case .followMouse: "Fare olan ekran"
+        case .builtIn: String(localized: "Yerleşik ekran")
+        case .main: String(localized: "Ana ekran")
+        case .allScreens: String(localized: "Tüm ekranlar")
+        case .followMouse: String(localized: "Fare olan ekran")
         }
     }
 }
@@ -24,8 +24,8 @@ enum AppTheme: String, CaseIterable, Identifiable, Sendable {
 
     var title: String {
         switch self {
-        case .system: "Sistem"
-        case .dark: "Koyu"
+        case .system: String(localized: "Sistem")
+        case .dark: String(localized: "Koyu")
         }
     }
 }
@@ -42,12 +42,12 @@ enum NotchModule: String, CaseIterable, Identifiable, Sendable {
 
     var title: String {
         switch self {
-        case .shelf: "Dosya Rafı"
-        case .media: "Şimdi Çalıyor"
-        case .timer: "Zamanlayıcı"
-        case .calendar: "Sıradaki Toplantı"
-        case .notes: "Notlar"
-        case .status: "Durum"
+        case .shelf: String(localized: "Dosya Rafı")
+        case .media: String(localized: "Şimdi Çalıyor")
+        case .timer: String(localized: "Zamanlayıcı")
+        case .calendar: String(localized: "Sıradaki Toplantı")
+        case .notes: String(localized: "Notlar")
+        case .status: String(localized: "Durum")
         }
     }
 

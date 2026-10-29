@@ -24,16 +24,19 @@ enum TimerFormatter {
     static func compact(_ remaining: TimeInterval) -> String {
         let total = wholeSeconds(remaining)
         if total >= secondsPerHour {
-            return "\(total / secondsPerHour)sa"
+            let hours = total / secondsPerHour
+            return String(localized: "\(hours)sa")
         }
         if total >= compactSecondsThreshold {
-            return "\(ceilDiv(total, secondsPerMinute))dk"
+            let minutes = ceilDiv(total, secondsPerMinute)
+            return String(localized: "\(minutes)dk")
         }
         return clock(TimeInterval(total))
     }
 
     static func minutesLabel(_ duration: TimeInterval) -> String {
-        "\(Int((duration / TimeInterval(secondsPerMinute)).rounded())) dk"
+        let minutes = Int((duration / TimeInterval(secondsPerMinute)).rounded())
+        return String(localized: "\(minutes) dk")
     }
 
     private static func wholeSeconds(_ interval: TimeInterval) -> Int {

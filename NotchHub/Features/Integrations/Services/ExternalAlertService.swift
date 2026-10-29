@@ -12,10 +12,10 @@ final class ExternalAlertService {
     static let defaultMinimumCommandSeconds = 30
     static let minimumSecondsEnvironmentKey = "NOTCHHUB_MIN_SECONDS"
     static let zshHookPlaceholderPath = "/path/to/NotchHub/tools/Integrations/notchhub.zsh"
-    static let openActionTitle = "Aç"
-    static let revealActionTitle = "Göster"
+    static let openActionTitle = String(localized: "Aç")
+    static let revealActionTitle = String(localized: "Göster")
     /// Source label on alerts that arrived through a `notchhub://` URL (any app or web page can open one).
-    static let externalSourceLabel = "Harici"
+    static let externalSourceLabel = String(localized: "Harici")
     static let urlRateLimitCapacity = 10
     static let urlRateLimitWindow: TimeInterval = 60
 
@@ -171,8 +171,8 @@ final class ExternalAlertService {
 
     func sendTestAlert() {
         let request = ExternalAlertRequest(
-            title: "NotchHub entegrasyonları çalışıyor",
-            subtitle: "Ayarlar'dan test uyarısı",
+            title: String(localized: "NotchHub entegrasyonları çalışıyor"),
+            subtitle: String(localized: "Ayarlar'dan test uyarısı"),
             style: .success,
             systemImage: "checkmark.seal.fill",
             autoDismissAfter: NotchAlert.defaultDuration,

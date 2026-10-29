@@ -34,7 +34,7 @@ struct Note: Identifiable, Codable, Hashable, Sendable {
 // MARK: - Title
 
 extension Note {
-    static let untitled = "Yeni not"
+    static var untitled: String { String(localized: "Yeni not") }
 
     /// First non-empty line; for an empty meeting note "Toplantı: <title> · <HH:mm>"; otherwise "Yeni not".
     func displayTitle(timeZone: TimeZone = .current) -> String {
@@ -42,7 +42,8 @@ extension Note {
             return firstLine
         }
         if let meetingTitle = meetingTitle?.trimmingCharacters(in: .whitespacesAndNewlines), !meetingTitle.isEmpty {
-            return "Toplantı: \(meetingTitle) · \(Self.timeText(createdAt, timeZone: timeZone))"
+            let time = Self.timeText(createdAt, timeZone: timeZone)
+            return String(localized: "Toplantı: \(meetingTitle) · \(time)")
         }
         return Self.untitled
     }

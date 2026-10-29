@@ -42,7 +42,7 @@ struct ClipboardEntry: Identifiable, Codable, Equatable, Sendable {
 
     /// Single-line preview for tiles and tooltips.
     var previewText: String {
-        guard let text else { return "Görsel" }
+        guard let text else { return String(localized: "Görsel") }
         let collapsed = text.split(whereSeparator: \.isWhitespace).joined(separator: " ")
         return String(collapsed.prefix(Self.previewLength))
     }

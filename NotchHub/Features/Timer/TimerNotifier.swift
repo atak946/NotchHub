@@ -72,16 +72,19 @@ final class UserNotificationTimerNotifier: TimerNotifier {
 
     nonisolated static func title(for phase: TimerPhase) -> String {
         switch phase {
-        case .countdown: "Zamanlayıcı bitti"
-        case .work: "Odak oturumu tamamlandı"
-        case .shortBreak, .longBreak: "Mola bitti"
+        case .countdown: String(localized: "Zamanlayıcı bitti")
+        case .work: String(localized: "Odak oturumu tamamlandı")
+        case .shortBreak, .longBreak: String(localized: "Mola bitti")
         }
     }
 
     nonisolated static func body(for completion: TimerCompletion) -> String {
-        guard let next = completion.nextPhase else { return "Zamanlayıcın bitti." }
-        let verb = completion.didAutoStartNext ? "başladı" : "sırada"
-        return "\(next.title) \(verb)."
+        guard let next = completion.nextPhase else { return String(localized: "Zamanlayıcın bitti.") }
+        let title = next.title
+        if completion.didAutoStartNext {
+            return String(localized: "\(title) başladı.")
+        }
+        return String(localized: "\(title) sırada.")
     }
 }
 

@@ -7,9 +7,9 @@ enum VPNState: String, Equatable, Sendable {
 
     var title: String {
         switch self {
-        case .connected: "Bağlı"
-        case .disconnected: "Bağlı değil"
-        case .unknown: "Bilinmiyor"
+        case .connected: String(localized: "Bağlı")
+        case .disconnected: String(localized: "Bağlı değil")
+        case .unknown: String(localized: "Bilinmiyor")
         }
     }
 }

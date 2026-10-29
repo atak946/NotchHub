@@ -73,8 +73,8 @@ struct OnboardingCard<Content: View>: View {
 
 /// Page heading: a large title with a muted one-line subtitle.
 struct OnboardingHeader: View {
-    let title: String
-    let subtitle: String
+    let title: LocalizedStringKey
+    let subtitle: LocalizedStringKey
 
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {

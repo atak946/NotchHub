@@ -58,8 +58,8 @@ struct CalendarSettingsSection: View {
     }
 
     nonisolated static func title(forLeadTime lead: TimeInterval) -> String {
-        guard lead > 0 else { return "Kapalı" }
+        guard lead > 0 else { return String(localized: "Kapalı") }
         let minutes = Int(lead / 60)
-        return minutes == 1 ? "1 dakika önce" : "\(minutes) dakika önce"
+        return String(localized: "\(minutes) dakika önce")
     }
 }

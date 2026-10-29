@@ -295,7 +295,7 @@ final class CalendarService {
     }
 
     private func inactiveDiagnostic(for source: any CalendarEventSource, index: Int) -> CalendarSourceDiagnostic {
-        let message = source.statusMessage ?? (source.authorization == .denied ? "Erişim yok" : "Bağlı değil")
+        let message = source.statusMessage ?? (source.authorization == .denied ? String(localized: "Erişim yok") : String(localized: "Bağlı değil"))
         return CalendarSourceDiagnostic(
             id: "\(index).\(source.sourceID)",
             name: source.sourceName,

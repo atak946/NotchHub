@@ -204,11 +204,11 @@ final class EndpointMonitor {
         let days = CertificateExpiryWarningPolicy.daysRemaining(until: expiry, now: now, calendar: calendar)
         let subtitle: String
         if expiry <= now {
-            subtitle = "Sertifikanın süresi doldu"
+            subtitle = String(localized: "Sertifikanın süresi doldu")
         } else if days <= 0 {
-            subtitle = "Sertifika bugün bitiyor"
+            subtitle = String(localized: "Sertifika bugün bitiyor")
         } else {
-            subtitle = "Sertifika bitişine \(days) gün var"
+            subtitle = String(localized: "Sertifika bitişine \(days) gün var")
         }
         alerts.post(NotchAlert(
             module: .status,
@@ -229,7 +229,7 @@ final class EndpointMonitor {
             alerts.post(NotchAlert(
                 module: .status,
                 systemImage: "bolt.horizontal.circle.fill",
-                title: "\(endpoint.displayName) kapalı",
+                title: String(localized: "\(endpoint.displayName) kapalı"),
                 subtitle: reason,
                 style: .urgent,
                 coalescingKey: key,
@@ -239,7 +239,7 @@ final class EndpointMonitor {
             alerts.post(NotchAlert(
                 module: .status,
                 systemImage: "checkmark.circle.fill",
-                title: "\(endpoint.displayName) tekrar ayakta",
+                title: String(localized: "\(endpoint.displayName) tekrar ayakta"),
                 style: .success,
                 coalescingKey: key
             ))

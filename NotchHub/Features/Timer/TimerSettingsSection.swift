@@ -31,7 +31,7 @@ struct TimerSettingsSection: View {
         }
     }
 
-    private func minutesStepper(_ title: String, value: Binding<Int>, range: ClosedRange<Int>) -> some View {
+    private func minutesStepper(_ title: LocalizedStringKey, value: Binding<Int>, range: ClosedRange<Int>) -> some View {
         Stepper(value: value, in: range) {
             LabeledContent(title) {
                 Text("\(value.wrappedValue) dk")

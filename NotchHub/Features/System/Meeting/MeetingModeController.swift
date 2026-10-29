@@ -117,7 +117,7 @@ final class MeetingModeController {
     }
 
     private func enter(at start: Date) {
-        session = MeetingSession(start: start, source: candidateSource ?? "Toplantı")
+        session = MeetingSession(start: start, source: candidateSource ?? String(localized: "Toplantı"))
         logger.info("Meeting mode on")
         if MeetingMediaPolicy.shouldPauseOnEnter(autoPause: autoPauseMusic, isPlaying: media.isMediaPlaying) {
             media.playPause()

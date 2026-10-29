@@ -15,17 +15,17 @@ enum ProfileStepIssue: Error, Equatable, Sendable, CustomStringConvertible {
 
     var description: String {
         switch self {
-        case .emptyBundleID: "Bundle kimliği boş"
-        case let .invalidBundleID(value): "“\(value)” geçerli bir bundle kimliği değil"
-        case let .invalidURL(value): "“\(value)” geçerli bir URL değil"
-        case let .schemeNotAllowed(scheme): "“\(scheme)” URL şemasına izin verilmiyor"
-        case .missingHost: "Web URL'sinde ana makine yok"
-        case .emptyPath: "Klasör seçilmedi"
-        case let .relativePath(path): "“\(path)” mutlak bir yol değil"
-        case let .folderMissing(path): "Klasör yok: \(path)"
-        case let .notAFolder(path): "Klasör değil: \(path)"
-        case let .composeFileMissing(path): "\(path) içinde compose dosyası yok"
-        case let .timeoutOutOfRange(value): "VPN zaman aşımı \(value) sn aralık dışında"
+        case .emptyBundleID: String(localized: "Bundle kimliği boş")
+        case let .invalidBundleID(value): String(localized: "“\(value)” geçerli bir bundle kimliği değil")
+        case let .invalidURL(value): String(localized: "“\(value)” geçerli bir URL değil")
+        case let .schemeNotAllowed(scheme): String(localized: "“\(scheme)” URL şemasına izin verilmiyor")
+        case .missingHost: String(localized: "Web URL'sinde ana makine yok")
+        case .emptyPath: String(localized: "Klasör seçilmedi")
+        case let .relativePath(path): String(localized: "“\(path)” mutlak bir yol değil")
+        case let .folderMissing(path): String(localized: "Klasör yok: \(path)")
+        case let .notAFolder(path): String(localized: "Klasör değil: \(path)")
+        case let .composeFileMissing(path): String(localized: "\(path) içinde compose dosyası yok")
+        case let .timeoutOutOfRange(value): String(localized: "VPN zaman aşımı \(value) sn aralık dışında")
         }
     }
 }

@@ -37,7 +37,7 @@ private struct TimerIdleView: View {
     var body: some View {
         HStack(alignment: .top, spacing: 16) {
             VStack(alignment: .leading, spacing: 10) {
-                sectionLabel("Hızlı zamanlayıcı")
+                sectionLabel(String(localized: "Hızlı zamanlayıcı"))
                 presetChips
                 customRow
             }
@@ -135,7 +135,7 @@ private struct TimerIdleView: View {
 
     private var pomodoroSummary: String {
         let settings = timer.pomodoroSettings
-        return "\(settings.workMinutes) dk odak · \(settings.shortBreakMinutes) dk mola · \(settings.longBreakMinutes) dk uzun"
+        return String(localized: "\(settings.workMinutes) dk odak · \(settings.shortBreakMinutes) dk mola · \(settings.longBreakMinutes) dk uzun")
     }
 
     private func sectionLabel(_ text: String) -> some View {
@@ -219,9 +219,9 @@ private struct TimerActiveView: View {
 
     private var statusText: String {
         switch timer.state {
-        case .paused: return "Duraklatıldı"
-        case .finished: return timer.upcomingPhase.map { "Sıradaki: \($0.title)" } ?? "Bitti"
-        case .running, .idle: return timer.upcomingPhase.map { "Sonraki: \($0.title)" } ?? ""
+        case .paused: return String(localized: "Duraklatıldı")
+        case .finished: return timer.upcomingPhase.map { String(localized: "Sıradaki: \($0.title)") } ?? String(localized: "Bitti")
+        case .running, .idle: return timer.upcomingPhase.map { String(localized: "Sonraki: \($0.title)") } ?? ""
         }
     }
 
@@ -230,33 +230,42 @@ private struct TimerActiveView: View {
         HStack(spacing: 10) {
             switch timer.state {
             case .running:
-                TimerControlButton(systemImage: "pause.fill", help: "Duraklat", isProminent: true) { timer.pause() }
+                TimerControlButton(systemImage: "pause.fill", help: String(localized: "Duraklat"), isProminent: true) { timer.pause() }
             case .paused:
-                TimerControlButton(systemImage: "play.fill", help: "Devam", isProminent: true) { timer.resume() }
+                TimerControlButton(systemImage: "play.fill", help: String(localized: "Devam"), isProminent: true) { timer.resume() }
             case .finished:
                 finishedPrimaryButton
             case .idle:
                 EmptyView()
             }
             if timer.isPomodoro && !timer.state.isFinished {
-                TimerControlButton(systemImage: "forward.end.fill", help: "Atla: \(timer.upcomingPhase?.title ?? "sonraki aşama")") {
+                TimerControlButton(systemImage: "forward.end.fill", help: skipHelp) {
                     timer.skipPhase()
                 }
             }
-            TimerControlButton(systemImage: "xmark", help: timer.state.isFinished ? "Kapat" : "İptal") {
+            TimerControlButton(systemImage: "xmark", help: cancelHelp) {
                 timer.cancel()
             }
         }
     }
 
+    private var skipHelp: String {
+        let next = timer.upcomingPhase?.title ?? String(localized: "sonraki aşama")
+        return String(localized: "Atla: \(next)")
+    }
+
+    private var cancelHelp: String {
+        timer.state.isFinished ? String(localized: "Kapat") : String(localized: "İptal")
+    }
+
     @ViewBuilder
     private var finishedPrimaryButton: some View {
         if let next = timer.upcomingPhase {
-            TimerControlButton(systemImage: "play.fill", help: "\(next.title) başlat", isProminent: true) {
+            TimerControlButton(systemImage: "play.fill", help: String(localized: "\(next.title) başlat"), isProminent: true) {
                 timer.startNextPhase()
             }
         } else {
-            TimerControlButton(systemImage: "arrow.counterclockwise", help: "Yeniden başlat", isProminent: true) {
+            TimerControlButton(systemImage: "arrow.counterclockwise", help: String(localized: "Yeniden başlat"), isProminent: true) {
                 timer.start(duration: timer.phaseDuration)
             }
         }

@@ -12,10 +12,10 @@ enum NetworkInterfaceKind: String, Equatable, Sendable {
         switch self {
         case .wifi: "Wi-Fi"
         case .ethernet: "Ethernet"
-        case .cellular: "Hücresel"
+        case .cellular: String(localized: "Hücresel")
         case .loopback: "Loopback"
-        case .other: "Diğer"
-        case .none: "Ağ yok"
+        case .other: String(localized: "Diğer")
+        case .none: String(localized: "Ağ yok")
         }
     }
 
@@ -57,7 +57,7 @@ struct NetworkSnapshot: Equatable, Sendable {
 
     /// "Office-5G" when the SSID is known, otherwise the interface type ("Wi-Fi").
     var displayName: String {
-        guard isOnline else { return "Çevrimdışı" }
+        guard isOnline else { return String(localized: "Çevrimdışı") }
         if interface == .wifi, let ssid, !ssid.isEmpty { return ssid }
         return interface.displayName
     }

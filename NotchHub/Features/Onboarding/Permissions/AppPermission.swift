@@ -14,21 +14,21 @@ enum AppPermission: String, CaseIterable, Identifiable, Sendable {
 
     var title: String {
         switch self {
-        case .calendar: "Takvim"
-        case .accessibility: "Erişilebilirlik"
-        case .automation: "Otomasyon"
-        case .notifications: "Bildirimler"
-        case .camera: "Kamera"
+        case .calendar: String(localized: "Takvim")
+        case .accessibility: String(localized: "Erişilebilirlik")
+        case .automation: String(localized: "Otomasyon")
+        case .notifications: String(localized: "Bildirimler")
+        case .camera: String(localized: "Kamera")
         }
     }
 
     var detail: String {
         switch self {
-        case .calendar: "Sıradaki toplantı ve hatırlatmalar"
-        case .accessibility: "Bildirim yansıtma, okunmamış sayıları, zaman takibi"
-        case .automation: "Spotify ve Music kontrolü"
-        case .notifications: "Zamanlayıcı bitince haber ver"
-        case .camera: "Toplantı öncesi ayna"
+        case .calendar: String(localized: "Sıradaki toplantı ve hatırlatmalar")
+        case .accessibility: String(localized: "Bildirim yansıtma, okunmamış sayıları, zaman takibi")
+        case .automation: String(localized: "Spotify ve Music kontrolü")
+        case .notifications: String(localized: "Zamanlayıcı bitince haber ver")
+        case .camera: String(localized: "Toplantı öncesi ayna")
         }
     }
 
@@ -75,9 +75,9 @@ enum PermissionStatus: String, Sendable {
 
     var title: String {
         switch self {
-        case .granted: "İzin verildi"
-        case .notDetermined: "Sorulmadı"
-        case .denied: "Reddedildi"
+        case .granted: String(localized: "İzin verildi")
+        case .notDetermined: String(localized: "Sorulmadı")
+        case .denied: String(localized: "Reddedildi")
         }
     }
 

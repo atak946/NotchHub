@@ -2,7 +2,9 @@ import Foundation
 
 /// RFC 4180 CSV of ledger entries: `Date,Client,App,Minutes`, CRLF line endings.
 enum TimeCSVExporter {
-    static let header = ["Tarih", "Müşteri", "Uygulama", "Dakika"]
+    static var header: [String] {
+        [String(localized: "Tarih"), String(localized: "Müşteri"), String(localized: "Uygulama"), String(localized: "Dakika")]
+    }
     static let lineEnding = "\r\n"
     private static let secondsPerMinute = 60.0
     private static let charactersNeedingQuotes: Set<Character> = [",", "\"", "\n", "\r"]

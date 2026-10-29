@@ -103,7 +103,7 @@ private struct ProfileChip: View {
                 Button("Devre dışı bırak", systemImage: "stop.circle", action: onDeactivate)
             }
         }
-        .accessibilityLabel("\(profile.displayName)\(isActive ? ", etkin" : "")")
+        .accessibilityLabel(isActive ? Text("\(profile.displayName), etkin") : Text(verbatim: profile.displayName))
     }
 
     private func chipFill(_ tint: Color) -> Color {

@@ -3,7 +3,7 @@ import Foundation
 /// Builds "✓ dotnet build · 1m 12s" / "✗ npm test failed (exit 1) · 45s" from a raw shell command line.
 enum CommandFinishedFormatter {
     static let maxNameLength = 40
-    static let fallbackName = "Komut"
+    static let fallbackName = String(localized: "Komut")
     static let successSymbol = "checkmark.circle.fill"
     static let failureSymbol = "xmark.octagon.fill"
 
@@ -27,7 +27,7 @@ enum CommandFinishedFormatter {
         if result.succeeded {
             return "✓ \(name) · \(duration)"
         }
-        return "✗ \(name) başarısız (çıkış \(result.exitCode)) · \(duration)"
+        return String(localized: "✗ \(name) başarısız (çıkış \(result.exitCode)) · \(duration)")
     }
 
     static func style(for result: ExternalCommandResult) -> ExternalAlertStyle {

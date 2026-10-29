@@ -71,6 +71,6 @@ struct FocusGuardPolicy: Equatable, Sendable {
     }
 
     static func reminderTitle(minutesLeft: Int) -> String {
-        "Odak zamanı — \(minutesLeft) dk kaldı"
+        String(localized: "Odak zamanı — \(minutesLeft) dk kaldı")
     }
 }

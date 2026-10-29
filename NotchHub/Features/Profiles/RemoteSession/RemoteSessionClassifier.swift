@@ -8,8 +8,8 @@ enum RemoteSessionSource: String, CaseIterable, Sendable, Comparable {
     var title: String {
         switch self {
         case .anyDesk: "AnyDesk"
-        case .screenSharing: "Ekran Paylaşımı"
-        case .remoteManagement: "Uzaktan Yönetim"
+        case .screenSharing: String(localized: "Ekran Paylaşımı")
+        case .remoteManagement: String(localized: "Uzaktan Yönetim")
         }
     }
 

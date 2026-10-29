@@ -26,7 +26,7 @@ struct ClientProfile: Identifiable, Codable, Hashable, Sendable {
     /// Name shown in the UI; never empty.
     var displayName: String {
         let trimmed = name.trimmingCharacters(in: .whitespacesAndNewlines)
-        return trimmed.isEmpty ? "Adsız profil" : trimmed
+        return trimmed.isEmpty ? String(localized: "Adsız profil") : trimmed
     }
 }
 
@@ -36,7 +36,19 @@ enum ProfileColor: String, CaseIterable, Identifiable, Codable, Sendable {
 
     var id: String { rawValue }
 
-    var title: String { rawValue.capitalized }
+    var title: String {
+        switch self {
+        case .blue: String(localized: "Mavi")
+        case .purple: String(localized: "Mor")
+        case .pink: String(localized: "Pembe")
+        case .red: String(localized: "Kırmızı")
+        case .orange: String(localized: "Turuncu")
+        case .yellow: String(localized: "Sarı")
+        case .green: String(localized: "Yeşil")
+        case .teal: String(localized: "Turkuaz")
+        case .gray: String(localized: "Gri")
+        }
+    }
 }
 
 /// One step of a profile. `continueOnFailure` lets non-critical steps fail without aborting the run.
@@ -106,13 +118,13 @@ enum ProfileAction: Codable, Hashable, Sendable {
     /// Short human description, e.g. "compose up · api".
     var summary: String {
         switch self {
-        case let .openApp(bundleID): "\(bundleID) aç"
-        case let .openURL(url): "\(url) aç"
+        case let .openApp(bundleID): String(localized: "\(bundleID) aç")
+        case let .openURL(url): String(localized: "\(url) aç")
         case let .openInVSCode(path): "VS Code · \(Self.folderName(path))"
         case let .dockerComposeUp(path): "compose up · \(Self.folderName(path))"
         case let .dockerComposeStop(path): "compose stop · \(Self.folderName(path))"
         case let .openTerminal(path): "Terminal · \(Self.folderName(path))"
-        case let .waitForVPN(timeout): "VPN bekle (\(timeout) sn)"
+        case let .waitForVPN(timeout): String(localized: "VPN bekle (\(timeout) sn)")
         }
     }
 
@@ -129,13 +141,13 @@ enum ProfileActionKind: String, CaseIterable, Identifiable, Sendable {
 
     var title: String {
         switch self {
-        case .openApp: "Uygulama aç"
-        case .openURL: "URL aç"
-        case .openInVSCode: "Klasörü VS Code'da aç"
+        case .openApp: String(localized: "Uygulama aç")
+        case .openURL: String(localized: "URL aç")
+        case .openInVSCode: String(localized: "Klasörü VS Code'da aç")
         case .dockerComposeUp: "docker compose up -d"
         case .dockerComposeStop: "docker compose stop"
-        case .openTerminal: "Terminali klasörde aç"
-        case .waitForVPN: "VPN bekle"
+        case .openTerminal: String(localized: "Terminali klasörde aç")
+        case .waitForVPN: String(localized: "VPN bekle")
         }
     }
 

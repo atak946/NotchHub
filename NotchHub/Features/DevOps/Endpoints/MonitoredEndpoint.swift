@@ -70,12 +70,12 @@ enum EndpointValidationError: Error, Equatable, Sendable {
 
     var message: String {
         switch self {
-        case .emptyName: "Bir ad gir."
-        case .invalidURL: "Geçerli bir URL gir."
-        case .unsupportedScheme: "Yalnızca http:// ve https:// URL'leri desteklenir."
-        case .missingHost: "URL'de bir ana makine adı olmalı."
-        case .intervalOutOfRange: "Aralık 30 saniye ile 10 dakika arasında olmalı."
-        case .invalidStatusRange: "Beklenen durum 100–599 aralığında olmalı."
+        case .emptyName: String(localized: "Bir ad gir.")
+        case .invalidURL: String(localized: "Geçerli bir URL gir.")
+        case .unsupportedScheme: String(localized: "Yalnızca http:// ve https:// URL'leri desteklenir.")
+        case .missingHost: String(localized: "URL'de bir ana makine adı olmalı.")
+        case .intervalOutOfRange: String(localized: "Aralık 30 saniye ile 10 dakika arasında olmalı.")
+        case .invalidStatusRange: String(localized: "Beklenen durum 100–599 aralığında olmalı.")
         }
     }
 }

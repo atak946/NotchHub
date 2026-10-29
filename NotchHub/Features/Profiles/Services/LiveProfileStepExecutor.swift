@@ -63,7 +63,7 @@ final class LiveProfileStepExecutor: ProfileStepExecuting {
 
     private func applicationURL(for bundleID: String) throws -> URL {
         guard let url = workspace.urlForApplication(withBundleIdentifier: bundleID) else {
-            throw ProfileStepFailure(message: "\(bundleID) uygulaması yüklü değil")
+            throw ProfileStepFailure(message: String(localized: "\(bundleID) uygulaması yüklü değil"))
         }
         return url
     }
@@ -73,19 +73,20 @@ final class LiveProfileStepExecutor: ProfileStepExecuting {
         do {
             try await workspace.openApplication(at: appURL, configuration: NSWorkspace.OpenConfiguration())
         } catch {
-            throw ProfileStepFailure(message: "\(appURL.lastPathComponent) açılamadı: \(error.localizedDescription)")
+            throw ProfileStepFailure(message: String(localized: "\(appURL.lastPathComponent) açılamadı: \(error.localizedDescription)"))
         }
         return appURL.deletingPathExtension().lastPathComponent
     }
 
     private func openURL(_ url: URL) async throws -> String? {
         guard let handler = workspace.urlForApplication(toOpen: url) else {
-            throw ProfileStepFailure(message: "No app handles \(url.scheme ?? "this") URLs")
+            let scheme = url.scheme ?? ""
+            throw ProfileStepFailure(message: String(localized: "No app handles \(scheme) URLs"))
         }
         do {
             try await workspace.open([url], withApplicationAt: handler, configuration: NSWorkspace.OpenConfiguration())
         } catch {
-            throw ProfileStepFailure(message: "URL açılamadı: \(error.localizedDescription)")
+            throw ProfileStepFailure(message: String(localized: "URL açılamadı: \(error.localizedDescription)"))
         }
         return handler.deletingPathExtension().lastPathComponent
     }
@@ -128,7 +129,7 @@ final class LiveProfileStepExecutor: ProfileStepExecuting {
         do {
             try await workspace.open([folder], withApplicationAt: appURL, configuration: NSWorkspace.OpenConfiguration())
         } catch {
-            throw ProfileStepFailure(message: "Klasör \(appURL.lastPathComponent) ile açılamadı: \(error.localizedDescription)")
+            throw ProfileStepFailure(message: String(localized: "Klasör \(appURL.lastPathComponent) ile açılamadı: \(error.localizedDescription)"))
         }
     }
 
@@ -137,7 +138,7 @@ final class LiveProfileStepExecutor: ProfileStepExecuting {
     private func compose(_ arguments: [String], in folder: URL) async throws -> String? {
         let resolver = ProfilesCLIResolver()
         guard let docker = resolver.resolveDocker() else {
-            throw ProfileStepFailure(message: "docker CLI bulunamadı (Docker Desktop veya OrbStack)")
+            throw ProfileStepFailure(message: String(localized: "docker CLI bulunamadı (Docker Desktop veya OrbStack)"))
         }
         let result = try await processRunner.run(
             executable: docker,
@@ -149,8 +150,9 @@ final class LiveProfileStepExecutor: ProfileStepExecuting {
         guard result.exitCode == 0 else {
             let lastLine = result.outputTail
                 .split(whereSeparator: \.isNewline)
-                .last.map(String.init) ?? "çıkış kodu \(result.exitCode)"
-            throw ProfileStepFailure(message: "docker \(arguments.joined(separator: " ")) failed: \(lastLine)")
+                .last.map(String.init) ?? String(localized: "çıkış kodu \(result.exitCode)")
+            let command = arguments.joined(separator: " ")
+            throw ProfileStepFailure(message: String(localized: "docker \(command) failed: \(lastLine)"))
         }
         return folder.lastPathComponent
     }
@@ -164,7 +166,7 @@ final class LiveProfileStepExecutor: ProfileStepExecuting {
     // MARK: - VPN
 
     private func waitForVPN(timeoutSeconds: Int, prompt: @escaping @MainActor (ProfilePrompt) -> Void) async throws -> String? {
-        if isVPNUp() { return "zaten bağlı" }
+        if isVPNUp() { return String(localized: "zaten bağlı") }
 
         let vpnBundleID = configuration().vpnAppBundleID
         if let vpnBundleID, let appURL = workspace.urlForApplication(withBundleIdentifier: vpnBundleID) {
@@ -177,8 +179,8 @@ final class LiveProfileStepExecutor: ProfileStepExecuting {
             logger.error("VPN app \(vpnBundleID ?? "none", privacy: .public) not found")
         }
         prompt(ProfilePrompt(
-            title: "VPN'e bağlanın",
-            subtitle: "Tünel için en fazla \(timeoutSeconds) sn bekleniyor",
+            title: String(localized: "VPN'e bağlanın"),
+            subtitle: String(localized: "Tünel için en fazla \(timeoutSeconds) sn bekleniyor"),
             systemImage: "lock.shield"
         ))
 
@@ -186,8 +188,8 @@ final class LiveProfileStepExecutor: ProfileStepExecuting {
         while ContinuousClock.now < deadline {
             try await sleep(Self.vpnPollInterval)
             try Task.checkCancellation()
-            if isVPNUp() { return "bağlandı" }
+            if isVPNUp() { return String(localized: "bağlandı") }
         }
-        throw ProfileStepFailure(message: "\(timeoutSeconds) sn sonra VPN bağlı değil")
+        throw ProfileStepFailure(message: String(localized: "\(timeoutSeconds) sn sonra VPN bağlı değil"))
     }
 }

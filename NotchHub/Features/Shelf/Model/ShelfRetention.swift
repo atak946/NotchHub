@@ -25,10 +25,10 @@ enum ShelfRetention: String, CaseIterable, Identifiable, Sendable {
 
     var title: String {
         switch self {
-        case .off: "Asla"
-        case .oneHour: "1 saat sonra"
-        case .oneDay: "1 gün sonra"
-        case .sevenDays: "7 gün sonra"
+        case .off: String(localized: "Asla")
+        case .oneHour: String(localized: "1 saat sonra")
+        case .oneDay: String(localized: "1 gün sonra")
+        case .sevenDays: String(localized: "7 gün sonra")
         }
     }
 }

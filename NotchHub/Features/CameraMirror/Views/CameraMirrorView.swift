@@ -57,7 +57,7 @@ struct CameraMirrorView: View {
 
 private struct MirrorMessage: View {
     let systemImage: String
-    let text: String
+    let text: LocalizedStringKey
 
     var body: some View {
         VStack(spacing: 6) {

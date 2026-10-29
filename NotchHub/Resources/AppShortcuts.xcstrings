@@ -1,0 +1,106 @@
+{
+  "sourceLanguage": "tr",
+  "strings": {
+    "${applicationName} zamanlayıcı başlat": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Start a ${applicationName} timer"
+          }
+        }
+      }
+    },
+    "${applicationName} ile geri sayım başlat": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Start a countdown with ${applicationName}"
+          }
+        }
+      }
+    },
+    "${applicationName} not ekle": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add a ${applicationName} note"
+          }
+        }
+      }
+    },
+    "${applicationName} ile not al": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Take a note with ${applicationName}"
+          }
+        }
+      }
+    },
+    "${applicationName} profil çalıştır": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Run a ${applicationName} profile"
+          }
+        }
+      }
+    },
+    "${applicationName} ile ${profile} profilini çalıştır": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Run the ${profile} profile with ${applicationName}"
+          }
+        }
+      }
+    },
+    "${applicationName} rafı aç": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Open the ${applicationName} shelf"
+          }
+        }
+      }
+    },
+    "${applicationName} rafını göster": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Show the ${applicationName} shelf"
+          }
+        }
+      }
+    },
+    "${applicationName} mikrofonu sustur": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mute the microphone with ${applicationName}"
+          }
+        }
+      }
+    },
+    "${applicationName} ile mikrofonu aç kapat": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Toggle the microphone with ${applicationName}"
+          }
+        }
+      }
+    }
+  },
+  "version": "1.0"
+}

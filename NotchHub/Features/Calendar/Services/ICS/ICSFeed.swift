@@ -44,8 +44,8 @@ enum ICSFeedURL {
 
         var errorDescription: String? {
             switch self {
-            case .invalid: "Geçerli bir https:// veya webcal:// ICS bağlantısı girin."
-            case .insecure: "Yalnızca https:// (veya webcal://) bağlantıları desteklenir."
+            case .invalid: String(localized: "Geçerli bir https:// veya webcal:// ICS bağlantısı girin.")
+            case .insecure: String(localized: "Yalnızca https:// (veya webcal://) bağlantıları desteklenir.")
             }
         }
     }
@@ -104,7 +104,7 @@ enum ICSFeedTestResult: Equatable, Sendable {
 
     var message: String {
         switch self {
-        case let .success(count, _): count == 1 ? "Found 1 event" : "Found \(count) events"
+        case let .success(count, _): String(localized: "Found \(count) events")
         case let .failure(message): message
         }
     }

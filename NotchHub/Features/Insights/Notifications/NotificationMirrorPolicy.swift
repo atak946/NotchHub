@@ -9,8 +9,8 @@ enum NotificationMirrorScope: String, CaseIterable, Identifiable, Sendable {
 
     var title: String {
         switch self {
-        case .allApps: "Tüm uygulamalar"
-        case .messagingOnly: "Yalnızca mesajlaşma uygulamaları"
+        case .allApps: String(localized: "Tüm uygulamalar")
+        case .messagingOnly: String(localized: "Yalnızca mesajlaşma uygulamaları")
         }
     }
 }
@@ -43,8 +43,8 @@ enum NotificationMirrorPolicy {
     static let scriptProxyAppNames = ["Script Editor", "Betik Düzenleyici", "osascript"]
     static let maxSubtitleTextLength = 80
     static let maxTitleLength = 60
-    static let newMessageText = "Yeni mesaj"
-    static let newNotificationText = "Yeni bildirim"
+    static var newMessageText: String { String(localized: "Yeni mesaj") }
+    static var newNotificationText: String { String(localized: "Yeni bildirim") }
     static let separator = " · "
     private static let ellipsis = "…"
 

@@ -62,7 +62,7 @@ struct ICSFeedsSettingsSection: View {
             try source.addFeed(name: newName, urlString: trimmedURL)
             newName = ""
             newURL = ""
-            addMessage = "Akış eklendi. Eşitleniyor…"
+            addMessage = String(localized: "Akış eklendi. Eşitleniyor…")
         } catch {
             addMessage = error.localizedDescription
         }
@@ -70,7 +70,7 @@ struct ICSFeedsSettingsSection: View {
 
     private func testNew() {
         isTestingNew = true
-        addMessage = "Test ediliyor…"
+        addMessage = String(localized: "Test ediliyor…")
         let url = trimmedURL
         Task {
             let result = await source.testFeed(urlString: url)
@@ -80,7 +80,7 @@ struct ICSFeedsSettingsSection: View {
     }
 
     private func test(_ feed: ICSFeed) {
-        testResults[feed.id] = "Test ediliyor…"
+        testResults[feed.id] = String(localized: "Test ediliyor…")
         Task {
             testResults[feed.id] = await source.testFeed(id: feed.id).message
         }
@@ -142,8 +142,9 @@ private struct ICSFeedRow: View {
     private var statusText: String {
         if let testResult { return testResult }
         if let error = status?.errorMessage { return error }
-        guard let status, let lastSync = status.lastSync else { return "Henüz eşitlenmedi" }
-        let count = status.eventCount.map { $0 == 1 ? "1 etkinlik" : "\($0) etkinlik" } ?? "Eşitlendi"
-        return "\(count) · eşitlendi \(lastSync.formatted(.relative(presentation: .named)))"
+        guard let status, let lastSync = status.lastSync else { return String(localized: "Henüz eşitlenmedi") }
+        let count = status.eventCount.map { String(localized: "\($0) etkinlik") } ?? String(localized: "Eşitlendi")
+        let relative = lastSync.formatted(.relative(presentation: .named))
+        return String(localized: "\(count) · eşitlendi \(relative)")
     }
 }

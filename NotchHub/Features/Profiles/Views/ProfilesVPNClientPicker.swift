@@ -21,8 +21,8 @@ struct ProfilesVPNClientPicker: View {
     }
 
     private var automaticTitle: String {
-        guard let first = installed.first else { return "Otomatik (yüklü istemci yok)" }
-        return "Otomatik (\(first.displayName))"
+        guard let first = installed.first else { return String(localized: "Otomatik (yüklü istemci yok)") }
+        return String(localized: "Otomatik (\(first.displayName))")
     }
 
     /// A stored choice that is not installed (or was typed in an earlier version) stays selectable.

@@ -2,7 +2,7 @@ import Foundation
 
 /// Turns parsed VEVENTs into `CalendarEvent` occurrences for a window (recurrences, EXDATE, RECURRENCE-ID, cancellations).
 enum ICSEventExpander {
-    static let untitledEventTitle = "Untitled event"
+    static let untitledEventTitle = String(localized: "Untitled event")
     private static let allDayDuration: TimeInterval = 24 * 60 * 60
 
     static func events(in data: ICSCalendarData, window: DateInterval, context: CalendarSourceContext) -> [CalendarEvent] {

@@ -9,8 +9,8 @@ enum ShelfSegment: String, CaseIterable, Identifiable, Sendable {
 
     var title: String {
         switch self {
-        case .shelf: "Raf"
-        case .clipboard: "Pano"
+        case .shelf: String(localized: "Raf")
+        case .clipboard: String(localized: "Pano")
         }
     }
 
@@ -22,7 +22,7 @@ enum ShelfSegment: String, CaseIterable, Identifiable, Sendable {
     }
 }
 
-/// Compact capsule switch between "Raf" and "Pano" with a sliding highlight.
+/// Compact capsule switch between String(localized: "Raf") and String(localized: "Pano") with a sliding highlight.
 struct ShelfSegmentPicker: View {
     private static let fontSize: CGFloat = 11
 

@@ -13,7 +13,7 @@ struct HeadphoneBatteryStatusTile: View {
     var body: some View {
         SystemStatusTileView(
             systemImage: systemImage,
-            title: "Kulaklık",
+            title: String(localized: "Kulaklık"),
             value: value,
             detail: detail,
             tint: tint,
@@ -31,17 +31,17 @@ struct HeadphoneBatteryStatusTile: View {
     }
 
     private var value: String {
-        guard monitor.isEnabled else { return "Kapalı" }
-        guard let report else { return monitor.connectedOutput == nil ? "Bağlı değil" : "Pil bilinmiyor" }
+        guard monitor.isEnabled else { return String(localized: "Kapalı") }
+        guard let report else { return monitor.connectedOutput == nil ? String(localized: "Bağlı değil") : String(localized: "Pil bilinmiyor") }
         let parts = HeadphoneBatteryFormatter.parts(report.levels)
-        let buds = parts.filter { $0.label != "Kutu" }
+        let buds = parts.filter { $0.kind != .caseLevel }
         return (buds.isEmpty ? parts : buds).map(\.text).joined(separator: " · ")
     }
 
     private var detail: String? {
         guard monitor.isEnabled else { return nil }
         guard let report else { return monitor.connectedOutput?.name }
-        let caseText = HeadphoneBatteryFormatter.parts(report.levels).first { $0.label == "Kutu" }?.text
+        let caseText = HeadphoneBatteryFormatter.parts(report.levels).first { $0.kind == .caseLevel }?.text
         return [caseText, report.deviceName].compactMap { $0 }.joined(separator: " · ")
     }
 

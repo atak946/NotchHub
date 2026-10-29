@@ -174,7 +174,7 @@ final class TimeTracker {
             style: .reminder,
             coalescingKey: "insights.dailySummary",
             autoDismissAfter: NotchAlert.importantDuration,
-            actionTitle: "Özeti kopyala",
+            actionTitle: String(localized: "Özeti kopyala"),
             action: { [weak self] in self?.copySummary(day: day) }
         ))
     }
@@ -209,7 +209,7 @@ final class TimeTracker {
             lastError = nil
         } catch {
             logger.error("Could not delete time ledger: \(error.localizedDescription, privacy: .public)")
-            lastError = "Takip edilen zaman sıfırlanamadı."
+            lastError = String(localized: "Takip edilen zaman sıfırlanamadı.")
         }
         resetSampling()
     }
@@ -239,7 +239,7 @@ final class TimeTracker {
             lastError = nil
         } catch {
             logger.error("Could not save time ledger: \(error.localizedDescription, privacy: .public)")
-            lastError = "Takip edilen zaman kaydedilemedi."
+            lastError = String(localized: "Takip edilen zaman kaydedilemedi.")
         }
     }
 
@@ -250,7 +250,7 @@ final class TimeTracker {
             ledger = try store.load()
         } catch {
             logger.error("Time ledger unreadable, starting fresh: \(error.localizedDescription, privacy: .public)")
-            lastError = "Kayıtlı zaman verisi okunamadı ve kenara alındı."
+            lastError = String(localized: "Kayıtlı zaman verisi okunamadı ve kenara alındı.")
         }
     }
 

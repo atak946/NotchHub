@@ -12,7 +12,7 @@ struct CalendarAccessView: View {
                 .symbolRenderingMode(.hierarchical)
 
             VStack(alignment: .leading, spacing: 6) {
-                Text(isDenied ? "Takvim erişimi kapalı" : "Sıradaki toplantınızı burada görün")
+                (isDenied ? Text("Takvim erişimi kapalı") : Text("Sıradaki toplantınızı burada görün"))
                     .font(.system(size: 16, weight: .semibold))
                     .foregroundStyle(.primary)
                 Text("NotchHub, yaklaşan toplantıları ve katılım bağlantılarını göstermek için takvimlerinizi okur. Hesapları Sistem Ayarları › İnternet Hesapları'ndan, ICS akışı / Microsoft 365'i ise NotchHub Ayarları'ndan ekleyin.")

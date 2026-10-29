@@ -13,7 +13,9 @@ extension NotchWindowManager: IntentPanelPresenting {}
 /// Routes intents to the real, in-process services.
 @MainActor
 final class LiveIntentRoutes: IntentRouting {
-    static let alertAppName = "Kestirmeler"
+    /// Shown as the alert source label; the bundle id finds the Shortcuts icon whatever the system language.
+    static let alertAppName = String(localized: "Kestirmeler")
+    static let alertAppBundleID = "com.apple.shortcuts"
 
     private let services: ModuleServices
     private let settings: SettingsStore
@@ -64,6 +66,7 @@ final class LiveIntentRoutes: IntentRouting {
             subtitle: message,
             style: style,
             autoDismissAfter: style.pulses ? NotchAlert.importantDuration : NotchAlert.defaultDuration,
+            appBundleID: Self.alertAppBundleID,
             appName: Self.alertAppName
         ))
     }

@@ -81,7 +81,7 @@ struct OnboardingView: View {
             launchAtLoginError = nil
         } catch {
             logger.error("Launch at login update failed: \(error.localizedDescription, privacy: .public)")
-            launchAtLoginError = "Giriş öğesi güncellenemedi: \(error.localizedDescription)"
+            launchAtLoginError = String(localized: "Giriş öğesi güncellenemedi: \(error.localizedDescription)")
             launchAtLogin = LaunchAtLogin.isEnabled
         }
     }

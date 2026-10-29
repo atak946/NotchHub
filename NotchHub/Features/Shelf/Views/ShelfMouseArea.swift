@@ -148,7 +148,7 @@ final class ShelfMouseAreaView: NSView, NSDraggingSource {
         case .image(let data):
             NSImage(data: data)
         case .text:
-            NSImage(systemSymbolName: "text.alignleft", accessibilityDescription: "Metin")
+            NSImage(systemSymbolName: "text.alignleft", accessibilityDescription: String(localized: "Metin"))
         }
     }
 }

@@ -44,7 +44,7 @@ struct CalendarPressableStyle: ButtonStyle {
 
 /// Filled capsule button used for "Join" and permission actions.
 struct CalendarProminentButtonLabel: View {
-    let title: String
+    let title: LocalizedStringKey
     let systemImage: String
     let tint: Color
 

@@ -207,7 +207,7 @@ struct EndpointEditorView: View {
     }
 
     private static func intervalTitle(_ seconds: Int) -> String {
-        seconds < 60 ? "\(seconds) saniye" : "\(seconds / 60) dk\(seconds % 60 == 0 ? "" : " \(seconds % 60) sn")"
+        Duration.seconds(seconds).formatted(.units(allowed: [.minutes, .seconds], width: .wide))
     }
 }
 
@@ -228,7 +228,7 @@ struct LocalLLMSettingsSection: View {
         }
     }
 
-    private func portField(_ title: String, value: Binding<Int>) -> some View {
+    private func portField(_ title: LocalizedStringKey, value: Binding<Int>) -> some View {
         LabeledContent(title) {
             TextField(title, value: value, format: .number.grouping(.never))
                 .labelsHidden()

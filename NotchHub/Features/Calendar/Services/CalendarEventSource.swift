@@ -32,7 +32,7 @@ protocol CalendarEventSource: AnyObject {
 
 extension CalendarEventSource {
     var sourceID: String { String(describing: type(of: self)) }
-    var sourceName: String { "Calendar" }
+    var sourceName: String { String(localized: "Calendar") }
     var sourceSystemImage: String { "calendar" }
     var statusMessage: String? { nil }
 }

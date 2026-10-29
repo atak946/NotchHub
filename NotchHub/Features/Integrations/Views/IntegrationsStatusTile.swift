@@ -90,12 +90,12 @@ struct IntegrationsStatusTile: View {
     }
 
     private var stateText: String {
-        guard service.isEnabled else { return "Kapalı" }
+        guard service.isEnabled else { return String(localized: "Kapalı") }
         switch service.socketState {
-        case .listening: return "Uyarı bekleniyor"
-        case .starting: return "Başlatılıyor…"
-        case .stopped: return "Yalnızca URL şeması"
-        case .failed: return "Soket başarısız"
+        case .listening: return String(localized: "Uyarı bekleniyor")
+        case .starting: return String(localized: "Başlatılıyor…")
+        case .stopped: return String(localized: "Yalnızca URL şeması")
+        case .failed: return String(localized: "Soket başarısız")
         }
     }
 
@@ -106,7 +106,7 @@ struct IntegrationsStatusTile: View {
     }
 
     private var helpText: String {
-        "Bugün \(service.countToday) harici uyarı · soket: \(stateText)"
+        String(localized: "Bugün \(service.countToday) harici uyarı · soket: \(stateText)")
     }
 }
 

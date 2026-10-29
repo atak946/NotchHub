@@ -228,7 +228,7 @@ final class NotificationMirrorService {
             style: .info,
             coalescingKey: content.coalescingKey,
             autoDismissAfter: Self.alertDuration,
-            actionTitle: openAction == nil ? nil : "Aç",
+            actionTitle: openAction == nil ? nil : String(localized: "Aç"),
             action: openAction,
             appBundleID: KnownApps.bundleID(forName: app),
             appName: MessagingApp.displayName(for: app),

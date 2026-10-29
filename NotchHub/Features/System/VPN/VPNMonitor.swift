@@ -177,19 +177,19 @@ final class VPNMonitor {
             alerts.post(NotchAlert(
                 module: .status,
                 systemImage: "lock.slash.fill",
-                title: "VPN bağlantısı koptu",
+                title: String(localized: "VPN bağlantısı koptu"),
                 subtitle: clientName,
                 style: .urgent,
                 coalescingKey: Self.alertKey,
                 autoDismissAfter: NotchAlert.importantDuration,
-                actionTitle: hasClient ? "Aç" : nil,
+                actionTitle: hasClient ? String(localized: "Aç") : nil,
                 action: openAction
             ))
         case .reconnected:
             alerts.post(NotchAlert(
                 module: .status,
                 systemImage: "lock.shield.fill",
-                title: "VPN yeniden bağlandı",
+                title: String(localized: "VPN yeniden bağlandı"),
                 subtitle: clientName,
                 style: .success,
                 coalescingKey: Self.alertKey,

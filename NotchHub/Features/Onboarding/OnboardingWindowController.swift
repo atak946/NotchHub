@@ -6,7 +6,7 @@ import SwiftUI
 /// reliably for an LSUIElement app and can be opened from AppKit code at launch.
 @MainActor
 final class OnboardingWindowController: NSObject, NSWindowDelegate {
-    private static let windowTitle = "NotchHub Kurulumu"
+    private static var windowTitle: String { String(localized: "NotchHub Kurulumu") }
 
     private let permissions: PermissionsModel
     private let stateStore: OnboardingStateStore

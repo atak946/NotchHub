@@ -146,11 +146,11 @@ final class MicCameraMonitor {
         alerts.post(NotchAlert(
             module: .status,
             systemImage: "mic.fill",
-            title: "Mikrofon hâlâ kullanımda",
-            subtitle: "Toplantı uygulaması açık değilken \(minutes) dk'dır açık",
+            title: String(localized: "Mikrofon hâlâ kullanımda"),
+            subtitle: String(localized: "Toplantı uygulaması açık değilken \(minutes) dk'dır açık"),
             style: .info,
             coalescingKey: Self.idleAlertKey,
-            actionTitle: "Ayarlar",
+            actionTitle: String(localized: "Ayarlar"),
             action: { [weak self] in self?.openPrivacySettings() }
         ))
     }

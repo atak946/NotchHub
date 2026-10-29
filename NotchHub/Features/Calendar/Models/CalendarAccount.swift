@@ -15,9 +15,9 @@ enum CalendarAccountKind: String, CaseIterable, Hashable, Sendable {
         case .outlook: "Outlook"
         case .google: "Google"
         case .iCloud: "iCloud"
-        case .local: "Bu Mac'te"
-        case .subscribed: "Abone olunan"
-        case .other: "Diğer"
+        case .local: String(localized: "Bu Mac'te")
+        case .subscribed: String(localized: "Abone olunan")
+        case .other: String(localized: "Diğer")
         }
     }
 
@@ -78,7 +78,7 @@ enum CalendarAccountKind: String, CaseIterable, Hashable, Sendable {
 
 /// An account (EventKit source) that owns one or more calendars.
 struct CalendarAccount: Hashable, Identifiable, Sendable {
-    static let unknown = CalendarAccount(id: "unknown", title: "Diğer", kind: .other)
+    static let unknown = CalendarAccount(id: "unknown", title: String(localized: "Diğer"), kind: .other)
 
     /// `EKSource.sourceIdentifier`.
     let id: String

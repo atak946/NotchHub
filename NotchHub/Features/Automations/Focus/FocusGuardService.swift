@@ -157,7 +157,7 @@ final class FocusGuardService {
     // MARK: - Private
 
     private func postReminder(for activation: FocusActivation, minutesLeft: Int) {
-        let appName = activation.name ?? "Bu uygulama"
+        let appName = activation.name ?? String(localized: "Bu uygulama")
         let hasReturnTarget = lastFocusedApp != nil
         var action: (@MainActor () -> Void)?
         if hasReturnTarget {
@@ -168,11 +168,11 @@ final class FocusGuardService {
             module: .status,
             systemImage: Self.alertSymbol,
             title: FocusGuardPolicy.reminderTitle(minutesLeft: minutesLeft),
-            subtitle: "\(appName) bekleyebilir.",
+            subtitle: String(localized: "\(appName) bekleyebilir."),
             style: .reminder,
             coalescingKey: Self.alertKey,
             autoDismissAfter: Self.alertDuration,
-            actionTitle: hasReturnTarget ? "İşe dön" : nil,
+            actionTitle: hasReturnTarget ? String(localized: "İşe dön") : nil,
             action: action
         ))
     }
