@@ -24,6 +24,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         self?.windowManager.present(module)
     }
     private var hotKey: GlobalHotKey?
+    private lazy var statusMenu = StatusMenuController(
+        settings: settings,
+        windowManager: windowManager,
+        updater: updater,
+        micMute: services.system.micMute,
+        supportActions: supportActions
+    )
     private lazy var micMuteHotKey = MicMuteHotKey(controller: services.system.micMute)
 
     // MARK: Updates (Sparkle; inert unless the build defines a feed and key)
@@ -66,6 +73,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         registerHotKey()
         micMuteHotKey.start()
         updater.start()
+        statusMenu.install()
         permissions.onGranted = { [weak self] permission in
             if permission == .calendar { self?.services.calendar.refresh() }
         }
