@@ -16,10 +16,10 @@ enum ICSEventExpander {
         for master in masters where !master.isCancelled {
             result += occurrences(of: master, skipping: overriddenKeys[master.uid] ?? [], in: window, context: context)
         }
-        for override in overrides where !override.isCancelled {
-            let master = mastersByUID[override.uid]
+        for exception in overrides where !exception.isCancelled {
+            let master = mastersByUID[exception.uid]
             if master?.isCancelled == true { continue }
-            if let event = overrideEvent(override, master: master, in: window, context: context) {
+            if let event = overrideEvent(exception, master: master, in: window, context: context) {
                 result.append(event)
             }
         }
@@ -58,38 +58,39 @@ enum ICSEventExpander {
             .map { makeEvent(master, start: $0, duration: duration, isAllDay: start.isAllDay, context: context) }
     }
 
-    /// The master's start moved to the override's RECURRENCE-ID. Kept as a separate function:
+    /// The master's start moved to the exception's RECURRENCE-ID. Kept as a separate function:
     /// the inline optional chain crashes the Swift 6.3 type checker.
-    private static func inheritedStart(of override: ICSRawEvent, master: ICSRawEvent?) -> ICSDateTime? {
+    private static func inheritedStart(of exception: ICSRawEvent, master: ICSRawEvent?) -> ICSDateTime? {
         guard let masterStart = master?.start else { return nil }
-        let date = override.recurrenceID ?? masterStart.date
+        let date = exception.recurrenceID ?? masterStart.date
         return ICSDateTime(date: date, isAllDay: masterStart.isAllDay, timeZone: masterStart.timeZone)
     }
 
     private static func overrideEvent(
-        _ override: ICSRawEvent,
+        _ exception: ICSRawEvent,
         master: ICSRawEvent?,
         in window: DateInterval,
         context: CalendarSourceContext
     ) -> CalendarEvent? {
         let masterDuration = master.flatMap { event in event.start.map { duration(of: event, start: $0) } }
-        guard let start = override.start ?? inheritedStart(of: override, master: master) else { return nil }
-        let hasOwnEnd = override.end != nil || override.duration != nil
-        let duration = hasOwnEnd ? duration(of: override, start: start) : (masterDuration ?? duration(of: override, start: start))
-        guard overlaps(start.date, duration: duration, window: window) else { return nil }
-        let merged = merge(override, into: master)
-        return makeEvent(merged, start: start.date, duration: duration, isAllDay: start.isAllDay, context: context)
+        let ownStart: ICSDateTime? = exception.start
+        guard let start = ownStart ?? inheritedStart(of: exception, master: master) else { return nil }
+        let hasOwnEnd = exception.end != nil || exception.duration != nil
+        let eventDuration = hasOwnEnd ? duration(of: exception, start: start) : (masterDuration ?? duration(of: exception, start: start))
+        guard overlaps(start.date, duration: eventDuration, window: window) else { return nil }
+        let merged = merge(exception, into: master)
+        return makeEvent(merged, start: start.date, duration: eventDuration, isAllDay: start.isAllDay, context: context)
     }
 
-    private static func merge(_ override: ICSRawEvent, into master: ICSRawEvent?) -> ICSRawEvent {
-        guard let master else { return override }
-        var merged = override
-        merged.summary = override.summary ?? master.summary
-        merged.location = override.location ?? master.location
-        merged.description = override.description ?? master.description
-        merged.url = override.url ?? master.url
-        merged.teamsMeetingURL = override.teamsMeetingURL ?? master.teamsMeetingURL
-        merged.conferenceLink = override.conferenceLink ?? master.conferenceLink
+    private static func merge(_ exception: ICSRawEvent, into master: ICSRawEvent?) -> ICSRawEvent {
+        guard let master else { return exception }
+        var merged = exception
+        merged.summary = exception.summary ?? master.summary
+        merged.location = exception.location ?? master.location
+        merged.description = exception.description ?? master.description
+        merged.url = exception.url ?? master.url
+        merged.teamsMeetingURL = exception.teamsMeetingURL ?? master.teamsMeetingURL
+        merged.conferenceLink = exception.conferenceLink ?? master.conferenceLink
         return merged
     }
 
