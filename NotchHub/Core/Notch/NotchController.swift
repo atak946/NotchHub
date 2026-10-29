@@ -146,8 +146,19 @@ final class NotchController {
     }
 
     /// Clicks pass through to the menu bar unless the panel or an alert banner is showing.
-    private func updateMouseInteractivity() {
-        panel.ignoresMouseEvents = !(model.isExpanded || alerts.current != nil)
+    private func updateMouseInteractivity(at point: CGPoint = NSEvent.mouseLocation) {
+        // The window spans the whole expanded area plus shadow margins; only the visible
+        // panel or alert may take clicks, everything around it must reach the apps below.
+        let shouldAccept = interactiveRect?.contains(point) ?? false
+        if panel.ignoresMouseEvents == shouldAccept {
+            panel.ignoresMouseEvents = !shouldAccept
+        }
+    }
+
+    private var interactiveRect: CGRect? {
+        if model.isExpanded { return model.geometry.expandedRect }
+        if alerts.current != nil { return model.geometry.alertRect }
+        return nil
     }
 
     private func cancelPendingTasks() {
@@ -211,6 +222,7 @@ final class NotchController {
 
     private func handleMouseMove(to point: CGPoint, isDragging: Bool) {
         guard panel.isVisible else { return }
+        updateMouseInteractivity(at: point)
         let geometry = model.geometry
 
         if model.isExpanded {
