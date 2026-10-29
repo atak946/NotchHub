@@ -60,31 +60,41 @@ final class SystemDefinedKeyMonitor: HUDKeySource {
     }
 }
 
-/// Reads the built-in display brightness through the private DisplayServices framework, loaded at runtime.
-/// Missing framework or symbol → always `nil`, so the HUD shows without a level.
+/// Reads and sets the built-in display brightness through the private DisplayServices framework, loaded at runtime.
+/// Missing framework or symbol → reads return `nil` (HUD without a level) and keys stay with macOS.
 @MainActor
 final class DisplayServicesBrightnessReader: HUDBrightnessReading {
     private typealias GetBrightness = @convention(c) (UInt32, UnsafeMutablePointer<Float>) -> Int32
+    private typealias SetBrightness = @convention(c) (UInt32, Float) -> Int32
 
     private static let frameworkPath = "/System/Library/PrivateFrameworks/DisplayServices.framework/DisplayServices"
-    private static let symbolName = "DisplayServicesGetBrightness"
+    private static let getSymbolName = "DisplayServicesGetBrightness"
+    private static let setSymbolName = "DisplayServicesSetBrightness"
 
     private let getBrightness: GetBrightness?
+    private let setBrightness: SetBrightness?
     private let logger = Logger(subsystem: AppIdentity.logSubsystem, category: "HUD")
 
     init() {
         guard let handle = dlopen(Self.frameworkPath, RTLD_LAZY) else {
             getBrightness = nil
+            setBrightness = nil
             logger.notice("DisplayServices unavailable; brightness HUD shows without a level")
             return
         }
-        guard let symbol = dlsym(handle, Self.symbolName) else {
+        // The handle stays open for the app's lifetime; the symbols must remain valid.
+        if let symbol = dlsym(handle, Self.getSymbolName) {
+            getBrightness = unsafeBitCast(symbol, to: GetBrightness.self)
+        } else {
             getBrightness = nil
             logger.notice("DisplayServicesGetBrightness missing; brightness HUD shows without a level")
-            return
         }
-        // The handle stays open for the app's lifetime; the symbol must remain valid.
-        getBrightness = unsafeBitCast(symbol, to: GetBrightness.self)
+        if let symbol = dlsym(handle, Self.setSymbolName) {
+            setBrightness = unsafeBitCast(symbol, to: SetBrightness.self)
+        } else {
+            setBrightness = nil
+            logger.notice("DisplayServicesSetBrightness missing; brightness keys stay with macOS")
+        }
     }
 
     func brightness() -> Double? {
@@ -93,6 +103,22 @@ final class DisplayServicesBrightnessReader: HUDBrightnessReading {
         let status = getBrightness(displayID, &value)
         guard status == 0, value.isFinite else { return nil }
         return HUDLevel.clamped(Double(value))
+    }
+
+    /// Brightness keys are only taken over when the level can be read back and written.
+    var canSetBrightness: Bool {
+        setBrightness != nil && brightness() != nil
+    }
+
+    /// Writes `level` (clamped to 0…1); `false` when unsupported or the call fails.
+    @discardableResult
+    func setBrightness(_ level: Double) -> Bool {
+        guard let setBrightness, let displayID = Self.builtInDisplayID() else { return false }
+        let status = setBrightness(displayID, Float(HUDLevel.clamped(level)))
+        if status != 0 {
+            logger.error("DisplayServicesSetBrightness failed: \(status)")
+        }
+        return status == 0
     }
 
     private static func builtInDisplayID() -> CGDirectDisplayID? {

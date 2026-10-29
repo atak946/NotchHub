@@ -6,6 +6,7 @@ import Observation
 @Observable
 final class SystemHUD {
     static let enabledKey = "hud.enabled"
+    static let hidesSystemHUDKey = "hud.hideSystemHUD"
     /// Lets the system apply the key press before the level is read back.
     static let keyReadDelay: Duration = .milliseconds(60)
 
@@ -21,6 +22,15 @@ final class SystemHUD {
         }
     }
 
+    /// "macOS ses/parlaklık kutusunu gizle" (default on): NotchHub handles the keys itself. Needs `isEnabled`.
+    var hidesSystemHUD: Bool {
+        didSet {
+            guard hidesSystemHUD != oldValue else { return }
+            defaults.set(hidesSystemHUD, forKey: Self.hidesSystemHUDKey)
+            updateInterception()
+        }
+    }
+
     /// Set by the integrator: `true` while readings must be dropped (paused, or an alert is on screen).
     @ObservationIgnored var isBlocked: @MainActor () -> Bool = { false }
 
@@ -29,6 +39,7 @@ final class SystemHUD {
     @ObservationIgnored private let keys: any HUDKeySource
     @ObservationIgnored private let brightness: any HUDBrightnessReading
     @ObservationIgnored private let sleep: NotchHUDCenter.Sleeper
+    @ObservationIgnored private let mediaKeys: MediaKeyCoordinator?
     @ObservationIgnored private var isStarted = false
     @ObservationIgnored private var sourcesRunning = false
     @ObservationIgnored private var lastVolume: HUDReading?
@@ -40,7 +51,8 @@ final class SystemHUD {
         volume: any HUDVolumeSource = CoreAudioVolumeSource(),
         keys: any HUDKeySource = SystemDefinedKeyMonitor(),
         brightness: any HUDBrightnessReading = DisplayServicesBrightnessReader(),
-        sleep: @escaping NotchHUDCenter.Sleeper = { try await Task.sleep(for: $0) }
+        sleep: @escaping NotchHUDCenter.Sleeper = { try await Task.sleep(for: $0) },
+        mediaKeys: MediaKeyCoordinator? = nil
     ) {
         self.defaults = defaults
         self.center = center
@@ -48,13 +60,16 @@ final class SystemHUD {
         self.keys = keys
         self.brightness = brightness
         self.sleep = sleep
+        self.mediaKeys = mediaKeys
         isEnabled = defaults.object(forKey: Self.enabledKey) as? Bool ?? true
+        hidesSystemHUD = defaults.object(forKey: Self.hidesSystemHUDKey) as? Bool ?? true
         center.canShow = { [weak self] in
             guard let self else { return false }
             return self.isEnabled && !self.isBlocked()
         }
         volume.onChange = { [weak self] reading in self?.handleVolume(reading) }
         keys.onKey = { [weak self] event in self?.handleKey(event) }
+        mediaKeys?.onReading = { [weak self] reading in self?.handleInterceptedReading(reading) }
     }
 
     func start() {
@@ -70,6 +85,7 @@ final class SystemHUD {
     // MARK: - Private
 
     private func updateSources() {
+        defer { updateInterception() }
         let shouldRun = isStarted && isEnabled
         guard shouldRun != sourcesRunning else { return }
         sourcesRunning = shouldRun
@@ -85,6 +101,17 @@ final class SystemHUD {
             lastVolume = nil
             center.hide()
         }
+    }
+
+    /// Media keys are only taken over while the notch HUD runs; otherwise macOS keeps them (and its HUD).
+    private func updateInterception() {
+        mediaKeys?.setWanted(sourcesRunning && hidesSystemHUD)
+    }
+
+    /// A key NotchHub performed itself; shown even when the level did not change (already at max/min).
+    private func handleInterceptedReading(_ reading: HUDReading) {
+        if reading.kind == .volume { lastVolume = reading }
+        center.show(reading)
     }
 
     private func handleVolume(_ reading: HUDReading) {
@@ -129,8 +156,15 @@ final class SystemHUD {
 
 extension SystemHUD {
     /// Production wiring: no HUD while paused or while a notch alert is on screen (it never interrupts one).
-    static func live(settings: SettingsStore, alerts: NotchAlertCenter) -> SystemHUD {
-        let hud = SystemHUD()
+    /// Media keys are intercepted only with Accessibility trust, re-checked silently (never prompts).
+    static func live(settings: SettingsStore, alerts: NotchAlertCenter, permission: AccessibilityPermission) -> SystemHUD {
+        let brightness = DisplayServicesBrightnessReader()
+        let mediaKeys = MediaKeyCoordinator(
+            tap: MediaKeyInterceptor(),
+            controller: SystemMediaKeyController(brightness: brightness),
+            isTrusted: { [weak permission] in permission?.refresh() ?? false }
+        )
+        let hud = SystemHUD(brightness: brightness, mediaKeys: mediaKeys)
         hud.isBlocked = { [weak settings, weak alerts] in
             guard let settings, let alerts else { return true }
             return settings.isPaused || alerts.current != nil

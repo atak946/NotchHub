@@ -85,12 +85,12 @@ final class CoreAudioVolumeSource: HUDVolumeSource {
 
     // MARK: - HAL reads
 
-    private static func outputAddress(_ selector: AudioObjectPropertySelector) -> AudioObjectPropertyAddress {
+    nonisolated static func outputAddress(_ selector: AudioObjectPropertySelector) -> AudioObjectPropertyAddress {
         CoreAudioReader.globalAddress(selector, scope: kAudioDevicePropertyScopeOutput)
     }
 
     /// The virtual main volume when the device has one, else the main-element scalar; plus mute.
-    private static func volumeAddress(of id: AudioObjectID) -> AudioObjectPropertyAddress? {
+    nonisolated static func volumeAddress(of id: AudioObjectID) -> AudioObjectPropertyAddress? {
         var virtual = outputAddress(kAudioHardwareServiceDeviceProperty_VirtualMainVolume)
         if AudioObjectHasProperty(id, &virtual) { return virtual }
         var scalar = outputAddress(kAudioDevicePropertyVolumeScalar)
@@ -98,7 +98,7 @@ final class CoreAudioVolumeSource: HUDVolumeSource {
         return nil
     }
 
-    private static func muteAddress(of id: AudioObjectID) -> AudioObjectPropertyAddress? {
+    nonisolated static func muteAddress(of id: AudioObjectID) -> AudioObjectPropertyAddress? {
         var mute = outputAddress(kAudioDevicePropertyMute)
         return AudioObjectHasProperty(id, &mute) ? mute : nil
     }
@@ -107,11 +107,11 @@ final class CoreAudioVolumeSource: HUDVolumeSource {
         [volumeAddress(of: id), muteAddress(of: id)].compactMap { $0 }
     }
 
-    private static func reading(of id: AudioObjectID) -> HUDReading {
+    nonisolated static func reading(of id: AudioObjectID) -> HUDReading {
         HUDReading(kind: .volume, level: volume(of: id), isMuted: isMuted(id))
     }
 
-    private static func volume(of id: AudioObjectID) -> Double? {
+    nonisolated static func volume(of id: AudioObjectID) -> Double? {
         guard var address = volumeAddress(of: id) else { return nil }
         var value: Float32 = 0
         var size = UInt32(MemoryLayout<Float32>.size)
@@ -119,7 +119,7 @@ final class CoreAudioVolumeSource: HUDVolumeSource {
         return status == noErr ? Double(value) : nil
     }
 
-    private static func isMuted(_ id: AudioObjectID) -> Bool {
+    nonisolated static func isMuted(_ id: AudioObjectID) -> Bool {
         guard var address = muteAddress(of: id) else { return false }
         var value: UInt32 = 0
         var size = UInt32(MemoryLayout<UInt32>.size)
