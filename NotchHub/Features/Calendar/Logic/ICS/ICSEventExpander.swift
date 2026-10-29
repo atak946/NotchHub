@@ -58,6 +58,14 @@ enum ICSEventExpander {
             .map { makeEvent(master, start: $0, duration: duration, isAllDay: start.isAllDay, context: context) }
     }
 
+    /// The master's start moved to the override's RECURRENCE-ID. Kept as a separate function:
+    /// the inline optional chain crashes the Swift 6.3 type checker.
+    private static func inheritedStart(of override: ICSRawEvent, master: ICSRawEvent?) -> ICSDateTime? {
+        guard let masterStart = master?.start else { return nil }
+        let date = override.recurrenceID ?? masterStart.date
+        return ICSDateTime(date: date, isAllDay: masterStart.isAllDay, timeZone: masterStart.timeZone)
+    }
+
     private static func overrideEvent(
         _ override: ICSRawEvent,
         master: ICSRawEvent?,
@@ -65,8 +73,7 @@ enum ICSEventExpander {
         context: CalendarSourceContext
     ) -> CalendarEvent? {
         let masterDuration = master.flatMap { event in event.start.map { duration(of: event, start: $0) } }
-        guard let start = override.start ?? master?.start.map({ ICSDateTime(date: override.recurrenceID ?? $0.date, isAllDay: $0.isAllDay, timeZone: $0.timeZone) })
-        else { return nil }
+        guard let start = override.start ?? inheritedStart(of: override, master: master) else { return nil }
         let hasOwnEnd = override.end != nil || override.duration != nil
         let duration = hasOwnEnd ? duration(of: override, start: start) : (masterDuration ?? duration(of: override, start: start))
         guard overlaps(start.date, duration: duration, window: window) else { return nil }
