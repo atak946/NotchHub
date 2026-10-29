@@ -1,0 +1,142 @@
+#!/bin/sh
+# notchhub - post alerts to the NotchHub notch from scripts.
+#
+#   notchhub "Deploy finished"
+#   notchhub --title "Backup" --subtitle "42 GB" --style success --icon externaldrive --duration 0
+#   notchhub open timer
+#   notchhub done -- dotnet build        # runs the command, then posts success/urgent with exit code
+#
+# Transport: the local socket (nc -U) when NotchHub is listening, else `open -g notchhub://...`.
+# Environment: NOTCHHUB_SOCKET overrides the socket path.
+
+set -u
+
+NOTCHHUB_SOCKET="${NOTCHHUB_SOCKET:-$HOME/Library/Application Support/NotchHub/notchhub.sock}"
+NC_TIMEOUT=2
+
+json_fields=""
+query=""
+quiet=0
+
+usage() {
+    cat <<'EOF'
+usage: notchhub [options] [title]
+       notchhub open <shelf|media|timer|calendar|status>
+       notchhub done [options] -- <command> [args...]
+
+options:
+  --title <text>       alert title (required unless using `done`)
+  --subtitle <text>    second line
+  --style <style>      info | reminder | success | urgent   (default: info)
+  --icon <symbol>      SF Symbol name, e.g. hammer.fill     (invalid names fall back to "bell")
+  --duration <sec>     seconds on screen, 0 = stays until dismissed (default: 6)
+  --key <key>          coalescing key: alerts with the same key replace each other
+  --open <url>         http(s) or file URL offered as the alert action
+  -q, --quiet          do not print errors
+  -h, --help           show this help
+EOF
+}
+
+fail() {
+    [ "$quiet" -eq 1 ] || printf 'notchhub: %s\n' "$1" >&2
+    exit "${2:-1}"
+}
+
+# Percent-encodes every byte; always valid in a URL query.
+urlencode() {
+    printf '%s' "$1" | od -An -v -tx1 | tr -d ' \n' | sed 's/\(..\)/%\1/g'
+}
+
+# JSON string body: control characters folded to spaces, backslash and quote escaped.
+json_escape() {
+    printf '%s' "$1" | tr '\t\n\r' '   ' | tr -d '\000-\037' | sed -e 's/\\/\\\\/g' -e 's/"/\\"/g'
+}
+
+add_field() {
+    name=$1
+    value=$2
+    json_fields="$json_fields,\"$name\":\"$(json_escape "$value")\""
+    query="$query&$name=$(urlencode "$value")"
+}
+
+# $1 = action (alert|open)
+send() {
+    action=$1
+    payload="{\"action\":\"$action\"$json_fields}"
+    if [ -S "$NOTCHHUB_SOCKET" ] && command -v nc >/dev/null 2>&1; then
+        reply=$(printf '%s\n' "$payload" | nc -U -w "$NC_TIMEOUT" "$NOTCHHUB_SOCKET" 2>/dev/null)
+        case $reply in
+            *'"ok":true'*) return 0 ;;
+            *'"error"'*)
+                message=$(printf '%s' "$reply" | sed -n 's/.*"error":"\([^"]*\)".*/\1/p')
+                fail "${message:-request rejected}" ;;
+        esac
+    fi
+    command -v open >/dev/null 2>&1 || fail "NotchHub socket not available and \`open\` not found"
+    open -g "notchhub://$action?${query#&}" || fail "could not open notchhub:// URL"
+}
+
+parse_alert_options() {
+    while [ $# -gt 0 ]; do
+        case $1 in
+            --title | --subtitle | --style | --icon | --duration | --key | --open)
+                [ $# -ge 2 ] || fail "missing value for $1" 2
+                add_field "${1#--}" "$2"
+                shift 2 ;;
+            -q | --quiet) quiet=1; shift ;;
+            -h | --help) usage; exit 0 ;;
+            --) break ;;
+            -*) fail "unknown option $1 (see --help)" 2 ;;
+            *) add_field title "$1"; shift ;;
+        esac
+    done
+}
+
+run_done() {
+    while [ $# -gt 0 ] && [ "$1" != "--" ]; do
+        case $1 in
+            --title | --subtitle | --style | --icon | --duration | --key | --open)
+                [ $# -ge 2 ] || fail "missing value for $1" 2
+                add_field "${1#--}" "$2"
+                shift 2 ;;
+            -q | --quiet) quiet=1; shift ;;
+            -h | --help) usage; exit 0 ;;
+            *) break ;;
+        esac
+    done
+    [ "${1:-}" = "--" ] && shift
+    [ $# -gt 0 ] || fail "usage: notchhub done -- <command> [args...]" 2
+
+    start=$(date +%s)
+    "$@"
+    status=$?
+    elapsed=$(($(date +%s) - start))
+
+    add_field command "$*"
+    add_field exit "$status"
+    add_field elapsed "$elapsed"
+    case $json_fields in
+        *',"subtitle":'*) ;;
+        *) add_field subtitle "in ${PWD##*/}" ;;
+    esac
+    # A failed post must not mask the command's own exit status.
+    (send alert) || true
+    exit "$status"
+}
+
+case ${1:-} in
+    "" | -h | --help) usage; [ $# -gt 0 ]; exit $? ;;
+    open)
+        [ $# -ge 2 ] || fail "usage: notchhub open <shelf|media|timer|calendar|status>" 2
+        add_field module "$2"
+        send open ;;
+    done)
+        shift
+        run_done "$@" ;;
+    *)
+        parse_alert_options "$@"
+        case $json_fields in
+            *',"title":'*) send alert ;;
+            *) fail "a title is required (see --help)" 2 ;;
+        esac ;;
+esac

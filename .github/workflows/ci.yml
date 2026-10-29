@@ -1,0 +1,50 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Build and test
+    # macOS 26 SDK is required (deployment target 26.0).
+    runs-on: macos-26
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Show toolchain
+        run: |
+          xcodebuild -version
+          sw_vers
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Generate project
+        # No Config/Local.xcconfig on CI: Config/Shared.xcconfig builds with ad-hoc signing ("-").
+        run: xcodegen generate
+
+      - name: Test
+        run: |
+          set -o pipefail
+          xcodebuild test \
+            -project NotchHub.xcodeproj \
+            -scheme NotchHub \
+            -destination 'platform=macOS' \
+            -derivedDataPath build \
+            -skipPackagePluginValidation \
+            DEVELOPMENT_TEAM= \
+            CODE_SIGN_STYLE=Manual \
+            CODE_SIGN_IDENTITY=-

@@ -1,0 +1,12 @@
+NotchHub Kurulumu
+=================
+
+Gereksinim: macOS 26 veya üstü. En iyi deneyim çentikli MacBook'ta (çentiksiz ekranda sanal çentik gösterilir).
+
+1. NotchHub.app'i yandaki Applications (Uygulamalar) klasörüne sürükleyin.
+2. Uygulamalar klasöründen NotchHub'ı açın.
+3. Uygulama menü çubuğunda çalışır; ekranın üstündeki çentiğin üzerine gelince panel açılır. Kısayol: ⌥⌘N
+4. İstenen izinleri onaylayın: Takvim (toplantılar), Otomasyon (Spotify/Music),
+   isteğe bağlı Erişilebilirlik (okunmamış rozetleri ve zaman takibi).
+
+Ayarlar: menü çubuğundaki NotchHub simgesi → Ayarlar.

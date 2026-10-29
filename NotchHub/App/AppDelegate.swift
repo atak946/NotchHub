@@ -1,0 +1,75 @@
+import AppKit
+import Carbon.HIToolbox
+import OSLog
+
+@MainActor
+final class AppDelegate: NSObject, NSApplicationDelegate {
+    let settings = SettingsStore()
+    let alerts = NotchAlertCenter()
+    private(set) lazy var services = ModuleServices(settings: settings, alerts: alerts)
+    private let fullScreenDetector = FullScreenDetector()
+    private(set) lazy var windowManager = NotchWindowManager(
+        settings: settings,
+        fullScreenDetector: fullScreenDetector,
+        services: services,
+        alerts: alerts
+    )
+    private lazy var alertRouter = AlertRouter(
+        settings: settings,
+        services: services,
+        alerts: alerts
+    ) { [weak self] module in
+        self?.windowManager.present(module)
+    }
+    private var hotKey: GlobalHotKey?
+
+    // MARK: Updates (Sparkle; inert unless the build defines a feed and key)
+    private(set) lazy var updater: UpdaterService = {
+        let updater = UpdaterService(alerts: alerts)
+        updater.canPostAlert = { [settings] in settings.alertsEnabled && !settings.isPaused }
+        return updater
+    }()
+
+    private let logger = Logger(subsystem: AppIdentity.logSubsystem, category: "App")
+
+    private static var isRunningTests: Bool {
+        ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] != nil
+    }
+
+    func applicationDidFinishLaunching(_ notification: Notification) {
+        guard !Self.isRunningTests else { return }
+
+        fullScreenDetector.start()
+        services.start()
+        alertRouter.start()
+        windowManager.start()
+        registerHotKey()
+        updater.start()
+        logger.info("NotchHub started")
+    }
+
+    func applicationWillTerminate(_ notification: Notification) {
+        hotKey?.unregister()
+        services.stop()
+    }
+
+    /// `notchhub://alert?...` and `notchhub://open?module=...` from scripts and the CLI.
+    func application(_ application: NSApplication, open urls: [URL]) {
+        for url in urls where !services.externalAlerts.handle(url: url) {
+            logger.error("Rejected external URL request")
+        }
+    }
+
+    private func registerHotKey() {
+        let hotKey = GlobalHotKey(
+            keyCode: UInt32(kVK_ANSI_N),
+            modifiers: UInt32(cmdKey | optionKey)
+        ) { [weak self] in
+            self?.windowManager.togglePanel()
+        }
+        if !hotKey.register() {
+            logger.error("Failed to register global hot key ⌥⌘N")
+        }
+        self.hotKey = hotKey
+    }
+}

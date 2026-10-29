@@ -1,0 +1,98 @@
+name: NotchHub
+options:
+  deploymentTarget:
+    macOS: "26.0"
+  createIntermediateGroups: true
+  developmentLanguage: tr
+
+settings:
+  base:
+    SWIFT_VERSION: "6.0"
+    MARKETING_VERSION: "1.2.0"
+    CURRENT_PROJECT_VERSION: "2"
+    SWIFT_STRICT_CONCURRENCY: complete
+
+packages:
+  Sparkle:
+    url: https://github.com/sparkle-project/Sparkle
+    from: "2.10.1"
+
+targets:
+  NotchHub:
+    type: application
+    platform: macOS
+    configFiles:
+      Debug: Config/Shared.xcconfig
+      Release: Config/Shared.xcconfig
+    sources:
+      - path: NotchHub
+      - path: tools/Integrations/notchhub.zsh
+        buildPhase: resources
+      - path: tools/Integrations/notchhub
+        buildPhase: resources
+    dependencies:
+      - package: Sparkle
+    info:
+      path: NotchHub/Info.plist
+      properties:
+        CFBundleDisplayName: NotchHub
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        LSUIElement: true
+        CFBundleDevelopmentRegion: tr
+        CFBundleLocalizations: [tr]
+        LSApplicationCategoryType: public.app-category.productivity
+        NSCalendarsFullAccessUsageDescription: NotchHub bir sonraki toplantını çentikte gösterir.
+        NSAppleEventsUsageDescription: NotchHub, Spotify ve Music oynatmasını çentikten denetler.
+        CFBundleURLTypes:
+          - CFBundleURLName: $(PRODUCT_BUNDLE_IDENTIFIER)
+            CFBundleURLSchemes: [notchhub]
+        NSAppTransportSecurity:
+          NSAllowsLocalNetworking: true
+        # Sparkle: both values come from Config/Local.xcconfig; empty disables updates.
+        SUFeedURL: $(SU_FEED_URL)
+        SUPublicEDKey: $(SU_PUBLIC_ED_KEY)
+        SUEnableAutomaticChecks: true
+        SUScheduledCheckInterval: 86400
+    entitlements:
+      path: NotchHub/NotchHub.entitlements
+      properties:
+        com.apple.security.automation.apple-events: true
+        com.apple.security.personal-information.calendars: true
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: $(APP_BUNDLE_ID)
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        ENABLE_HARDENED_RUNTIME: YES
+        COMBINE_HIDPI_IMAGES: YES
+      configs:
+        Release:
+          # Notarization rejects the debug get-task-allow entitlement.
+          CODE_SIGN_INJECT_BASE_ENTITLEMENTS: NO
+
+  NotchHubTests:
+    type: bundle.unit-test
+    platform: macOS
+    configFiles:
+      Debug: Config/Shared.xcconfig
+      Release: Config/Shared.xcconfig
+    sources:
+      - path: NotchHubTests
+    dependencies:
+      - target: NotchHub
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
+        PRODUCT_BUNDLE_IDENTIFIER: $(APP_BUNDLE_ID)Tests
+        TEST_HOST: "$(BUILT_PRODUCTS_DIR)/NotchHub.app/Contents/MacOS/NotchHub"
+        BUNDLE_LOADER: "$(TEST_HOST)"
+
+schemes:
+  NotchHub:
+    build:
+      targets:
+        NotchHub: all
+        NotchHubTests: [test]
+    test:
+      targets:
+        - NotchHubTests
