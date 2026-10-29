@@ -142,7 +142,7 @@ final class NetworkMonitor {
                 subtitle: "Ağ bağlantısı yok",
                 style: .urgent,
                 coalescingKey: Self.alertKey,
-                autoDismissAfter: nil,
+                autoDismissAfter: NotchAlert.importantDuration,
                 actionTitle: "Ayarlar",
                 action: { [weak self] in self?.openNetworkSettings() }
             ))

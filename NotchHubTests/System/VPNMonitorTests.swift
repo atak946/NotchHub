@@ -51,7 +51,7 @@ struct VPNMonitorTests {
         #expect(monitor.state == .disconnected)
         #expect(alerts.current?.title == "VPN bağlantısı koptu")
         #expect(alerts.current?.style == .urgent)
-        #expect(alerts.current?.autoDismissAfter == nil)
+        #expect(alerts.current?.autoDismissAfter == NotchAlert.importantDuration)
         #expect(alerts.current?.coalescingKey == VPNMonitor.alertKey)
         #expect(monitor.hasCompactIndicator)
     }

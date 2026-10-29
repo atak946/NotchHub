@@ -236,7 +236,7 @@ struct DockerMonitorTests {
         #expect(alert.title == "api sonlandı")
         #expect(alert.subtitle == "Çıkış kodu 2")
         #expect(alert.actionTitle == "Günlük komutunu kopyala")
-        #expect(alert.autoDismissAfter == nil)
+        #expect(alert.autoDismissAfter == NotchAlert.importantDuration)
 
         alerts.performAction()
         #expect(pasteboard.copied == ["docker logs --tail 100 api"])

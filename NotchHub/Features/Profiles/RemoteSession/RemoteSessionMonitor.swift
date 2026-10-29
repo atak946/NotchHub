@@ -144,7 +144,7 @@ final class RemoteSessionMonitor {
             subtitle: "Biri bu Mac'i görüntülüyor olabilir (sezgisel)",
             style: .urgent,
             coalescingKey: Self.alertKey,
-            autoDismissAfter: nil,
+            autoDismissAfter: NotchAlert.importantDuration,
             actionTitle: canOpenAnyDesk ? "AnyDesk'i göster" : nil,
             action: action
         ))

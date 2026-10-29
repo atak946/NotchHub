@@ -150,6 +150,11 @@ final class NotchController {
         // The window spans the whole expanded area plus shadow margins; only the visible
         // panel or alert may take clicks, everything around it must reach the apps below.
         let shouldAccept = interactiveRect?.contains(point) ?? false
+        // Once the window stops taking mouse events SwiftUI never sees the hover end,
+        // which would leave the alert countdown paused forever.
+        if !shouldAccept, alerts.isHovered {
+            alerts.isHovered = false
+        }
         if panel.ignoresMouseEvents == shouldAccept {
             panel.ignoresMouseEvents = !shouldAccept
         }

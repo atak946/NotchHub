@@ -180,7 +180,7 @@ final class ProfilesService {
             subtitle: "\(profile.displayName) · \(prompt.subtitle)",
             style: .reminder,
             coalescingKey: Self.alertKey(for: profile.id),
-            autoDismissAfter: nil,
+            autoDismissAfter: NotchAlert.importantDuration,
             actionTitle: "Çalışmayı iptal et",
             action: { [weak self] in self?.cancel() }
         ))
@@ -210,7 +210,7 @@ final class ProfilesService {
                 subtitle: failure.map { "\($0.summary): \(Self.message(of: $0.status))" },
                 style: .urgent,
                 coalescingKey: Self.alertKey(for: profile.id),
-                autoDismissAfter: nil,
+                autoDismissAfter: NotchAlert.importantDuration,
                 actionTitle: "Yeniden dene",
                 action: { [weak self] in
                     _ = kind == .activate ? self?.activate(profile.id) : self?.deactivate(profile.id)

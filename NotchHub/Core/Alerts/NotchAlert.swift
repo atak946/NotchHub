@@ -15,6 +15,10 @@ struct NotchAlert: Identifiable {
     }
 
     static let defaultDuration: Duration = .seconds(6)
+    /// For alerts that need attention (failures, reminders): long, but never stuck on screen.
+    static let importantDuration: Duration = .seconds(30)
+    /// Meeting reminders stay up long enough to join from the notch.
+    static let meetingReminderDuration: Duration = .seconds(90)
 
     let id = UUID()
     let postedAt = Date()

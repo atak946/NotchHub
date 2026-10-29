@@ -73,7 +73,7 @@ struct NetworkMonitorTests {
 
         #expect(alerts.current?.title == "Çevrimdışısın")
         #expect(alerts.current?.style == .urgent)
-        #expect(alerts.current?.autoDismissAfter == nil)
+        #expect(alerts.current?.autoDismissAfter == NotchAlert.importantDuration)
         #expect(monitor.hasCompactIndicator)
 
         reader.onUpdate?(home)

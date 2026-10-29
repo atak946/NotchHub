@@ -66,7 +66,7 @@ final class AlertRouter {
                 .joined(separator: " · "),
             style: .reminder,
             coalescingKey: "calendar.\(event.id)",
-            autoDismissAfter: nil,
+            autoDismissAfter: NotchAlert.meetingReminderDuration,
             actionTitle: link == nil ? "Aç" : "Katıl",
             action: { [weak self] in
                 if link == nil {
@@ -106,7 +106,7 @@ final class AlertRouter {
                 subtitle: next.map { "Sıradaki: \($0.title)" },
                 style: .success,
                 coalescingKey: "timer",
-                autoDismissAfter: nil,
+                autoDismissAfter: NotchAlert.importantDuration,
                 actionTitle: next == nil ? "Tamam" : "\(next?.title ?? "") başlat",
                 action: {
                     if next != nil {

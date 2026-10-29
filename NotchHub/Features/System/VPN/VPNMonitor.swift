@@ -181,7 +181,7 @@ final class VPNMonitor {
                 subtitle: clientName,
                 style: .urgent,
                 coalescingKey: Self.alertKey,
-                autoDismissAfter: nil,
+                autoDismissAfter: NotchAlert.importantDuration,
                 actionTitle: hasClient ? "Aç" : nil,
                 action: openAction
             ))

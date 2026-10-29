@@ -173,7 +173,7 @@ final class TimeTracker {
             subtitle: TimeSummaryFormatter.clientLine(totals),
             style: .reminder,
             coalescingKey: "insights.dailySummary",
-            autoDismissAfter: nil,
+            autoDismissAfter: NotchAlert.importantDuration,
             actionTitle: "Özeti kopyala",
             action: { [weak self] in self?.copySummary(day: day) }
         ))

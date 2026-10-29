@@ -214,7 +214,7 @@ final class EndpointMonitor {
             subtitle: subtitle,
             style: .reminder,
             coalescingKey: "endpoint.cert.\(endpoint.id.uuidString)",
-            autoDismissAfter: nil
+            autoDismissAfter: NotchAlert.importantDuration
         ))
     }
 
@@ -230,7 +230,7 @@ final class EndpointMonitor {
                 subtitle: reason,
                 style: .urgent,
                 coalescingKey: key,
-                autoDismissAfter: nil
+                autoDismissAfter: NotchAlert.importantDuration
             ))
         case .recovered:
             alerts.post(NotchAlert(

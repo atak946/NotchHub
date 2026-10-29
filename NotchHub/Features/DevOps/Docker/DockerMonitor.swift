@@ -241,7 +241,7 @@ final class DockerMonitor {
                 subtitle: "Çıkış kodu \(exitCode)",
                 style: .urgent,
                 coalescingKey: key,
-                autoDismissAfter: nil,
+                autoDismissAfter: NotchAlert.importantDuration,
                 actionTitle: "Günlük komutunu kopyala",
                 action: { pasteboard.copy(command) }
             )
@@ -253,7 +253,7 @@ final class DockerMonitor {
                 subtitle: "Container OOM nedeniyle sonlandırıldı",
                 style: .urgent,
                 coalescingKey: key,
-                autoDismissAfter: nil
+                autoDismissAfter: NotchAlert.importantDuration
             )
         case .unhealthy:
             return NotchAlert(
