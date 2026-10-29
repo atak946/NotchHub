@@ -14,5 +14,6 @@ struct NotchHubApp: App {
             )
                 .environment(\.supportActions, appDelegate.supportActions)
         }
+        .windowResizability(.contentMinSize)
     }
 }

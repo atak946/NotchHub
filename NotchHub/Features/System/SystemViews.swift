@@ -44,22 +44,3 @@ struct SystemCompactIndicators: View {
         }
     }
 }
-
-/// Every System settings section for the grouped settings Form.
-struct SystemSettingsSection: View {
-    let monitors: SystemMonitors
-
-    init(monitors: SystemMonitors) {
-        self.monitors = monitors
-    }
-
-    var body: some View {
-        MeetingModeSettingsSection(controller: monitors.meetingMode)
-        MicCameraSettingsSection(monitor: monitors.micCamera)
-        MicMuteSettingsSection(controller: monitors.micMute)
-        HeadphoneBatterySettingsSection(monitor: monitors.headphones)
-        VPNSettingsSection(monitor: monitors.vpn)
-        NetworkSettingsSection(monitor: monitors.network)
-        SystemPressureSettingsSection(monitor: monitors.pressure)
-    }
-}

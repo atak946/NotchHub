@@ -2,24 +2,8 @@ import AppKit
 import SwiftUI
 import UniformTypeIdentifiers
 
-/// Settings form sections for Insights: access, unread badges, notification mirroring and time tracking.
-struct InsightsSettingsSection: View {
-    let insights: Insights
-
-    init(insights: Insights) {
-        self.insights = insights
-    }
-
-    var body: some View {
-        Section("Analizler") {
-            AccessibilityAccessRow(insights: insights)
-        }
-        UnreadSettingsSection(monitor: insights.unread)
-        NotificationMirrorSettingsSection(mirror: insights.mirror)
-        TimeTrackingSettingsSection(tracker: insights.timeTracker)
-    }
-}
-
+/// Insights settings pieces, placed on separate Settings pages: the Accessibility permission row,
+/// unread badges (Okunmamış Mesajlar) and time tracking (Zaman Takibi).
 struct AccessibilityAccessRow: View {
     let insights: Insights
 

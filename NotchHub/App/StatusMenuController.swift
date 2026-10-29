@@ -117,6 +117,12 @@ final class StatusMenuController: NSObject, NSMenuDelegate {
         } else {
             NSApp.sendAction(Self.settingsSelector, to: nil, from: nil)
         }
+        // An LSUIElement app is not brought forward by activate(); raise the window explicitly.
+        DispatchQueue.main.async {
+            let window = NSApp.windows.first { $0.isVisible && $0.styleMask.contains(.titled) && !($0 is NSPanel) }
+            window?.makeKeyAndOrderFront(nil)
+            window?.orderFrontRegardless()
+        }
     }
 }
 

@@ -1,7 +1,7 @@
 import AppKit
 import SwiftUI
 
-/// Settings for the Profiles feature: "Client Profiles" and "Remote Session Awareness" sections.
+/// "Client Profiles" settings with the profile editor sheet. Remote session awareness has its own page.
 struct ProfilesSettingsSection: View {
     let profiles: Profiles
     @State private var editing: ClientProfile?
@@ -11,18 +11,15 @@ struct ProfilesSettingsSection: View {
     }
 
     var body: some View {
-        Group {
-            ClientProfilesSection(service: profiles.service, editing: $editing)
-            RemoteSessionSettingsSection(store: profiles.store, monitor: profiles.remoteMonitor)
-        }
-        .sheet(item: $editing) { profile in
-            ProfileEditorView(profile: profile, validator: ProfileStepValidator()) { saved in
-                profiles.store.save(saved)
-                editing = nil
-            } onCancel: {
-                editing = nil
+        ClientProfilesSection(service: profiles.service, editing: $editing)
+            .sheet(item: $editing) { profile in
+                ProfileEditorView(profile: profile, validator: ProfileStepValidator()) { saved in
+                    profiles.store.save(saved)
+                    editing = nil
+                } onCancel: {
+                    editing = nil
+                }
             }
-        }
     }
 }
 
@@ -138,7 +135,8 @@ private struct WorkspaceSuggestionsView: View {
     }
 }
 
-private struct RemoteSessionSettingsSection: View {
+/// "Uzak Oturum Farkındalığı": shown on its own Settings page.
+struct RemoteSessionSettingsSection: View {
     @Bindable var store: ProfilesStore
     let monitor: RemoteSessionMonitor
 

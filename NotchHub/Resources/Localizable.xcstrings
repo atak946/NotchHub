@@ -1743,16 +1743,6 @@
         }
       }
     },
-    "Analizler": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Insights"
-          }
-        }
-      }
-    },
     "AnyDesk'i göster": {
       "localizations": {
         "en": {
@@ -1779,6 +1769,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "The interval must be between 30 seconds and 10 minutes."
+          }
+        }
+      }
+    },
+    "Aramayı temizle": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Clear Search"
           }
         }
       }
@@ -1899,6 +1899,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Test alert from Settings"
+          }
+        }
+      }
+    },
+    "Ayarlarda ara": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Search Settings"
           }
         }
       }
@@ -2053,6 +2063,16 @@
         }
       }
     },
+    "Ağ ve VPN": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Network & VPN"
+          }
+        }
+      }
+    },
     "Ağ yok": {
       "localizations": {
         "en": {
@@ -2089,6 +2109,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Connection refused"
+          }
+        }
+      }
+    },
+    "Bağlantı ve VPN durumunu izle.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Monitor connection and VPN status."
           }
         }
       }
@@ -2283,6 +2313,16 @@
         }
       }
     },
+    "Bellek, sıcaklık ve disk alanı uyarıları.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Memory, thermal and disk space alerts."
+          }
+        }
+      }
+    },
     "Bellek, sıcaklık ve diski izle": {
       "localizations": {
         "en": {
@@ -2299,6 +2339,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Accept Alerts from Scripts and Apps"
+          }
+        }
+      }
+    },
+    "Betiklerden, terminalden ve URL'lerden gelen uyarılar.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Alerts from scripts, the terminal and URLs."
           }
         }
       }
@@ -2349,6 +2399,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Show Notifications in the Notch"
+          }
+        }
+      }
+    },
+    "Bildirimleri çentikte göster, içeriği uygulama bazında gizle.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Show notifications in the notch and hide their content per app."
           }
         }
       }
@@ -2483,6 +2543,16 @@
         }
       }
     },
+    "Biri bu Mac'e uzaktan bağlandığında haber ver.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Know when someone connects to this Mac remotely."
+          }
+        }
+      }
+    },
     "Biri bu Mac'i görüntülüyor olabilir (sezgisel)": {
       "localizations": {
         "en": {
@@ -2519,6 +2589,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Done"
+          }
+        }
+      }
+    },
+    "Bluetooth kulaklık pil seviyeleri.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bluetooth headphone battery levels."
           }
         }
       }
@@ -2923,6 +3003,16 @@
         }
       }
     },
+    "DevOps": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "DevOps"
+          }
+        }
+      }
+    },
     "Devam": {
       "localizations": {
         "en": {
@@ -2969,6 +3059,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Language changes take effect after a restart."
+          }
+        }
+      }
+    },
+    "Dil, başlangıç, güncellemeler ve destek.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Language, launch, updates and support."
           }
         }
       }
@@ -3043,6 +3143,16 @@
         }
       }
     },
+    "Dock rozetlerinden okunmamış mesaj sayıları.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unread message counts from Dock badges."
+          }
+        }
+      }
+    },
     "Dock rozetlerini, bildirimleri ve pencere başlıklarını okumak için gerekir. İzin yoksa okunmamış sayıları gizlenir ve yalnızca uygulama kuralları zamanı takip eder.": {
       "localizations": {
         "en": {
@@ -3069,6 +3179,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Docker"
+          }
+        }
+      }
+    },
+    "Docker, uç noktalar ve yerel LLM sunucuları.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Docker, endpoints and local LLM servers."
           }
         }
       }
@@ -3119,6 +3239,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "File Shelf"
+          }
+        }
+      }
+    },
+    "Dosya rafı ve pano geçmişi.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "File shelf and clipboard history."
           }
         }
       }
@@ -3593,6 +3723,16 @@
         }
       }
     },
+    "Faturalanabilir zaman, takip kuralları ve dışa aktarma.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Billable time, tracking rules and export."
+          }
+        }
+      }
+    },
     "Faturalanabilir zamanı takip et": {
       "localizations": {
         "en": {
@@ -3647,6 +3787,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "%lld etkinlik bulundu"
+          }
+        }
+      }
+    },
+    "Geliştirici": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Developer"
           }
         }
       }
@@ -4527,6 +4677,16 @@
         }
       }
     },
+    "Kapalı çentikte medya kontrolleri ve müzik dalgası.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Media controls and music wave in the closed notch."
+          }
+        }
+      }
+    },
     "Kapalı: %@": {
       "localizations": {
         "en": {
@@ -4647,6 +4807,26 @@
         }
       }
     },
+    "Kestirmeler uygulaması": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Shortcuts App"
+          }
+        }
+      }
+    },
+    "Kestirmeler'i Aç": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Open Shortcuts"
+          }
+        }
+      }
+    },
     "Kiracı": {
       "localizations": {
         "en": {
@@ -4743,6 +4923,26 @@
         }
       }
     },
+    "Klavye kısayolları": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keyboard Shortcuts"
+          }
+        }
+      }
+    },
+    "Klavye kısayolları ve Kestirmeler eylemleri.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keyboard shortcuts and Shortcuts actions."
+          }
+        }
+      }
+    },
     "Komut": {
       "localizations": {
         "en": {
@@ -4779,6 +4979,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "No location access. Allow it in System Settings > Privacy & Security > Location Services, or choose a city."
+          }
+        }
+      }
+    },
+    "Konum ve hava durumu kaynağı.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Location and weather source."
           }
         }
       }
@@ -5059,6 +5269,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Blue"
+          }
+        }
+      }
+    },
+    "Medya": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Media"
           }
         }
       }
@@ -5493,6 +5713,16 @@
         }
       }
     },
+    "Müşteri profilleri ve çalışma klasörü önerileri.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Client profiles and workspace suggestions."
+          }
+        }
+      }
+    },
     "Ne zaman": {
       "localizations": {
         "en": {
@@ -5619,6 +5849,16 @@
         }
       }
     },
+    "NotchHub eylemleri Kestirmeler uygulamasında ve Siri'de görünür: zamanlayıcı başlat, not ekle, profil çalıştır, uyarı göster, modül aç, rafı aç ve mikrofonu sustur.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "NotchHub actions appear in the Shortcuts app and Siri: start a timer, add a note, run a profile, show an alert, open a module, open the shelf and mute the microphone."
+          }
+        }
+      }
+    },
     "NotchHub henüz hazır değil. Birkaç saniye sonra yeniden dene.": {
       "localizations": {
         "en": {
@@ -5719,6 +5959,26 @@
         }
       }
     },
+    "Notlar ve Hesap": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Notes & Calculator"
+          }
+        }
+      }
+    },
+    "Notlar ve hızlı hesap.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Notes and quick calculator."
+          }
+        }
+      }
+    },
     "Notlar yalnızca bu Mac'te düz metin olarak saklanır.": {
       "localizations": {
         "en": {
@@ -5789,6 +6049,16 @@
         }
       }
     },
+    "Odak koruma, ekran görüntüleri ve indirilenler.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Focus guard, screenshots and downloads."
+          }
+        }
+      }
+    },
     "Odak oturumu tamamlandı": {
       "localizations": {
         "en": {
@@ -5825,6 +6095,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Unread"
+          }
+        }
+      }
+    },
+    "Okunmamış Mesajlar": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unread Messages"
           }
         }
       }
@@ -5905,6 +6185,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Automation"
+          }
+        }
+      }
+    },
+    "Otomasyonlar": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Automations"
           }
         }
       }
@@ -6241,6 +6531,16 @@
         }
       }
     },
+    "Performans": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Performance"
+          }
+        }
+      }
+    },
     "Performans düşebilir": {
       "localizations": {
         "en": {
@@ -6297,6 +6597,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Start Pomodoro Cycle"
+          }
+        }
+      }
+    },
+    "Pomodoro süreleri ve aşama geçişleri.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pomodoro durations and phase changes."
           }
         }
       }
@@ -6401,12 +6711,32 @@
         }
       }
     },
+    "Profiller": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Profiles"
+          }
+        }
+      }
+    },
     "Raf": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Shelf"
+          }
+        }
+      }
+    },
+    "Raf ve Pano": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Shelf & Clipboard"
           }
         }
       }
@@ -6653,6 +6983,16 @@
         }
       }
     },
+    "Ses ve parlaklık göstergesi çentikte.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Volume and brightness indicator in the notch."
+          }
+        }
+      }
+    },
     "Ses çıkışı": {
       "localizations": {
         "en": {
@@ -6789,6 +7129,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "When you add Microsoft Exchange in System Settings › Internet Accounts, Outlook meetings appear here automatically. The new Outlook for Mac doesn't share its calendar with macOS — use the ICS feed below or Microsoft 365 instead."
+          }
+        }
+      }
+    },
+    "Sistem HUD'u": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "System HUD"
           }
         }
       }
@@ -7483,6 +7833,26 @@
         }
       }
     },
+    "Toplantı hatırlatıcısı, takvim kaynakları ve görünen takvimler.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Meeting reminder, calendar sources and visible calendars."
+          }
+        }
+      }
+    },
+    "Toplantı modu, kamera aynası, mikrofon ve gizlilik göstergesi.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Meeting mode, camera mirror, microphone and privacy indicator."
+          }
+        }
+      }
+    },
     "Toplantı uygulaması açık değilken %lld dk'dır açık": {
       "localizations": {
         "en": {
@@ -7835,6 +8205,16 @@
         }
       }
     },
+    "Uyarılar": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Alerts"
+          }
+        }
+      }
+    },
     "Uygulama": {
       "localizations": {
         "en": {
@@ -7971,6 +8351,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Remote"
+          }
+        }
+      }
+    },
+    "Uzak Oturum": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Remote Session"
           }
         }
       }
@@ -8687,6 +9077,16 @@
         }
       }
     },
+    "Zaman Takibi": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Time Tracking"
+          }
+        }
+      }
+    },
     "Zaman aşımı": {
       "localizations": {
         "en": {
@@ -9231,6 +9631,16 @@
         }
       }
     },
+    "Çentik ve Görünüm": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Notch & Appearance"
+          }
+        }
+      }
+    },
     "Çentik önizlemesi": {
       "localizations": {
         "en": {
@@ -9271,6 +9681,16 @@
         }
       }
     },
+    "Çentikten çıkan animasyonlu uyarılar.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Animated alerts from the notch."
+          }
+        }
+      }
+    },
     "Çentiği olmayan ekranlarda sanal çentik": {
       "localizations": {
         "en": {
@@ -9287,6 +9707,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Your notch is now a control center: file shelf, media, timer, meetings and notes, one tap away."
+          }
+        }
+      }
+    },
+    "Çentiğin davranışı, ekranlar, tema ve panel sekmeleri.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Notch behavior, displays, theme and panel tabs."
           }
         }
       }
@@ -9581,6 +10011,16 @@
         }
       }
     },
+    "İletişim": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Communication"
+          }
+        }
+      }
+    },
     "İndirilenleri izle": {
       "localizations": {
         "en": {
@@ -9731,16 +10171,6 @@
         }
       }
     },
-    "İzleyiciler": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Monitors"
-          }
-        }
-      }
-    },
     "İçerik gizlendi": {
       "localizations": {
         "en": {
@@ -9767,16 +10197,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Show content"
-          }
-        }
-      }
-    },
-    "İş Akışı": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Workflow"
           }
         }
       }
@@ -9817,6 +10237,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Charging animation"
+          }
+        }
+      }
+    },
+    "Şarj animasyonu ve düşük pil uyarıları.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Charging animation and low battery alerts."
           }
         }
       }

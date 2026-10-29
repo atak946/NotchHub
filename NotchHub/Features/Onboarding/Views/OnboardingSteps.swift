@@ -62,6 +62,7 @@ struct OnboardingCalendarSourcesStep: View {
     }
 
     private func showSettings() {
+        SettingsCategory.select(.calendar)
         NSApp.activate()
         openSettings()
     }

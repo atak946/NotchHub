@@ -187,6 +187,8 @@ macOS bildirim bantları Erişilebilirlik API'si ile Bildirim Merkezi'nden okunu
 | Hover gecikmesi | Açılma gecikmesi ve hassasiyet ayarı | MVP |
 | Kısayol | Paneli klavyeyle aç (ör. `⌥⌘N`) | MVP |
 | Tema | Sistem / koyu (çentik siyah olduğu için varsayılan koyu) | MVP |
+| Ayarlar penceresi | Koyu cam görünüm: hareketli, bulanık mor/pembe/camgöbeği arka plan (pencere öne çıkmadığında durur; Hareketi ve Saydamlığı Azalt'a uyar), gizli başlık çubuğu, buzlu kartlar. Kenar çubuğunda 5 grup, 24 kategori: NotchHub (Genel, Çentik ve Görünüm, Sistem HUD'u, Uyarılar), Modüller (Raf ve Pano, Medya, Zamanlayıcı, Takvim, Notlar ve Hesap, Hava Durumu, Pil), İletişim (Bildirimler, Okunmamış Mesajlar, Toplantı), Sistem (Ağ ve VPN, Kulaklık, Performans, Uzak Oturum), Geliştirici (DevOps, Profiller, Entegrasyonlar, Kestirmeler, Otomasyonlar, Zaman Takibi). Son seçilen kategori hatırlanır | 1.5 |
+| Ayarlarda ara | Türkçe ve İngilizce etiketlerde ve eş anlamlılarda (ör. "ses" → Sistem HUD'u, "whatsapp" → Bildirimler) büyük/küçük harf, aksan ve İ/ı duyarsız arama; eşleşen kategoriler ve altında en fazla 3 eşleşen ayar. ↑/↓ seçer, Return ilk sonucu açar, Esc temizler | 1.5 |
 
 ### Kestirmeler (v1.4)
 
