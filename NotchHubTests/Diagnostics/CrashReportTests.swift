@@ -164,7 +164,7 @@ final class RecordingRevealer: CrashReportFileRevealing {
 
 @MainActor
 struct CrashReportMonitorTests {
-    private let defaults = UserDefaults(suiteName: "CrashReportMonitorTests.\(UUID().uuidString)") ?? .standard
+    private let defaults = TestDefaults.suite(named: "CrashReportMonitorTests.\(UUID().uuidString)")
     private let lister = StubCrashReportLister()
     private let alerts = NotchAlertCenter(sleep: { _ in try await Task.sleep(for: .seconds(3600)) })
     private let opener = RecordingURLOpener()
@@ -275,7 +275,7 @@ struct CrashReportMonitorTests {
 
 struct CrashReportLedgerTests {
     @Test func handledNamesAreDeduplicatedAndCapped() {
-        let defaults = UserDefaults(suiteName: "CrashReportLedgerTests.\(UUID().uuidString)") ?? .standard
+        let defaults = TestDefaults.suite(named: "CrashReportLedgerTests.\(UUID().uuidString)")
         let ledger = CrashReportLedger(defaults: defaults)
         ledger.markHandled("a")
         ledger.markHandled("a")

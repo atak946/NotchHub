@@ -219,8 +219,7 @@ struct MediaVisualizerPolicyTests {
 @MainActor
 struct MediaVisualizerSettingsTests {
     private func makeDefaults() -> UserDefaults {
-        let suiteName = "NotchHubTests.\(UUID().uuidString)"
-        let defaults = UserDefaults(suiteName: suiteName)!
+        let (suiteName, defaults) = TestDefaults.makeSuite("MediaVisualizer.\(UUID().uuidString)")
         defaults.removePersistentDomain(forName: suiteName)
         return defaults
     }

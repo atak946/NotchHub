@@ -150,8 +150,7 @@ struct SettingsCategoryTests {
     }
 
     @Test func selectWritesTheSharedStorageKey() throws {
-        let suiteName = "NotchHubTests.\(UUID().uuidString)"
-        let defaults = try #require(UserDefaults(suiteName: suiteName))
+        let (suiteName, defaults) = TestDefaults.makeSuite("SettingsSearchIndex.\(UUID().uuidString)")
         defer { defaults.removePersistentDomain(forName: suiteName) }
 
         SettingsCategory.select(.calendar, in: defaults)

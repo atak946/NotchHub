@@ -52,9 +52,7 @@ struct CameraReminderServiceTests {
     private let defaults: UserDefaults
 
     init() {
-        let suite = "CameraReminderServiceTests.\(UUID().uuidString)"
-        defaults = UserDefaults(suiteName: suite) ?? .standard
-        defaults.removePersistentDomain(forName: suite)
+        defaults = TestDefaults.suite(named: "CameraReminderServiceTests.\(UUID().uuidString)")
     }
 
     private func meeting(video: Bool = true) -> CalendarEvent {

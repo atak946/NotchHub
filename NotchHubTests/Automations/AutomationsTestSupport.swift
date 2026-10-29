@@ -143,8 +143,7 @@ extension CaptureFileEvent {
 }
 
 func makeAutomationsTestDefaults() -> UserDefaults {
-    let suiteName = "NotchHubTests.Automations.\(UUID().uuidString)"
-    let defaults = UserDefaults(suiteName: suiteName) ?? .standard
+    let (suiteName, defaults) = TestDefaults.makeSuite("Automations.\(UUID().uuidString)")
     defaults.removePersistentDomain(forName: suiteName)
     return defaults
 }

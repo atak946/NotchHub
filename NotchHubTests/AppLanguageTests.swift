@@ -4,10 +4,17 @@ import Testing
 
 @MainActor
 struct AppLanguageTests {
-    private let suiteName = "NotchHubTests.language.\(UUID().uuidString)"
+    private let suiteName: String
+    private let suiteDefaults: UserDefaults
+
+    init() {
+        let suite = TestDefaults.makeSuite("Language.\(UUID().uuidString)")
+        suiteName = suite.name
+        suiteDefaults = suite.defaults
+    }
 
     private func makeStore() -> (AppLanguageStore, UserDefaults) {
-        let defaults = UserDefaults(suiteName: suiteName)!
+        let defaults = suiteDefaults
         defaults.removePersistentDomain(forName: suiteName)
         return (AppLanguageStore(defaults: defaults, domainName: suiteName), defaults)
     }

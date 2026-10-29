@@ -37,7 +37,7 @@ final class FakeClipboardPasteboard: ClipboardPasteboard {
 
 @MainActor
 struct ClipboardFixture {
-    let suiteName = "NotchHubTests.Clipboard.\(UUID().uuidString)"
+    let suiteName: String
     let defaults: UserDefaults
     let root: URL
     let pasteboard = FakeClipboardPasteboard()
@@ -45,8 +45,9 @@ struct ClipboardFixture {
     let frontmost = FrontmostBox()
 
     init() throws {
-        defaults = UserDefaults(suiteName: suiteName) ?? .standard
-        defaults.removePersistentDomain(forName: suiteName)
+        let suite = TestDefaults.makeSuite("Clipboard.\(UUID().uuidString)")
+        suiteName = suite.name
+        defaults = suite.defaults
         root = FileManager.default.temporaryDirectory.appending(path: "ClipboardTests-\(UUID().uuidString)", directoryHint: .isDirectory)
     }
 

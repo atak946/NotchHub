@@ -16,8 +16,7 @@ struct OnboardingPolicyTests {
 
     @MainActor
     @Test func storeMarksCompletedAndNeverDowngrades() throws {
-        let suite = "OnboardingPolicyTests.\(UUID().uuidString)"
-        let defaults = try #require(UserDefaults(suiteName: suite))
+        let (suite, defaults) = TestDefaults.makeSuite("OnboardingPolicyTests.\(UUID().uuidString)")
         defer { defaults.removePersistentDomain(forName: suite) }
         let store = OnboardingStateStore(defaults: defaults)
 

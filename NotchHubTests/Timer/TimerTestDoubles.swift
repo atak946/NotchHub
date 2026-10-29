@@ -38,8 +38,7 @@ final class FakeTimerNotifier: TimerNotifier {
 }
 
 func makeTimerTestDefaults() -> UserDefaults {
-    let suiteName = "NotchHubTests.Timer.\(UUID().uuidString)"
-    let defaults = UserDefaults(suiteName: suiteName)!
+    let (suiteName, defaults) = TestDefaults.makeSuite("Timer.\(UUID().uuidString)")
     defaults.removePersistentDomain(forName: suiteName)
     return defaults
 }

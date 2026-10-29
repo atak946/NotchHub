@@ -122,12 +122,7 @@ func devOpsAllAlerts(_ center: NotchAlertCenter) -> [NotchAlert] {
 }
 
 func makeDevOpsTestDefaults() -> UserDefaults {
-    let suiteName = "NotchHubTests.DevOps.\(UUID().uuidString)"
-    guard let defaults = UserDefaults(suiteName: suiteName) else {
-        fatalError("Could not create test defaults")
-    }
-    defaults.removePersistentDomain(forName: suiteName)
-    return defaults
+    TestDefaults.suite(named: "DevOps.\(UUID().uuidString)")
 }
 
 func devOpsData(_ text: String) -> Data {

@@ -75,9 +75,7 @@ struct SystemHUDTests {
     private let defaults: UserDefaults
 
     init() {
-        let suite = "SystemHUDTests.\(UUID().uuidString)"
-        defaults = UserDefaults(suiteName: suite) ?? .standard
-        defaults.removePersistentDomain(forName: suite)
+        defaults = TestDefaults.suite(named: "SystemHUDTests.\(UUID().uuidString)")
     }
 
     private func makeHUD(brightness: Double? = 0.7) -> SystemHUD {

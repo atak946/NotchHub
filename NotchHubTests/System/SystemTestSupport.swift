@@ -34,8 +34,7 @@ enum SystemTestSupport {
     }
 
     static func makeDefaults() -> UserDefaults {
-        let suiteName = "NotchHubTests.System.\(UUID().uuidString)"
-        guard let defaults = UserDefaults(suiteName: suiteName) else { return .standard }
+        let (suiteName, defaults) = TestDefaults.makeSuite("System.\(UUID().uuidString)")
         defaults.removePersistentDomain(forName: suiteName)
         return defaults
     }

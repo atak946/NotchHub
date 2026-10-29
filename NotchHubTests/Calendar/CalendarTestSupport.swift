@@ -111,8 +111,7 @@ enum CalendarFixtures {
     }
 
     static func makeDefaults() -> UserDefaults {
-        let suiteName = "NotchHubTests.Calendar.\(UUID().uuidString)"
-        let defaults = UserDefaults(suiteName: suiteName) ?? .standard
+        let (suiteName, defaults) = TestDefaults.makeSuite("Calendar.\(UUID().uuidString)")
         defaults.removePersistentDomain(forName: suiteName)
         return defaults
     }

@@ -34,8 +34,7 @@ struct DiagnosticsReporterTests {
         issueSetting: String?,
         logs: StubLogReader = StubLogReader(lines: ["10:00:00.000 [info] [App] opened /Users/sample/a.txt for a@b.com"])
     ) -> (DiagnosticsReporter, RecordingPasteboard, RecordingURLOpener, NotchAlertCenter) {
-        let suite = "DiagnosticsReporterTests.\(UUID().uuidString)"
-        let settings = SettingsStore(defaults: UserDefaults(suiteName: suite) ?? .standard)
+        let settings = SettingsStore(defaults: TestDefaults.suite(named: "DiagnosticsReporterTests.\(UUID().uuidString)"))
         let checker = FakePermissionChecker()
         checker.statuses = [.calendar: .granted, .automation: .denied]
         let permissions = PermissionsModel(checker: checker, clock: CountingPollingClock(allowedSleeps: 0))

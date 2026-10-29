@@ -129,10 +129,5 @@ final class WeatherTestClock: WeatherClock, @unchecked Sendable {
 }
 
 func makeWeatherTestDefaults() -> UserDefaults {
-    let suiteName = "NotchHubTests.Weather.\(UUID().uuidString)"
-    guard let defaults = UserDefaults(suiteName: suiteName) else {
-        fatalError("Could not create test defaults")
-    }
-    defaults.removePersistentDomain(forName: suiteName)
-    return defaults
+    TestDefaults.suite(named: "Weather.\(UUID().uuidString)")
 }

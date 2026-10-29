@@ -182,8 +182,7 @@ enum InsightsTestDates {
 }
 
 func makeInsightsTestDefaults() -> UserDefaults {
-    let suiteName = "NotchHubTests.Insights.\(UUID().uuidString)"
-    let defaults = UserDefaults(suiteName: suiteName)!
+    let (suiteName, defaults) = TestDefaults.makeSuite("Insights.\(UUID().uuidString)")
     defaults.removePersistentDomain(forName: suiteName)
     return defaults
 }

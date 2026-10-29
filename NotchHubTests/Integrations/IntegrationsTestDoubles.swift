@@ -51,10 +51,7 @@ final class IntegrationsTestClock {
 }
 
 func makeIntegrationsTestDefaults() -> UserDefaults {
-    let suite = "IntegrationsTests.\(UUID().uuidString)"
-    let defaults = UserDefaults(suiteName: suite) ?? .standard
-    defaults.removePersistentDomain(forName: suite)
-    return defaults
+    TestDefaults.suite(named: "IntegrationsTests.\(UUID().uuidString)")
 }
 
 var integrationsUTCCalendar: Calendar {

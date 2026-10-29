@@ -58,8 +58,7 @@ final class TestClock: @unchecked Sendable {
 }
 
 func makeQuickCalcDefaults() -> UserDefaults {
-    let suiteName = "NotchHubTests.QuickCalc.\(UUID().uuidString)"
-    let defaults = UserDefaults(suiteName: suiteName)!
+    let (suiteName, defaults) = TestDefaults.makeSuite("QuickCalc.\(UUID().uuidString)")
     defaults.removePersistentDomain(forName: suiteName)
     return defaults
 }

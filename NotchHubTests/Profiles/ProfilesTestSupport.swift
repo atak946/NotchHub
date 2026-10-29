@@ -87,8 +87,7 @@ final class ProfilesFakeProbe: RemoteSessionProbing {
 }
 
 func makeProfilesTestDefaults() -> UserDefaults {
-    let suiteName = "NotchHubTests.Profiles.\(UUID().uuidString)"
-    let defaults = UserDefaults(suiteName: suiteName)!
+    let (suiteName, defaults) = TestDefaults.makeSuite("Profiles.\(UUID().uuidString)")
     defaults.removePersistentDomain(forName: suiteName)
     return defaults
 }

@@ -23,15 +23,16 @@ final class ShelfTestClock: @unchecked Sendable {
 
 @MainActor
 struct ShelfFixture {
-    let suiteName = "NotchHubTests.Shelf.\(UUID().uuidString)"
+    let suiteName: String
     let defaults: UserDefaults
     let root: URL
     let storageDirectory: URL
     let clock = ShelfTestClock()
 
     init() throws {
-        defaults = try #require(UserDefaults(suiteName: suiteName))
-        defaults.removePersistentDomain(forName: suiteName)
+        let suite = TestDefaults.makeSuite("Shelf.\(UUID().uuidString)")
+        suiteName = suite.name
+        defaults = suite.defaults
         root = FileManager.default.temporaryDirectory.appending(path: "ShelfTests-\(UUID().uuidString)", directoryHint: .isDirectory)
         storageDirectory = root.appending(path: "Storage", directoryHint: .isDirectory)
         try FileManager.default.createDirectory(at: root, withIntermediateDirectories: true)

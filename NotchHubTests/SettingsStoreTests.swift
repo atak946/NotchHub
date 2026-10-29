@@ -5,8 +5,7 @@ import Testing
 @MainActor
 struct SettingsStoreTests {
     private func makeDefaults() -> UserDefaults {
-        let suiteName = "NotchHubTests.\(UUID().uuidString)"
-        let defaults = UserDefaults(suiteName: suiteName)!
+        let (suiteName, defaults) = TestDefaults.makeSuite("SettingsStore.\(UUID().uuidString)")
         defaults.removePersistentDomain(forName: suiteName)
         return defaults
     }
