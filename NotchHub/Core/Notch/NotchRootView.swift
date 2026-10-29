@@ -87,7 +87,11 @@ struct NotchRootView: View {
                 .background(alignment: .bottom) { alertBackdrop }
                 .overlay(alignment: .top) { alertHairline }
 
+            // Content is laid out at its final size; clip it to the morphing shape so nothing
+            // (e.g. the alert countdown bar) pokes out while width and height animate in turn.
             content
+                .frame(width: size.width, height: size.height, alignment: .top)
+                .clipShape(NotchShape(topRadius: topRadius, bottomRadius: bottomRadius))
         }
         .frame(width: size.width, height: size.height)
         .attentionShake(trigger: ShakeTrigger(
