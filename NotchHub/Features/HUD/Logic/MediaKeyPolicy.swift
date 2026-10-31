@@ -37,7 +37,9 @@ enum MediaKeyPolicy {
     static let coarseStepCount = 16
     static let fineStepCount = 64
     /// Absorbs float noise so a level already on the grid moves by exactly one step.
-    private static let gridTolerance = 1e-6
+    /// In step units: DisplayServices reports brightness as a `Float` that can sit a few ULPs off the grid
+    /// (0.75 reads back as 0.7499999 → 11.999998 steps), which a 1e-6 tolerance missed and pinned the level.
+    private static let gridTolerance = 1e-3
 
     /// Interception needs the notch HUD, the "hide macOS HUD" setting and Accessibility trust.
     static func isActive(hudEnabled: Bool, hidesSystemHUD: Bool, isTrusted: Bool) -> Bool {
