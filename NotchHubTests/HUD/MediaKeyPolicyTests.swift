@@ -102,6 +102,9 @@ struct MediaKeyPolicyTests {
     @Test func floatNoiseOnTheGridStillMovesOneStep() {
         #expect(MediaKeyPolicy.stepped(0.5 - 1e-9, up: true, isFine: false) == 9.0 / 16)
         #expect(MediaKeyPolicy.stepped(0.5 + 1e-9, up: false, isFine: false) == 7.0 / 16)
+        // DisplayServices Float readback just below the grid (0.75 → 0.7499999) must still step up.
+        #expect(MediaKeyPolicy.stepped(Double(Float(0.7499999)), up: true, isFine: false) == 13.0 / 16)
+        #expect(MediaKeyPolicy.stepped(Double(Float(0.7500001)), up: false, isFine: false) == 11.0 / 16)
     }
 
     @Test func clampsAtBothEnds() {
