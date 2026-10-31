@@ -138,12 +138,26 @@ final class LyricsService {
         } catch {
             loadedTrackID = nil
             guard !Task.isCancelled else { return }
-            logger.error("Lyrics lookup failed: \(String(describing: error), privacy: .public)")
+            logger.error("Lyrics lookup failed: \(Self.logSummary(of: error), privacy: .public)")
             state = .failed
             return
         }
         cache.insert(result, for: track.trackID)
         guard !Task.isCancelled, loadedTrackID == track.trackID else { return }
         state = result
+    }
+
+    /// Error kind and code only: a `URLError`'s description carries the request URL, whose query holds the
+    /// track title and artist, and the log is readable by anyone on the Mac.
+    nonisolated static func logSummary(of error: any Error) -> String {
+        switch error {
+        case let urlError as URLError:
+            return "URLError \(urlError.code.rawValue)"
+        case LRCLibClient.ClientError.badResponse(let statusCode):
+            return "HTTP \(statusCode)"
+        default:
+            let nsError = error as NSError
+            return "\(nsError.domain) \(nsError.code)"
+        }
     }
 }

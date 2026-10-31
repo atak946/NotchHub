@@ -104,3 +104,17 @@ struct PlayerExtrasParsingTests {
         #expect(RepeatMode.one.next == .off)
     }
 }
+
+struct LyricsLogSummaryTests {
+    @Test func urlErrorsLogTheirCodeButNotTheRequestURL() {
+        let url = URL(string: "https://lrclib.net/api/get?track_name=Secret%20Song&artist_name=Someone")!
+        let error = URLError(.timedOut, userInfo: [NSURLErrorFailingURLErrorKey: url])
+        let summary = LyricsService.logSummary(of: error)
+        #expect(summary == "URLError \(URLError.Code.timedOut.rawValue)")
+        #expect(!summary.contains("Secret"))
+    }
+
+    @Test func badResponsesLogTheStatusCode() {
+        #expect(LyricsService.logSummary(of: LRCLibClient.ClientError.badResponse(statusCode: 503)) == "HTTP 503")
+    }
+}
