@@ -14,24 +14,47 @@ enum CoreAudioVolumeWriter {
     }
 
     /// Reads, applies `command` and writes back; returns the level read back afterwards.
-    static func perform(_ command: MediaKeyCommand, on id: AudioObjectID) -> HUDReading? {
+    static func perform(_ command: MediaKeyCommand, on id: AudioObjectID, step: VolumeKeyStep = .system) -> HUDReading? {
         guard let volumeAddress = settableVolumeAddress(of: id) else { return nil }
         let muteAddress = settableMuteAddress(of: id)
-        let current = VolumeState(
-            level: CoreAudioVolumeSource.volume(of: id) ?? 0,
-            isMuted: CoreAudioVolumeSource.isMuted(id)
-        )
-        let next = MediaKeyPolicy.apply(command, to: current, canSetMute: muteAddress != nil)
+        let current = currentState(of: id)
+        let next = MediaKeyPolicy.apply(command, to: current, canSetMute: muteAddress != nil, step: step)
+        apply(next, over: current, volumeAddress: volumeAddress, muteAddress: muteAddress, on: id)
+        return CoreAudioVolumeSource.reading(of: id)
+    }
+
+    /// Sets an absolute level (HUD scroll/drag); a level above zero unmutes, as the volume keys do.
+    static func setLevel(_ level: Double, on id: AudioObjectID) -> HUDReading? {
+        guard let volumeAddress = settableVolumeAddress(of: id) else { return nil }
+        let muteAddress = settableMuteAddress(of: id)
+        let current = currentState(of: id)
+        let target = HUDLevel.clamped(level)
+        let unmute = current.isMuted && target > 0 && muteAddress != nil
+        let next = VolumeState(level: target, isMuted: unmute ? false : current.isMuted)
+        apply(next, over: current, volumeAddress: volumeAddress, muteAddress: muteAddress, on: id)
+        return CoreAudioVolumeSource.reading(of: id)
+    }
+
+    // MARK: - Private
+
+    private static func currentState(of id: AudioObjectID) -> VolumeState {
+        VolumeState(level: CoreAudioVolumeSource.volume(of: id) ?? 0, isMuted: CoreAudioVolumeSource.isMuted(id))
+    }
+
+    private static func apply(
+        _ next: VolumeState,
+        over current: VolumeState,
+        volumeAddress: AudioObjectPropertyAddress,
+        muteAddress: AudioObjectPropertyAddress?,
+        on id: AudioObjectID
+    ) {
         if next.level != current.level {
             write(Float32(next.level), to: volumeAddress, on: id)
         }
         if next.isMuted != current.isMuted, let muteAddress {
             write(UInt32(next.isMuted ? 1 : 0), to: muteAddress, on: id)
         }
-        return CoreAudioVolumeSource.reading(of: id)
     }
-
-    // MARK: - Private
 
     private static func settableVolumeAddress(of id: AudioObjectID) -> AudioObjectPropertyAddress? {
         guard let address = CoreAudioVolumeSource.volumeAddress(of: id), isSettable(address, on: id) else { return nil }

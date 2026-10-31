@@ -19,6 +19,8 @@ final class SettingsStore {
         static let showTrackChangeAlerts = "showTrackChangeAlerts"
         static let showsCompactMediaControls = "showsCompactMediaControls"
         static let showsMediaVisualizer = "showsMediaVisualizer"
+        static let detectsBrowserMedia = WebPlayerSettings.enabledKey
+        static let showsLyrics = "showsLyrics"
     }
 
     @ObservationIgnored private let defaults: UserDefaults
@@ -67,6 +69,16 @@ final class SettingsStore {
         didSet { defaults.set(showsMediaVisualizer, forKey: Keys.showsMediaVisualizer) }
     }
 
+    /// YouTube and YouTube Music tabs in Chrome, Arc, Brave and Edge. Off by default: the first scan asks for Automation access.
+    var detectsBrowserMedia: Bool {
+        didSet { defaults.set(detectsBrowserMedia, forKey: Keys.detectsBrowserMedia) }
+    }
+
+    /// Synced lyrics from LRCLIB in the media panel; sends the track's title and artist to lrclib.net.
+    var showsLyrics: Bool {
+        didSet { defaults.set(showsLyrics, forKey: Keys.showsLyrics) }
+    }
+
     /// Session-only: hides every panel until resumed.
     var isPaused = false
 
@@ -83,6 +95,8 @@ final class SettingsStore {
         showTrackChangeAlerts = defaults.object(forKey: Keys.showTrackChangeAlerts) as? Bool ?? true
         showsCompactMediaControls = defaults.object(forKey: Keys.showsCompactMediaControls) as? Bool ?? true
         showsMediaVisualizer = defaults.object(forKey: Keys.showsMediaVisualizer) as? Bool ?? true
+        detectsBrowserMedia = defaults.bool(forKey: Keys.detectsBrowserMedia)
+        showsLyrics = defaults.object(forKey: Keys.showsLyrics) as? Bool ?? true
 
         if let stored = defaults.stringArray(forKey: Keys.enabledModules) {
             let known = defaults.stringArray(forKey: Keys.knownModules).map { Set($0.compactMap(NotchModule.init)) }

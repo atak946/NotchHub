@@ -4,14 +4,20 @@ import SwiftUI
 struct MediaModuleView: View {
     let media: MediaService
     let audio: AudioOutputService
+    let showsLyrics: Bool
+
+    @State private var isShowingLyrics = false
 
     private static let artworkSize: CGFloat = 116
     private static let artworkRadius: CGFloat = 14
     private static let progressTick: TimeInterval = 0.5
+    private static let lyricsTick: TimeInterval = 0.25
+    private static let skipInterval: TimeInterval = 10
 
-    init(media: MediaService, audio: AudioOutputService) {
+    init(media: MediaService, audio: AudioOutputService, showsLyrics: Bool = true) {
         self.media = media
         self.audio = audio
+        self.showsLyrics = showsLyrics
     }
 
     var body: some View {
@@ -19,7 +25,11 @@ struct MediaModuleView: View {
             if let track = media.nowPlaying {
                 playerView(track)
             } else {
-                MediaEmptyView(deniedSources: media.permissionDeniedSources, audio: audio)
+                MediaEmptyView(
+                    deniedSources: media.permissionDeniedSources,
+                    javaScriptBlocked: !media.javaScriptBlockedSources.isEmpty,
+                    audio: audio
+                )
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -30,7 +40,11 @@ struct MediaModuleView: View {
         HStack(alignment: .center, spacing: 18) {
             artwork
             VStack(alignment: .leading, spacing: 0) {
-                header(track)
+                if isShowingLyrics && showsLyrics {
+                    lyrics(track)
+                } else {
+                    header(track)
+                }
                 Spacer(minLength: 6)
                 // Ticks only while playing; a paused position does not move.
                 TimelineView(.periodic(every: Self.progressTick, paused: !track.isPlaying)) { context in
@@ -47,6 +61,15 @@ struct MediaModuleView: View {
             .frame(maxHeight: Self.artworkSize)
         }
         .padding(.horizontal, 4)
+    }
+
+    private func lyrics(_ track: NowPlaying) -> some View {
+        TimelineView(.periodic(every: Self.lyricsTick, paused: !track.isPlaying)) { context in
+            LyricsPanel(state: media.lyrics.state, position: media.position(at: context.date))
+        }
+        .frame(height: 54)
+        .task(id: track.trackID) { await media.lyrics.load(for: track) }
+        .transition(.opacity)
     }
 
     private var artwork: some View {
@@ -77,6 +100,9 @@ struct MediaModuleView: View {
                     .font(.system(size: 13, weight: .medium))
                     .foregroundStyle(.secondary)
                     .lineLimit(1)
+                if let upNext = track.extras.upNext {
+                    UpNextLabel(track: upNext)
+                }
             }
             Spacer(minLength: 0)
             Text(track.source.displayName)
@@ -92,16 +118,9 @@ struct MediaModuleView: View {
 
     private func controls(_ track: NowPlaying) -> some View {
         HStack(spacing: 6) {
-            MediaIconButton(systemImage: "backward.fill", help: "Önceki", action: media.previous)
-            MediaIconButton(
-                systemImage: track.isPlaying ? "pause.fill" : "play.fill",
-                help: track.isPlaying ? "Duraklat" : "Oynat",
-                size: 20,
-                diameter: 38,
-                action: media.playPause
-            )
-            MediaIconButton(systemImage: "forward.fill", help: "Sonraki", action: media.next)
+            transport(track)
             Spacer(minLength: 0)
+            extras(track)
             if track.isPlaying {
                 MediaEqualizerView(isPlaying: track.isPlaying)
                     .frame(width: 16, height: 12)
@@ -110,11 +129,79 @@ struct MediaModuleView: View {
             AudioOutputMenu(audio: audio)
         }
     }
+
+    @ViewBuilder
+    private func transport(_ track: NowPlaying) -> some View {
+        let source = track.source
+        if source.supportsShuffle, let isShuffling = track.extras.isShuffling {
+            MediaToggleButton(systemImage: "shuffle", help: "Karıştır", isOn: isShuffling) {
+                media.setShuffling(!isShuffling)
+            }
+        }
+        if source.supportsVideoControls {
+            MediaIconButton(systemImage: "gobackward.10", help: "10 sn geri", size: 13, diameter: 26) {
+                media.skip(by: -Self.skipInterval)
+            }
+        }
+        MediaIconButton(systemImage: "backward.fill", help: "Önceki", action: media.previous)
+        MediaIconButton(
+            systemImage: track.isPlaying ? "pause.fill" : "play.fill",
+            help: track.isPlaying ? "Duraklat" : "Oynat",
+            size: 20,
+            diameter: 38,
+            action: media.playPause
+        )
+        MediaIconButton(systemImage: "forward.fill", help: "Sonraki", action: media.next)
+        if source.supportsVideoControls {
+            MediaIconButton(systemImage: "goforward.10", help: "10 sn ileri", size: 13, diameter: 26) {
+                media.skip(by: Self.skipInterval)
+            }
+        }
+        if source.supportsRepeat, let mode = track.extras.repeatMode {
+            MediaToggleButton(
+                systemImage: mode == .one ? "repeat.1" : "repeat",
+                help: "Tekrarla",
+                isOn: mode != .off
+            ) {
+                media.setRepeatMode(mode.next)
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func extras(_ track: NowPlaying) -> some View {
+        let source = track.source
+        if source.supportsLike, let isLiked = track.extras.isLiked {
+            MediaToggleButton(
+                systemImage: isLiked ? "heart.fill" : "heart",
+                help: isLiked ? "Beğenmekten vazgeç" : "Beğen",
+                isOn: isLiked,
+                activeTint: .pink
+            ) {
+                media.setLiked(!isLiked)
+            }
+        }
+        if source.supportsVideoControls {
+            PlaybackRateMenu(rate: track.extras.playbackRate ?? 1, onSelect: media.setPlaybackRate)
+            MediaIconButton(systemImage: "pip.enter", help: "Resim içinde Resim", size: 13, diameter: 26) {
+                media.togglePictureInPicture()
+            }
+        }
+        if showsLyrics {
+            MediaToggleButton(systemImage: "quote.bubble", help: "Şarkı sözleri", isOn: isShowingLyrics) {
+                withAnimation(.spring(response: 0.35, dampingFraction: 0.85)) { isShowingLyrics.toggle() }
+            }
+        }
+        if let volume = track.extras.volume {
+            PlayerVolumeControl(volume: volume, onChange: media.setVolume)
+        }
+    }
 }
 
 /// Shown when no player has a track loaded.
 private struct MediaEmptyView: View {
     let deniedSources: Set<MediaSource>
+    let javaScriptBlocked: Bool
     let audio: AudioOutputService
 
     private static let automationSettingsURL = URL(
@@ -123,7 +210,10 @@ private struct MediaEmptyView: View {
 
     private var subtitle: String {
         let denied = MediaSource.allCases.filter(deniedSources.contains).map(\.displayName)
-        guard !denied.isEmpty else { return String(localized: "Burada denetlemek için Spotify veya Music'te müzik başlat.") }
+        if denied.isEmpty, javaScriptBlocked {
+            return String(localized: "YouTube için tarayıcında Görünüm › Geliştirici › Apple Events'ten JavaScript'e İzin Ver'i aç.")
+        }
+        guard !denied.isEmpty else { return String(localized: "Burada denetlemek için Spotify, Music veya YouTube'da müzik başlat.") }
         let names = denied.formatted(.list(type: .and))
         return String(localized: "NotchHub'ın \(names) uygulamasını denetlemesine Otomasyon ayarlarından izin ver.")
     }
@@ -149,7 +239,7 @@ private struct MediaEmptyView: View {
                         .lineLimit(2)
                 }
                 HStack(spacing: 8) {
-                    ForEach(MediaSource.allCases) { source in
+                    ForEach(MediaSource.allCases.filter { !$0.isWebPlayer }) { source in
                         OpenPlayerButton(source: source)
                     }
                     if !deniedSources.isEmpty, let url = Self.automationSettingsURL {

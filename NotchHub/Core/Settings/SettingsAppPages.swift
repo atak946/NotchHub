@@ -150,6 +150,14 @@ struct MediaSettingsSection: View {
         Section("Medya") {
             Toggle("Kapalıyken medya kontrolleri", isOn: $settings.showsCompactMediaControls)
             Toggle("Müzik dalgası", isOn: $settings.showsMediaVisualizer)
+            Toggle("Şarkı sözleri", isOn: $settings.showsLyrics)
+                .help("Şarkı adı ve sanatçı, eşzamanlı sözler için lrclib.net'e gönderilir.")
+            VStack(alignment: .leading, spacing: 2) {
+                Toggle("Tarayıcıdaki YouTube'u algıla", isOn: $settings.detectsBrowserMedia)
+                Text("Chrome, Arc, Brave ve Edge'deki YouTube ve YouTube Music sekmeleri. Tarayıcıda Görünüm › Geliştirici › Apple Events'ten JavaScript'e İzin Ver açık olmalı.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
         }
     }
 }

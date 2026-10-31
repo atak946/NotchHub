@@ -10,10 +10,10 @@ struct NotchRootView: View {
     private typealias Presentation = NotchPresentation
 
     private static let topRadius: [Presentation: CGFloat] = [
-        .collapsed: 6, .hud: 8, .alert: 12, .expanded: 14, .cameraMirror: 12,
+        .collapsed: 6, .hud: 6, .alert: 12, .expanded: 14, .cameraMirror: 12,
     ]
     private static let bottomRadius: [Presentation: CGFloat] = [
-        .collapsed: 10, .hud: 14, .alert: 22, .expanded: 26, .cameraMirror: 24,
+        .collapsed: 10, .hud: 10, .alert: 22, .expanded: 26, .cameraMirror: 24,
     ]
     private static let morphAnimation = Animation.spring(response: 0.42, dampingFraction: 0.72)
     /// The leading axis of the morph; the other axis follows a beat later.
@@ -51,11 +51,10 @@ struct NotchRootView: View {
             return geometry.expandedRect.size
         case .alert:
             return geometry.alertRect.size
-        case .hud:
-            return geometry.hudRect.size
         case .cameraMirror:
             return geometry.cameraMirrorRect.size
-        case .collapsed:
+        case .collapsed, .hud:
+            // The HUD floats as its own capsule below; the notch itself keeps its collapsed shape.
             let collapsed = geometry.collapsedRect(wingWidth: model.wingWidth)
             return CGSize(width: collapsed.width + topRadius * 2, height: collapsed.height)
         }
@@ -94,6 +93,7 @@ struct NotchRootView: View {
                 .clipShape(NotchShape(topRadius: topRadius, bottomRadius: bottomRadius))
         }
         .frame(width: size.width, height: size.height)
+        .overlay(alignment: .top) { hudPill }
         .attentionShake(trigger: ShakeTrigger(
             count: model.attentionCount,
             alertID: reduceMotion ? nil : alerts.current?.id
@@ -149,17 +149,11 @@ struct NotchRootView: View {
                 .frame(width: alertSize.width, height: alertSize.height)
                 .transition(.alertContent(reduceMotion: reduceMotion))
             }
-        case .hud:
-            if let reading = model.services.hud.center.current {
-                NotchHUDView(reading: reading, layout: hudLayout)
-                    .frame(width: model.geometry.hudRect.width, height: model.geometry.hudRect.height)
-                    .transition(.alertContent(reduceMotion: reduceMotion))
-            }
         case .cameraMirror:
             CameraMirrorView(service: model.services.cameraMirror.service, notchHeight: notchHeight)
                 .frame(width: model.geometry.cameraMirrorRect.width, height: model.geometry.cameraMirrorRect.height)
                 .transition(.alertContent(reduceMotion: reduceMotion))
-        case .collapsed:
+        case .collapsed, .hud:
             CompactWingsView(model: model)
                 .padding(.horizontal, topRadius)
                 .transition(.opacity)
@@ -167,11 +161,22 @@ struct NotchRootView: View {
     }
 
     private var hudLayout: NotchHUDView.Layout {
-        NotchHUDView.Layout(
-            notchHeight: model.geometry.notchSize.height,
-            notchWidth: model.geometry.notchSize.width,
-            sideInset: topRadius + Self.alertContentInset
-        )
+        NotchHUDView.Layout(pillSize: model.geometry.hudBarRect.size)
+    }
+
+    /// The level capsule hanging under the notch; it grows out of the notch's bottom edge.
+    @ViewBuilder
+    private var hudPill: some View {
+        if presentation == .hud, let reading = model.services.hud.center.current {
+            NotchHUDHost(hud: model.services.hud, media: model.services.media, reading: reading, layout: hudLayout)
+                .padding(.top, model.geometry.notchSize.height + NotchGeometry.hudPillGap)
+                .environment(\.colorScheme, .dark)
+                .transition(
+                    reduceMotion
+                        ? .opacity
+                        : .scale(scale: 0.6, anchor: .top).combined(with: .opacity)
+                )
+        }
     }
 
     private func alertLayout(notchHeight: CGFloat) -> NotchAlertView.Layout {
@@ -200,8 +205,17 @@ struct NotchRootView: View {
     @ViewBuilder
     private var alertHairline: some View {
         if presentation == .alert, let alert = alerts.current {
-            AlertHairline(style: alert.style, topRadius: topRadius, bottomRadius: bottomRadius)
-                .transition(.opacity)
+            ZStack {
+                AlertAmbientWash(
+                    style: alert.style,
+                    topRadius: topRadius,
+                    bottomRadius: bottomRadius,
+                    notchHeight: model.geometry.notchSize.height
+                )
+                AlertHairline(style: alert.style, topRadius: topRadius, bottomRadius: bottomRadius)
+            }
+            .id(alert.id)
+            .transition(.opacity)
         }
     }
 

@@ -1537,6 +1537,26 @@
         }
       }
     },
+    "10 sn geri": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Back 10 Seconds"
+          }
+        }
+      }
+    },
+    "10 sn ileri": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Forward 10 Seconds"
+          }
+        }
+      }
+    },
     "12,5*3 · 5 km mil · 100 usd tl": {
       "localizations": {
         "en": {
@@ -1783,6 +1803,16 @@
         }
       }
     },
+    "Chrome, Arc, Brave ve Edge'deki YouTube ve YouTube Music sekmeleri. Tarayıcıda Görünüm › Geliştirici › Apple Events'ten JavaScript'e İzin Ver açık olmalı.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube and YouTube Music tabs in Chrome, Arc, Brave and Edge. Turn on View › Developer › Allow JavaScript from Apple Events in the browser."
+          }
+        }
+      }
+    },
     "Asla": {
       "localizations": {
         "en": {
@@ -1979,6 +2009,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Open"
+          }
+        }
+      }
+    },
+    "Açık": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "On"
           }
         }
       }
@@ -2353,6 +2393,26 @@
         }
       }
     },
+    "Beğen": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Like"
+          }
+        }
+      }
+    },
+    "Beğenmekten vazgeç": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unlike"
+          }
+        }
+      }
+    },
     "Bildir": {
       "localizations": {
         "en": {
@@ -2703,6 +2763,16 @@
         }
       }
     },
+    "Bu şarkı için söz bulunamadı": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No lyrics found for this song"
+          }
+        }
+      }
+    },
     "Bugün": {
       "localizations": {
         "en": {
@@ -2881,12 +2951,12 @@
         }
       }
     },
-    "Burada denetlemek için Spotify veya Music'te müzik başlat.": {
+    "Burada denetlemek için Spotify, Music veya YouTube'da müzik başlat.": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Start playing music in Spotify or Music to control it here."
+            "value": "Start music in Spotify, Music or YouTube to control it here."
           }
         }
       }
@@ -3523,6 +3593,16 @@
         }
       }
     },
+    "Enstrümantal": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Instrumental"
+          }
+        }
+      }
+    },
     "Entegrasyonlar": {
       "localizations": {
         "en": {
@@ -4107,6 +4187,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Show"
+          }
+        }
+      }
+    },
+    "Gösterge açıkken üzerinde kaydırın veya çubuğu sürükleyin; çubuğun dışındaki tıklamalar menü çubuğuna geçer.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "While the HUD is showing, scroll over it or drag its bar; clicks outside the bar go through to the menu bar."
+          }
+        }
+      }
+    },
+    "Göstergede kaydırarak veya sürükleyerek ayarla": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Adjust by Scrolling or Dragging the HUD"
           }
         }
       }
@@ -4813,6 +4913,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Snow"
+          }
+        }
+      }
+    },
+    "Karıştır": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Shuffle"
           }
         }
       }
@@ -6421,12 +6531,32 @@
         }
       }
     },
+    "Oynatma hızı": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Playback Speed"
+          }
+        }
+      }
+    },
     "Oynatma konumu": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Playback Position"
+          }
+        }
+      }
+    },
+    "Oynatıcı sesi": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Player Volume"
           }
         }
       }
@@ -6941,6 +7071,16 @@
         }
       }
     },
+    "Resim içinde Resim": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Picture in Picture"
+          }
+        }
+      }
+    },
     "Sabitle": {
       "localizations": {
         "en": {
@@ -7079,6 +7219,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Volume"
+          }
+        }
+      }
+    },
+    "Ses tuşu adımı": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Volume Key Step"
           }
         }
       }
@@ -7259,6 +7409,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Mutes or unmutes the system microphone."
+          }
+        }
+      }
+    },
+    "Sistem varsayılanı": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "System Default"
           }
         }
       }
@@ -7553,6 +7713,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "No microphone that can be muted was found."
+          }
+        }
+      }
+    },
+    "Sözler yüklenemedi": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn't load lyrics"
           }
         }
       }
@@ -7873,6 +8043,16 @@
         }
       }
     },
+    "Tarayıcıdaki YouTube'u algıla": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Detect YouTube in the Browser"
+          }
+        }
+      }
+    },
     "Tarih": {
       "localizations": {
         "en": {
@@ -7899,6 +8079,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Back online"
+          }
+        }
+      }
+    },
+    "Tekrarla": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Repeat"
           }
         }
       }
@@ -8165,6 +8355,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Orange"
+          }
+        }
+      }
+    },
+    "Tuşları NotchHub yönetirken geçerlidir. Option+Shift ile dörtte bir adım.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Applies while NotchHub handles the keys. Option+Shift moves a quarter step."
           }
         }
       }
@@ -9233,6 +9433,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Ignore"
+          }
+        }
+      }
+    },
+    "YouTube için tarayıcında Görünüm › Geliştirici › Apple Events'ten JavaScript'e İzin Ver'i aç.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "For YouTube, turn on View › Developer › Allow JavaScript from Apple Events in your browser."
           }
         }
       }
@@ -10517,6 +10727,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Charging"
+          }
+        }
+      }
+    },
+    "Şarkı adı ve sanatçı, eşzamanlı sözler için lrclib.net'e gönderilir.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The song title and artist are sent to lrclib.net for synced lyrics."
+          }
+        }
+      }
+    },
+    "Şarkı sözleri": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lyrics"
           }
         }
       }

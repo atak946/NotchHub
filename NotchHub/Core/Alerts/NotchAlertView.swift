@@ -58,7 +58,7 @@ struct NotchAlertView: View {
 
             VStack(alignment: .leading, spacing: 1) {
                 Text(alert.title)
-                    .font(.system(size: 14, weight: .semibold))
+                    .font(.system(size: 15, weight: .semibold))
                     .foregroundStyle(.white)
                     .lineLimit(1)
                 if alert.isContentConcealed {
@@ -66,8 +66,8 @@ struct NotchAlertView: View {
                         .transition(.opacity)
                 } else if let subtitle = alert.displayedSubtitle {
                     Text(subtitle)
-                        .font(.system(size: 12))
-                        .foregroundStyle(.white.opacity(0.62))
+                        .font(.system(size: 12.5))
+                        .foregroundStyle(.white.opacity(0.74))
                         .lineLimit(2)
                         .contentTransition(.numericText())
                         .transition(.blurReplace)
@@ -126,7 +126,7 @@ private struct AlertConcealedLine: View {
 
 /// Labels on both sides of the hardware notch: source on the left, queue pill and time on the right.
 private struct AlertWings: View {
-    private static let dotSize: CGFloat = 5
+    private static let dotSize: CGFloat = 6
 
     let alert: NotchAlert
     let queuedCount: Int
@@ -140,6 +140,8 @@ private struct AlertWings: View {
                     .frame(width: Self.dotSize, height: Self.dotSize)
                     .shadow(color: alert.style.tint.opacity(0.8), radius: 3)
                 Text(alert.sourceLabel)
+                    .font(.system(size: 11, weight: .semibold))
+                    .foregroundStyle(alert.style.tint)
                     .lineLimit(1)
             }
             .frame(width: wingWidth, alignment: .leading)

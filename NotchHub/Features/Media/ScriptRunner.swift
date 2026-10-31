@@ -19,6 +19,8 @@ enum ScriptError: Error, Equatable, Sendable {
     case notPermitted
     /// The target app quit between the running check and the script.
     case applicationNotRunning
+    /// A browser refused `execute javascript` because "Allow JavaScript from Apple Events" is off.
+    case javaScriptDisabled
 
     static let notPermittedCode = -1743
     static let applicationNotRunningCode = -600

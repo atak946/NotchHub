@@ -20,7 +20,7 @@ final class SystemMediaPlaybackEvents: MediaPlaybackEventSource {
     private let bundleIdentifiers: Set<String>
     private var tokens: [(NotificationCenter, any NSObjectProtocol)] = []
 
-    init(bundleIdentifiers: Set<String> = Set(MediaSource.allCases.map(\.bundleIdentifier))) {
+    init(bundleIdentifiers: Set<String> = Set(MediaSource.allCases.compactMap(\.bundleIdentifier) + MediaBrowser.bundleIdentifiers)) {
         self.bundleIdentifiers = bundleIdentifiers
     }
 

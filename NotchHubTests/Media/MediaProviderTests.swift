@@ -3,7 +3,7 @@ import Testing
 @testable import NotchHub
 
 struct MediaProviderTests {
-    private let allRunning = FakeAppChecker(running: [MediaSource.spotify.bundleIdentifier, MediaSource.music.bundleIdentifier])
+    private let allRunning = FakeAppChecker(running: ["com.spotify.client", "com.apple.Music"])
 
     @Test func neverScriptsAPlayerThatIsNotRunning() async throws {
         let runner = FakeScriptRunner()

@@ -36,12 +36,50 @@ struct HUDLevelTests {
     @Test(arguments: [
         (0.0, false, "speaker.slash.fill"),
         (0.6, true, "speaker.slash.fill"),
-        (0.2, false, "speaker.wave.1.fill"),
-        (0.5, false, "speaker.wave.2.fill"),
+        (0.2, false, "speaker.wave.3.fill"),
+        (0.5, false, "speaker.wave.3.fill"),
         (0.9, false, "speaker.wave.3.fill"),
     ])
-    func volumeIconFollowsLevel(level: Double, isMuted: Bool, expected: String) {
+    func volumeIconIsSilencedOnlyWhenMutedOrAtZero(level: Double, isMuted: Bool, expected: String) {
         #expect(HUDLevel.systemImage(of: HUDReading(kind: .volume, level: level, isMuted: isMuted)) == expected)
+    }
+
+    @Test func speakerWavesFillWithTheLevel() {
+        #expect(HUDLevel.symbolVariableValue(of: HUDReading(kind: .volume, level: 0.3)) == 0.3)
+        #expect(HUDLevel.symbolVariableValue(of: HUDReading(kind: .volume, level: 0.3, isMuted: true)) == nil)
+        #expect(HUDLevel.symbolVariableValue(of: HUDReading(kind: .volume, level: 0)) == nil)
+        #expect(HUDLevel.symbolVariableValue(of: HUDReading(kind: .brightness, level: 0.3)) == nil)
+    }
+
+    @Test func headphonesReplaceTheSpeakerUnlessMuted() {
+        let airPods = HUDOutputDevice(name: "AirPods Pro", systemImage: "airpodspro", batteryPercent: 80)
+
+        #expect(HUDLevel.systemImage(of: HUDReading(kind: .volume, level: 0.5, output: airPods)) == "airpodspro")
+        #expect(HUDLevel.systemImage(of: HUDReading(kind: .volume, level: 0, output: airPods)) == "airpodspro")
+        #expect(HUDLevel.systemImage(of: HUDReading(kind: .volume, level: 0.5, isMuted: true, output: airPods)) == "speaker.slash.fill")
+        #expect(HUDLevel.symbolVariableValue(of: HUDReading(kind: .volume, level: 0.5, output: airPods)) == nil)
+    }
+
+    @Test(arguments: [
+        (0.0, false, HUDLevelEdge?.some(.empty)),
+        (0.0005, false, HUDLevelEdge?.some(.empty)),
+        (1.0, false, HUDLevelEdge?.some(.full)),
+        (0.5, false, HUDLevelEdge?.none),
+        (1.0, true, HUDLevelEdge?.none),
+    ])
+    func edgesAreTheEndsOfTheBarButNotMute(level: Double, isMuted: Bool, expected: HUDLevelEdge?) {
+        #expect(HUDLevel.edge(of: HUDReading(kind: .volume, level: level, isMuted: isMuted)) == expected)
+    }
+
+    @Test func unknownLevelsHaveNoEdge() {
+        #expect(HUDLevel.edge(of: HUDReading(kind: .brightness, level: nil)) == nil)
+        #expect(HUDLevel.edge(of: HUDReading(kind: .brightness, level: 1)) == .full)
+    }
+
+    @Test func brightnessEmptyEdgeIsTheFloor() {
+        #expect(HUDLevel.edge(of: HUDReading(kind: .brightness, level: MediaKeyPolicy.minimumBrightness)) == .empty)
+        #expect(HUDLevel.edge(of: HUDReading(kind: .brightness, level: 0.2)) == nil)
+        #expect(HUDLevel.edge(of: HUDReading(kind: .volume, level: MediaKeyPolicy.minimumBrightness)) == nil)
     }
 
     @Test func brightnessIconDimsBelowHalf() {

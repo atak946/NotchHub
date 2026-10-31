@@ -24,6 +24,14 @@ protocol HUDBrightnessReading {
     func brightness() -> Double?
 }
 
+/// Sets an absolute volume or brightness level, for scrolling over and dragging the HUD.
+@MainActor
+protocol HUDLevelSetting: AnyObject {
+    func canSetLevel(for kind: HUDKind) -> Bool
+    /// Must not block the caller; `completion` runs on the main actor with the level read back (or `nil`).
+    func setLevel(_ level: Double, for kind: HUDKind, completion: @escaping @MainActor @Sendable (HUDReading?) -> Void)
+}
+
 /// Global + local `NSEvent` monitors for `.systemDefined` events.
 @MainActor
 final class SystemDefinedKeyMonitor: HUDKeySource {

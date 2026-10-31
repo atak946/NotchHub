@@ -3,7 +3,7 @@ import CoreGraphics
 /// What one notch shows right now. Higher cases win; see `resolve`.
 enum NotchPresentation: Equatable, Sendable {
     case collapsed
-    /// Slim volume/brightness level; never takes clicks.
+    /// Slim volume/brightness level; only its bar strip takes clicks, and only while it can be adjusted.
     case hud
     case alert
     case expanded
@@ -26,12 +26,14 @@ enum NotchPresentation: Equatable, Sendable {
     }
 
     /// The only area of the window that may take clicks; `nil` keeps the whole window click-through.
+    /// Callers resolve `.hud` only while the HUD can be dragged; otherwise it stays click-through as `.collapsed`.
     func interactiveRect(in geometry: NotchGeometry) -> CGRect? {
         switch self {
         case .expanded: geometry.expandedRect
         case .alert: geometry.alertRect
         case .cameraMirror: geometry.cameraMirrorRect
-        case .hud, .collapsed: nil
+        case .hud: geometry.hudBarRect
+        case .collapsed: nil
         }
     }
 }

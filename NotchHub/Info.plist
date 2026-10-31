@@ -48,7 +48,7 @@
 		<true/>
 	</dict>
 	<key>NSAppleEventsUsageDescription</key>
-	<string>NotchHub, Spotify ve Music oynatmasını çentikten denetler.</string>
+	<string>NotchHub, Spotify, Music ve tarayıcıdaki YouTube oynatmasını çentikten denetler.</string>
 	<key>NSCalendarsFullAccessUsageDescription</key>
 	<string>NotchHub bir sonraki toplantını çentikte gösterir.</string>
 	<key>NSCameraUsageDescription</key>

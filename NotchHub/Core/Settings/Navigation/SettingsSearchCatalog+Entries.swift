@@ -45,8 +45,10 @@ extension SettingsSearchCatalog {
             SettingsSearchTerm("Göstergeler", "Indicators"),
             SettingsSearchTerm("Ses/parlaklık göstergesi çentikte", "Volume/Brightness HUD in Notch"),
             SettingsSearchTerm("macOS ses/parlaklık kutusunu gizle (tuşları NotchHub yönetir)", "Hide macOS Volume/Brightness HUD (NotchHub handles the keys)"),
+            SettingsSearchTerm("Ses tuşu adımı", "Volume Key Step"),
+            SettingsSearchTerm("Göstergede kaydırarak veya sürükleyerek ayarla", "Adjust by Scrolling or Dragging the HUD"),
         ],
-        synonyms: ["hud", "ses", "volume", "parlaklık", "brightness", "klavye tuşları", "keyboard keys", "osd"]
+        synonyms: ["hud", "ses", "volume", "parlaklık", "brightness", "klavye tuşları", "keyboard keys", "osd", "adım", "step", "kaydır", "scroll", "sürükle", "drag"]
     )
 
     static let alerts = SettingsSearchEntry(
@@ -78,8 +80,10 @@ extension SettingsSearchCatalog {
         items: [
             SettingsSearchTerm("Kapalıyken medya kontrolleri", "Media Controls When Closed"),
             SettingsSearchTerm("Müzik dalgası", "Music visualizer"),
+            SettingsSearchTerm("Tarayıcıdaki YouTube'u algıla", "Detect YouTube in the Browser"),
+            SettingsSearchTerm("Şarkı sözleri", "Lyrics"),
         ],
-        synonyms: ["müzik", "music", "spotify", "apple music", "şarkı", "song", "görselleştirici", "visualizer", "ekolayzır", "equalizer", "oynat", "play", "şimdi çalıyor", "now playing"]
+        synonyms: ["müzik", "music", "spotify", "apple music", "youtube", "youtube music", "arc", "brave", "edge", "tarayıcı", "browser", "söz", "lyrics", "şarkı", "song", "görselleştirici", "visualizer", "ekolayzır", "equalizer", "oynat", "play", "şimdi çalıyor", "now playing"]
     )
 
     static let timer = SettingsSearchEntry(

@@ -9,6 +9,10 @@ final class NotchHUDCenter {
     typealias Sleeper = @Sendable (Duration) async throws -> Void
 
     private(set) var current: HUDReading?
+    /// Bumped by every accepted `show`, so the view can react to a press that left the level unchanged.
+    private(set) var showCount = 0
+    /// While held (the bar is being dragged) the HUD stays up; releasing restarts the hide timer.
+    private(set) var isHeld = false
 
     /// Set by the integrator: `false` drops readings (setting off, paused, or an alert is showing).
     @ObservationIgnored var canShow: @MainActor () -> Bool = { true }
@@ -23,13 +27,33 @@ final class NotchHUDCenter {
     func show(_ reading: HUDReading) {
         guard canShow() else { return }
         if current != reading { current = reading }
-        scheduleHide()
+        showCount &+= 1
+        if isHeld {
+            hideTask?.cancel()
+            hideTask = nil
+        } else {
+            scheduleHide()
+        }
     }
 
     func hide() {
         hideTask?.cancel()
         hideTask = nil
+        isHeld = false
         if current != nil { current = nil }
+    }
+
+    /// Keeps the current reading on screen while `held`; ignored when nothing is shown.
+    func setHeld(_ held: Bool) {
+        guard held != isHeld else { return }
+        guard !held || current != nil else { return }
+        isHeld = held
+        if held {
+            hideTask?.cancel()
+            hideTask = nil
+        } else if current != nil {
+            scheduleHide()
+        }
     }
 
     private func scheduleHide() {

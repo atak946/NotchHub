@@ -2,15 +2,18 @@ import Foundation
 
 /// Pure parsing of the single delimiter-separated line the player scripts return per poll.
 ///
-/// Field order: state, title, artist, album, duration, position, artwork (URL for Spotify, persistent ID for Music).
+/// Field order: state, title, artist, album, duration, position, artwork (URL for Spotify and YouTube, persistent ID
+/// for Music), then the optional extras: liked, shuffle, repeat, volume (0–100), rate, up-next title, up-next artist.
 enum NowPlayingParser {
     /// ASCII unit separator; never appears in track metadata.
     static let separator: Character = "\u{1F}"
     static let minimumFieldCount = 2
     static let millisecondsPerSecond: TimeInterval = 1000
+    static let volumeScale = 100.0
 
     private enum Field: Int {
         case state, title, artist, album, duration, position, artwork
+        case liked, shuffle, repeatMode, volume, rate, upNextTitle, upNextArtist
     }
 
     enum PlaybackState: Equatable, Sendable {
@@ -33,7 +36,7 @@ enum NowPlayingParser {
         guard !title.isEmpty else { return nil }
 
         let rawDuration = number(from: field(.duration, in: fields))
-        let duration = source == .spotify ? rawDuration / millisecondsPerSecond : rawDuration
+        let duration = source.reportsDurationInMilliseconds ? rawDuration / millisecondsPerSecond : rawDuration
         let position = PlaybackMath.clamp(number(from: field(.position, in: fields)), duration: duration)
         let artwork = field(.artwork, in: fields)
 
@@ -45,9 +48,37 @@ enum NowPlayingParser {
             position: position,
             isPlaying: state == .playing,
             source: source,
-            artworkURL: source == .spotify ? artworkURL(from: artwork) : nil,
-            artworkID: artworkID(from: artwork, source: source)
+            artworkURL: source.hasRemoteArtwork ? artworkURL(from: artwork) : nil,
+            artworkID: artworkID(from: artwork, source: source),
+            extras: extras(from: fields)
         )
+    }
+
+    private static func extras(from fields: [String]) -> PlayerExtras {
+        let volume = field(.volume, in: fields)
+        let rate = field(.rate, in: fields)
+        let upNextTitle = field(.upNextTitle, in: fields)
+        return PlayerExtras(
+            isLiked: bool(from: field(.liked, in: fields)),
+            isShuffling: bool(from: field(.shuffle, in: fields)),
+            repeatMode: repeatMode(from: field(.repeatMode, in: fields)),
+            volume: volume.isEmpty ? nil : min(number(from: volume) / volumeScale, 1),
+            playbackRate: rate.isEmpty ? nil : number(from: rate),
+            upNext: upNextTitle.isEmpty ? nil : UpNextTrack(title: upNextTitle, artist: field(.upNextArtist, in: fields))
+        )
+    }
+
+    static func bool(from text: String) -> Bool? {
+        switch text.lowercased() {
+        case "true": true
+        case "false": false
+        default: nil
+        }
+    }
+
+    /// Spotify only reports a boolean `repeating`, which maps to repeating the whole context.
+    static func repeatMode(from text: String) -> RepeatMode? {
+        bool(from: text).map { $0 ? .all : .off } ?? RepeatMode(rawValue: text.lowercased())
     }
 
     /// Accepts both the readable state names and the raw four-char codes AppleScript sometimes leaks.
@@ -83,7 +114,7 @@ enum NowPlayingParser {
 
     private static func artworkID(from text: String, source: MediaSource) -> String? {
         switch source {
-        case .spotify: artworkURL(from: text)?.absoluteString
+        case .spotify, .youtube, .youtubeMusic: artworkURL(from: text)?.absoluteString
         case .music: text.isEmpty || text == "missing value" ? nil : "music:\(text)"
         }
     }

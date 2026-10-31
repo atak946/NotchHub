@@ -102,6 +102,9 @@ struct MediaKeyPolicyTests {
     @Test func floatNoiseOnTheGridStillMovesOneStep() {
         #expect(MediaKeyPolicy.stepped(0.5 - 1e-9, up: true, isFine: false) == 9.0 / 16)
         #expect(MediaKeyPolicy.stepped(0.5 + 1e-9, up: false, isFine: false) == 7.0 / 16)
+        // DisplayServices Float readback just below the grid (0.75 → 0.7499999) must still step up.
+        #expect(MediaKeyPolicy.stepped(Double(Float(0.7499999)), up: true, isFine: false) == 13.0 / 16)
+        #expect(MediaKeyPolicy.stepped(Double(Float(0.7500001)), up: false, isFine: false) == 11.0 / 16)
     }
 
     @Test func clampsAtBothEnds() {
@@ -110,6 +113,17 @@ struct MediaKeyPolicyTests {
         #expect(MediaKeyPolicy.stepped(0, up: false, isFine: false) == 0)
         #expect(MediaKeyPolicy.stepped(0.01, up: false, isFine: true) == 0)
         #expect(MediaKeyPolicy.stepped(1.4, up: false, isFine: false) == 15.0 / 16)
+    }
+
+    @Test func brightnessNeverReachesZero() {
+        #expect(MediaKeyPolicy.brightnessLevel(0) == 1.0 / 16)
+        #expect(MediaKeyPolicy.brightnessLevel(-0.3) == 1.0 / 16)
+        #expect(MediaKeyPolicy.brightnessLevel(.nan) == 1.0 / 16)
+        #expect(MediaKeyPolicy.brightnessLevel(0.5) == 0.5)
+        #expect(MediaKeyPolicy.brightnessLevel(1.7) == 1)
+        // Stepping down from the floor stays on the floor.
+        #expect(MediaKeyPolicy.brightnessLevel(MediaKeyPolicy.stepped(1.0 / 16, up: false, isFine: false)) == 1.0 / 16)
+        #expect(MediaKeyPolicy.brightnessLevel(MediaKeyPolicy.stepped(1.0 / 16, up: false, isFine: true)) == 1.0 / 16)
     }
 
     // MARK: - Volume state
@@ -146,5 +160,51 @@ struct MediaKeyPolicyTests {
         let state = VolumeState(level: 0.25, isMuted: false)
 
         #expect(MediaKeyPolicy.apply(.brightnessUp(fine: false), to: state, canSetMute: true) == state)
+    }
+
+    // MARK: - Configurable volume step
+
+    @Test(arguments: [
+        (VolumeKeyStep.system, 16, 64),
+        (.percent2, 50, 200),
+        (.percent5, 20, 80),
+        (.percent10, 10, 40),
+    ])
+    func stepCountsAndQuarterFineSteps(step: VolumeKeyStep, coarse: Int, fine: Int) {
+        #expect(step.stepCount(isFine: false) == coarse)
+        #expect(step.stepCount(isFine: true) == fine)
+    }
+
+    @Test func percentStepsMoveByTheirSize() {
+        let state = VolumeState(level: 0.5, isMuted: false)
+
+        let up = MediaKeyPolicy.apply(.volumeUp(fine: false), to: state, canSetMute: true, step: .percent10)
+        let down = MediaKeyPolicy.apply(.volumeDown(fine: false), to: state, canSetMute: true, step: .percent5)
+
+        #expect(abs(up.level - 0.6) < 1e-9)
+        #expect(abs(down.level - 0.45) < 1e-9)
+    }
+
+    @Test func systemStepMatchesTheMacOSGrid() {
+        let state = VolumeState(level: 0.5, isMuted: false)
+
+        #expect(MediaKeyPolicy.apply(.volumeUp(fine: false), to: state, canSetMute: true, step: .system).level == 9.0 / 16)
+        #expect(MediaKeyPolicy.apply(.volumeUp(fine: true), to: state, canSetMute: true, step: .system).level == 33.0 / 64)
+    }
+
+    @Test func offGridLevelsSnapToTheChosenGrid() {
+        // 0.34 on the 10 % grid: up lands on 40 %, down on 30 %.
+        #expect(abs(MediaKeyPolicy.stepped(0.34, up: true, stepCount: 10) - 0.4) < 1e-9)
+        #expect(abs(MediaKeyPolicy.stepped(0.34, up: false, stepCount: 10) - 0.3) < 1e-9)
+        #expect(MediaKeyPolicy.stepped(0.99, up: true, stepCount: 50) == 1)
+        #expect(MediaKeyPolicy.stepped(0.01, up: false, stepCount: 50) == 0)
+    }
+
+    @Test func percentStepsStillUnmuteOnVolumeUp() {
+        let next = MediaKeyPolicy.apply(
+            .volumeUp(fine: false), to: VolumeState(level: 0.2, isMuted: true), canSetMute: true, step: .percent2
+        )
+        #expect(!next.isMuted)
+        #expect(abs(next.level - 0.22) < 1e-9)
     }
 }

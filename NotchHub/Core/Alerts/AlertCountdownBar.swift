@@ -3,7 +3,7 @@ import SwiftUI
 /// Thin line along the bottom inner edge that drains until the alert auto-dismisses.
 /// Driven by one linear animation per run, so nothing ticks while it is idle or paused.
 struct AlertCountdownBar: View {
-    static let height: CGFloat = 2
+    static let height: CGFloat = 3
 
     let countdown: AlertCountdown?
     let tint: Color
@@ -16,6 +16,7 @@ struct AlertCountdownBar: View {
                 Capsule()
                     .fill(LinearGradient(colors: [tint.opacity(0.55), tint], startPoint: .leading, endPoint: .trailing))
                     .scaleEffect(x: fraction, anchor: .leading)
+                    .shadow(color: tint.opacity(0.6), radius: 3)
             }
             .frame(height: Self.height)
             .opacity(countdown == nil ? 0 : 1)

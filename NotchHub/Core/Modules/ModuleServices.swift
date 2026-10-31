@@ -56,7 +56,13 @@ final class ModuleServices {
         let noteContext = LiveNoteContextProvider(calendar: core.calendar, profiles: profiles.store)
         core.notes.contextProvider = { noteContext.context(at: $0) }
         externalAlerts = ExternalAlertService(alerts: alerts, defaults: defaults)
-        hud = SystemHUD.live(settings: settings, alerts: alerts, permission: insights.permission)
+        hud = SystemHUD.live(
+            settings: settings,
+            alerts: alerts,
+            permission: insights.permission,
+            audio: core.audio,
+            headphones: system.headphones
+        )
         cameraMirror = CameraMirror.live(settings: settings, alerts: alerts, calendar: core.calendar)
         charging = ChargingPresenter(alerts: alerts, defaults: defaults)
         // Native banners are only taken over (and closed) while notch alerts can actually be shown.
