@@ -10,6 +10,9 @@ enum MediaSource: String, CaseIterable, Identifiable, Sendable {
     var id: String { rawValue }
 
     /// The app to script and launch; `nil` for web players, which live in a browser tab.
+    /// Spotify and Music broadcast their own changes; browser tabs have to be polled.
+    var hasPushEvents: Bool { bundleIdentifier != nil }
+
     var bundleIdentifier: String? {
         switch self {
         case .spotify: "com.spotify.client"

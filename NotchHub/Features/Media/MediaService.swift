@@ -67,7 +67,13 @@ final class MediaService {
         loop.start { [weak self] in
             guard let self else { return nil }
             let anyRunning = await self.refresh()
-            return MediaPollPolicy.interval(anyPlayerRunning: anyRunning, isPlaying: self.nowPlaying?.isPlaying == true)
+            let nowPlaying = self.nowPlaying
+            return MediaPollPolicy.interval(
+                anyPlayerRunning: anyRunning,
+                isPlaying: nowPlaying?.isPlaying == true,
+                hasPushEvents: nowPlaying?.source.hasPushEvents ?? true,
+                remaining: nowPlaying.map { $0.duration - self.currentPosition }
+            )
         }
     }
 
