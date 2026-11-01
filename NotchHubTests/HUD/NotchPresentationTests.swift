@@ -33,9 +33,28 @@ struct NotchPresentationTests {
         #expect(resolve(mirror: true, expanded: true, alert: true, hud: true) == .cameraMirror)
     }
 
-    @Test func hudAndCollapsedNeverTakeClicks() {
-        #expect(NotchPresentation.hud.interactiveRect(in: geometry) == nil)
+    @Test func collapsedNeverTakesClicksAndTheHUDOnlyOnItsBarStrip() {
         #expect(NotchPresentation.collapsed.interactiveRect(in: geometry) == nil)
+        #expect(NotchPresentation.hud.interactiveRect(in: geometry) == geometry.hudBarRect)
+    }
+
+    @Test func hudPillFloatsBelowTheNotchBandAndLeavesTheMenuBarFree() {
+        let strip = geometry.hudBarRect
+        let menuBarBand = CGRect(
+            x: geometry.hudRect.minX,
+            y: geometry.hudRect.maxY - geometry.notchSize.height,
+            width: geometry.hudRect.width,
+            height: geometry.notchSize.height
+        )
+
+        #expect(geometry.hudRect.contains(strip))
+        #expect(strip.minY == geometry.hudRect.minY)
+        #expect(strip.height == NotchGeometry.hudPillSize.height)
+        #expect(strip.width == NotchGeometry.hudPillSize.width)
+        #expect(strip.midX == geometry.screenFrame.midX)
+        #expect(!strip.intersects(menuBarBand))
+        // A visible gap separates the capsule from the notch.
+        #expect(menuBarBand.minY - strip.maxY == NotchGeometry.hudPillGap)
     }
 
     @Test func interactiveRectsMatchTheVisibleShape() {
@@ -50,7 +69,10 @@ struct NotchPresentationTests {
             #expect(rect.maxY == geometry.screenFrame.maxY)
             #expect(geometry.expandedRect.contains(rect))
         }
-        #expect(geometry.hudRect.height == geometry.notchSize.height + NotchGeometry.hudStripHeight)
+        #expect(
+            geometry.hudRect.height
+                == geometry.notchSize.height + NotchGeometry.hudPillGap + NotchGeometry.hudPillSize.height
+        )
         #expect(geometry.cameraMirrorRect.width >= NotchGeometry.cameraMirrorPreviewSize.width)
     }
 }

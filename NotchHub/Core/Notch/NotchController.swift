@@ -63,6 +63,7 @@ final class NotchController {
         installMonitors()
         trackAlerts()
         trackCameraMirror()
+        trackHUD()
     }
 
     func update(screen: NSScreen) {
@@ -161,7 +162,8 @@ final class NotchController {
     private func updateMouseInteractivity(at point: CGPoint = NSEvent.mouseLocation) {
         // The window spans the whole expanded area plus shadow margins; only the visible
         // panel or alert may take clicks, everything around it must reach the apps below.
-        let shouldAccept = interactiveRect?.contains(point) ?? false
+        // A bar drag keeps the clicks until the button is released, even outside the strip.
+        let shouldAccept = (interactiveRect?.contains(point) ?? false) || hud.center.isHeld
         // Once the window stops taking mouse events SwiftUI never sees the hover end,
         // which would leave the alert countdown paused forever.
         if !shouldAccept, alerts.isHovered {
@@ -177,7 +179,7 @@ final class NotchController {
             isCameraMirrorShown: isCameraMirrorShown,
             isExpanded: model.isExpanded,
             hasAlert: alerts.current != nil,
-            hasHUD: false // The HUD never takes clicks, so it does not affect the rect.
+            hasHUD: hud.isAdjustableOnScreen // Only an adjustable HUD takes clicks, on its bar strip.
         ).interactiveRect(in: model.geometry)
     }
 
@@ -208,6 +210,37 @@ final class NotchController {
         model.attentionCount += 1
     }
 
+    // MARK: - HUD
+
+    private var hud: SystemHUD { model.services.hud }
+
+    /// The HUD is what this notch shows and it can be scrolled or dragged.
+    private var isHUDAdjustable: Bool {
+        hud.isAdjustableOnScreen && !model.isExpanded && alerts.current == nil && !isCameraMirrorShown
+    }
+
+    private func trackHUD() {
+        withObservationTracking {
+            _ = hud.isAdjustableOnScreen
+        } onChange: { [weak self] in
+            Task { @MainActor in
+                guard let self, !self.isTornDown else { return }
+                self.updateMouseInteractivity()
+                self.trackHUD()
+            }
+        }
+    }
+
+    /// Scrolling anywhere over the visible HUD changes its level; the pending hover-open is dropped.
+    private func handleScroll(_ scroll: HUDScroll, at point: CGPoint) {
+        guard panel.isVisible, !scroll.isMomentum, scroll.deltaY != 0, isHUDAdjustable,
+              model.geometry.hudRect.contains(point)
+        else { return }
+        openTask?.cancel()
+        openTask = nil
+        hud.adjust(byScroll: scroll.deltaY, isPrecise: scroll.isPrecise, isInverted: scroll.isInverted)
+    }
+
     // MARK: - Events
 
     private func installMonitors() {
@@ -228,6 +261,19 @@ final class NotchController {
         }
         if let monitor = NSEvent.addGlobalMonitorForEvents(matching: .leftMouseDown, handler: { [weak self] _ in
             MainActor.assumeIsolated { self?.handleOutsideClick(at: NSEvent.mouseLocation) }
+        }) {
+            monitors.append(monitor)
+        }
+        if let monitor = NSEvent.addGlobalMonitorForEvents(matching: .scrollWheel, handler: { [weak self] event in
+            let scroll = HUDScroll(event)
+            MainActor.assumeIsolated { self?.handleScroll(scroll, at: NSEvent.mouseLocation) }
+        }) {
+            monitors.append(monitor)
+        }
+        if let monitor = NSEvent.addLocalMonitorForEvents(matching: .scrollWheel, handler: { [weak self] event in
+            let scroll = HUDScroll(event)
+            MainActor.assumeIsolated { self?.handleScroll(scroll, at: NSEvent.mouseLocation) }
+            return event
         }) {
             monitors.append(monitor)
         }
@@ -259,6 +305,12 @@ final class NotchController {
         // The alert banner handles its own hover and clicks; the media controls never start the open timer.
         mediaControls.updateHover(at: point)
         micMute.updateHover(at: point)
+        // Dragging or reaching for the HUD bar never opens the panel over it.
+        if hud.center.isHeld || (isHUDAdjustable && geometry.hudBarRect.contains(point)) {
+            openTask?.cancel()
+            openTask = nil
+            return
+        }
         let isOpenTrigger = geometry.shouldOpen(
             at: point,
             wingWidth: model.wingWidth,
@@ -368,5 +420,21 @@ final class NotchController {
                 panel.orderFrontRegardless()
             }
         }
+    }
+}
+
+/// The parts of a scroll-wheel event the HUD needs, copied out so they can cross into the main actor.
+private struct HUDScroll: Sendable {
+    let deltaY: Double
+    let isPrecise: Bool
+    let isInverted: Bool
+    /// Trackpad inertia after the fingers lift; ignored so the level never runs on by itself.
+    let isMomentum: Bool
+
+    init(_ event: NSEvent) {
+        deltaY = Double(event.scrollingDeltaY)
+        isPrecise = event.hasPreciseScrollingDeltas
+        isInverted = event.isDirectionInvertedFromDevice
+        isMomentum = !event.momentumPhase.isEmpty
     }
 }

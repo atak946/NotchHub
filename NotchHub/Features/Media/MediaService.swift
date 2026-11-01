@@ -13,13 +13,18 @@ final class MediaService {
     static let artworkCacheCapacity = 32
 
     static var defaultProviders: [any MediaProvider] {
-        [SpotifyProvider(), MusicProvider()]
+        [SpotifyProvider(), MusicProvider(), WebPlayerProvider(source: .youtubeMusic), WebPlayerProvider(source: .youtube)]
     }
+
+    /// Lyrics for the shown track, loaded on demand by the lyrics view.
+    @ObservationIgnored let lyrics: LyricsService
 
     private(set) var nowPlaying: NowPlaying?
     private(set) var artwork: NSImage?
     /// Players for which macOS denied Automation access.
     private(set) var permissionDeniedSources: Set<MediaSource> = []
+    /// Web players whose browser has "Allow JavaScript from Apple Events" turned off.
+    private(set) var javaScriptBlockedSources: Set<MediaSource> = []
 
     /// True while a track is loaded (playing or paused).
     var hasCompactContent: Bool { nowPlaying != nil }
@@ -43,9 +48,11 @@ final class MediaService {
         providers: [any MediaProvider] = MediaService.defaultProviders,
         clock: any MediaClock = SystemMediaClock(),
         commandRefreshDelay: Duration = MediaService.defaultCommandRefreshDelay,
-        events: (any MediaPlaybackEventSource)? = SystemMediaPlaybackEvents()
+        events: (any MediaPlaybackEventSource)? = SystemMediaPlaybackEvents(),
+        lyrics: LyricsService? = nil
     ) {
         self.providers = providers
+        self.lyrics = lyrics ?? LyricsService()
         self.events = events
         self.clock = clock
         self.commandRefreshDelay = commandRefreshDelay
@@ -60,7 +67,13 @@ final class MediaService {
         loop.start { [weak self] in
             guard let self else { return nil }
             let anyRunning = await self.refresh()
-            return MediaPollPolicy.interval(anyPlayerRunning: anyRunning, isPlaying: self.nowPlaying?.isPlaying == true)
+            let nowPlaying = self.nowPlaying
+            return MediaPollPolicy.interval(
+                anyPlayerRunning: anyRunning,
+                isPlaying: nowPlaying?.isPlaying == true,
+                hasPushEvents: nowPlaying?.source.hasPushEvents ?? true,
+                remaining: nowPlaying.map { $0.duration - self.currentPosition }
+            )
         }
     }
 
@@ -114,6 +127,50 @@ final class MediaService {
         perform("seek") { try await provider.seek(to: target) }
     }
 
+    func setLiked(_ liked: Bool) {
+        updateExtras("like") { $0.isLiked = liked } command: { try await $0.setLiked(liked) }
+    }
+
+    func setShuffling(_ shuffling: Bool) {
+        updateExtras("shuffle") { $0.isShuffling = shuffling } command: { try await $0.setShuffling(shuffling) }
+    }
+
+    func setRepeatMode(_ mode: RepeatMode) {
+        updateExtras("repeat") { $0.repeatMode = mode } command: { try await $0.setRepeatMode(mode) }
+    }
+
+    /// Player volume, `0...1`.
+    func setVolume(_ volume: Double) {
+        let clamped = min(max(volume, 0), 1)
+        updateExtras("volume") { $0.volume = clamped } command: { try await $0.setVolume(clamped) }
+    }
+
+    func setPlaybackRate(_ rate: Double) {
+        updateExtras("rate") { $0.playbackRate = rate } command: { try await $0.setPlaybackRate(rate) }
+    }
+
+    /// Jumps forward (positive) or back (negative) from the extrapolated position.
+    func skip(by seconds: TimeInterval) {
+        seek(to: currentPosition + seconds)
+    }
+
+    func togglePictureInPicture() {
+        guard let provider = activeProvider else { return }
+        perform("pictureInPicture") { try await provider.togglePictureInPicture() }
+    }
+
+    private func updateExtras(
+        _ name: String,
+        _ change: (inout PlayerExtras) -> Void,
+        command: @escaping @Sendable (any MediaProvider) async throws -> Void
+    ) {
+        guard let nowPlaying, let provider = activeProvider else { return }
+        var extras = nowPlaying.extras
+        change(&extras)
+        applyOptimistic(nowPlaying.with(position: currentPosition, extras: extras))
+        perform(name) { try await command(provider) }
+    }
+
     // MARK: Polling
 
     /// Polls every provider once. Returns whether any player is running.
@@ -157,8 +214,14 @@ final class MediaService {
 
     private func updatePermissions(from results: [ProviderPollResult]) {
         var denied = permissionDeniedSources
+        var blocked = javaScriptBlockedSources
         for (provider, result) in zip(providers, results) {
             switch result {
+            case .failed(let source, .javaScriptDisabled?):
+                if !blocked.contains(source) {
+                    logger.error("JavaScript from Apple Events is off for \(source.displayName, privacy: .public)")
+                }
+                blocked.insert(source)
             case .failed(let source, let error):
                 if error == .notPermitted {
                     if !denied.contains(source) {
@@ -170,12 +233,16 @@ final class MediaService {
                 }
             case .track:
                 denied.remove(provider.source)
+                blocked.remove(provider.source)
             case .notRunning:
-                break
+                blocked.remove(provider.source)
             }
         }
         if denied != permissionDeniedSources {
             permissionDeniedSources = denied
+        }
+        if blocked != javaScriptBlockedSources {
+            javaScriptBlockedSources = blocked
         }
     }
 

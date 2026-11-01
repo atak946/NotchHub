@@ -5,9 +5,13 @@ struct AlertLeadingIcon: View {
     static let size: CGFloat = 38
     private static let badgeSize: CGFloat = 17
     private static let badgeOffset: CGFloat = 3
+    private static let haloBlur: CGFloat = 9
+    private static let haloScale: CGFloat = 1.3
+    private static let entranceScale: CGFloat = 0.6
 
     let alert: NotchAlert
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @State private var hasAppeared = false
 
     private var appIcon: NSImage? {
         guard alert.battery == nil, alert.appBundleID != nil || alert.appName != nil else { return nil }
@@ -35,11 +39,23 @@ struct AlertLeadingIcon: View {
             }
         }
         .frame(width: Self.size, height: Self.size)
+        .background {
+            // Accent halo that ties the icon to the alert's colour.
+            Circle()
+                .fill(alert.style.tint.opacity(0.32))
+                .blur(radius: Self.haloBlur)
+                .scaleEffect(Self.haloScale)
+        }
         .overlay(alignment: .bottomTrailing) {
             if alert.style == .success, alert.sender == nil, alert.battery == nil {
                 SuccessCheckBadge(size: Self.badgeSize, animates: !reduceMotion)
                     .offset(x: Self.badgeOffset, y: Self.badgeOffset)
             }
+        }
+        .scaleEffect(hasAppeared || reduceMotion ? 1 : Self.entranceScale)
+        .opacity(hasAppeared || reduceMotion ? 1 : 0)
+        .onAppear {
+            withAnimation(.spring(response: 0.42, dampingFraction: 0.62).delay(0.08)) { hasAppeared = true }
         }
         .accessibilityElement()
         .accessibilityLabel(alert.sender ?? alert.sourceLabel)

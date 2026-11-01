@@ -52,6 +52,9 @@ Fare çentiğe gelince panel aşağı doğru genişler; uzaklaşınca kapanır.
 | Kontroller | Oynat/duraklat, önceki, sonraki | MVP |
 | İlerleme çubuğu | Süre + sürükleyerek konum değiştirme | MVP |
 | Kaynaklar | Spotify ve Apple Music (AppleScript / ScriptingBridge) | MVP |
+| YouTube ve YouTube Music | Arc, Brave ve Edge sekmelerinden okuma ve kontrol (`execute javascript`). Ayarlar › Medya'dan açılır (varsayılan kapalı); tarayıcıda Görünüm › Geliştirici › Apple Events'ten JavaScript'e İzin Ver açık olmalı, kapalıysa panel bunu söyler | 1.6 |
+| Şarkı sözleri | LRCLIB'den eşzamanlı sözler; yalnızca söz düğmesine basınca istek atılır, şarkı başına önbelleklenir. Ayarlar › Medya'dan kapatılabilir | 1.6 |
+| Ek kontroller | Karıştır ve tekrar (Spotify, Music; YouTube Music'te tekrar), beğen (Music, YouTube Music), oynatıcı sesi, YouTube'da ±10 sn, hız (0,5×–2×) ve Resim içinde Resim, YouTube Music'te "Sıradaki" | 1.6 |
 | Ses çıkışı | AirPods / hoparlör arasında hızlı geçiş | MVP |
 | Müzik dalgası | Kapalı çentikte kapağın yanında, kapak rengine boyanmış animasyonlu ekolayzer çubukları (gerçek ses yakalama yok; duraklatınca, Düşük Güç Modu'nda ve Hareketi Azalt açıkken durur) | 1.5 |
 

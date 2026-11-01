@@ -14,10 +14,20 @@ extension NotchAlert.Style {
     /// Peak opacity of the soft glow under the notch.
     var glowOpacity: Double {
         switch self {
-        case .info: 0.22
-        case .reminder: 0.28
-        case .success: 0.24
-        case .urgent: 0.42
+        case .info: 0.34
+        case .reminder: 0.40
+        case .success: 0.36
+        case .urgent: 0.55
+        }
+    }
+
+    /// Peak opacity of the accent light inside the alert, kept low so white text stays above 7:1.
+    var washOpacity: Double {
+        switch self {
+        case .info: 0.20
+        case .reminder: 0.22
+        case .success: 0.20
+        case .urgent: 0.28
         }
     }
 

@@ -12,16 +12,33 @@ protocol MediaProvider: Sendable {
     func seek(to position: TimeInterval) async throws
     /// Raw image bytes for the track's artwork, if any.
     func fetchArtwork(for track: NowPlaying) async throws -> Data?
+    // Optional commands; a player that lacks one keeps the default no-op and `MediaSource` hides its button.
+    func setLiked(_ liked: Bool) async throws
+    func setShuffling(_ shuffling: Bool) async throws
+    func setRepeatMode(_ mode: RepeatMode) async throws
+    /// Player volume, `0...1`.
+    func setVolume(_ volume: Double) async throws
+    func setPlaybackRate(_ rate: Double) async throws
+    func togglePictureInPicture() async throws
+}
+
+extension MediaProvider {
+    func setLiked(_ liked: Bool) async throws {}
+    func setShuffling(_ shuffling: Bool) async throws {}
+    func setRepeatMode(_ mode: RepeatMode) async throws {}
+    func setVolume(_ volume: Double) async throws {}
+    func setPlaybackRate(_ rate: Double) async throws {}
+    func togglePictureInPicture() async throws {}
 }
 
 /// Shared plumbing for players controlled through AppleScript.
 struct AppleScriptBridge: Sendable {
-    let source: MediaSource
+    let bundleIdentifier: String
     let runner: any ScriptRunner
     let appChecker: any RunningApplicationChecking
 
     func isRunning() async -> Bool {
-        await appChecker.isRunning(bundleIdentifier: source.bundleIdentifier)
+        await appChecker.isRunning(bundleIdentifier: bundleIdentifier)
     }
 
     /// Runs `body` inside a tell block, guarded twice against launching the app:
@@ -30,7 +47,7 @@ struct AppleScriptBridge: Sendable {
     func run(_ body: String) async throws -> ScriptOutput? {
         guard await isRunning() else { return nil }
         do {
-            return try await runner.run(Self.wrap(body, bundleIdentifier: source.bundleIdentifier))
+            return try await runner.run(Self.wrap(body, bundleIdentifier: bundleIdentifier))
         } catch ScriptError.applicationNotRunning {
             return nil
         }
@@ -55,8 +72,18 @@ struct AppleScriptBridge: Sendable {
 
 /// AppleScript body that emits one `NowPlayingParser` line. Each optional field is guarded by `try`.
 enum PlayerScripts {
-    static func nowPlaying(durationProperty: String, artworkExpression: String) -> String {
-        """
+    /// `extras` are expressions for the parser's extra fields in order; an empty string leaves that field empty.
+    static func nowPlaying(durationProperty: String, artworkExpression: String, extras: [String] = []) -> String {
+        let extraFields = extras.enumerated().map { index, expression in
+            expression.isEmpty ? "set extra\(index) to \"\"" : """
+            set extra\(index) to ""
+            try
+            set extra\(index) to (\(expression)) as text
+            end try
+            """
+        }
+        let extraJoin = extras.indices.map { " & sep & extra\($0)" }.joined()
+        return """
         set sep to character id 31
         set playerState to (player state as text)
         if playerState is "stopped" then return playerState
@@ -84,8 +111,13 @@ enum PlayerScripts {
         try
         set trackArtwork to (\(artworkExpression)) as text
         end try
-        return playerState & sep & trackName & sep & trackArtist & sep & trackAlbum & sep & trackDuration & sep & trackPosition & sep & trackArtwork
+        \(extraFields.joined(separator: "\n"))
+        return playerState & sep & trackName & sep & trackArtist & sep & trackAlbum & sep & trackDuration & sep & trackPosition & sep & trackArtwork\(extraJoin)
         """
+    }
+
+    static func volume(_ volume: Double) -> String {
+        "set sound volume to \(Int((min(max(volume, 0), 1) * NowPlayingParser.volumeScale).rounded()))"
     }
 
     static let playPause = "playpause"
@@ -100,7 +132,8 @@ enum PlayerScripts {
 struct SpotifyProvider: MediaProvider {
     private static let nowPlayingScript = PlayerScripts.nowPlaying(
         durationProperty: "duration",
-        artworkExpression: "artwork url of current track"
+        artworkExpression: "artwork url of current track",
+        extras: ["", "shuffling", "repeating", "sound volume"]
     )
 
     private let bridge: AppleScriptBridge
@@ -113,7 +146,7 @@ struct SpotifyProvider: MediaProvider {
         appChecker: any RunningApplicationChecking = WorkspaceRunningApplicationChecker(),
         downloader: any ArtworkDownloading = URLSessionArtworkDownloader()
     ) {
-        bridge = AppleScriptBridge(source: .spotify, runner: runner, appChecker: appChecker)
+        bridge = AppleScriptBridge(bundleIdentifier: "com.spotify.client", runner: runner, appChecker: appChecker)
         self.downloader = downloader
     }
 
@@ -133,12 +166,18 @@ struct SpotifyProvider: MediaProvider {
         guard let url = track.artworkURL else { return nil }
         return try await downloader.download(url)
     }
+
+    func setShuffling(_ shuffling: Bool) async throws { _ = try await bridge.run("set shuffling to \(shuffling)") }
+    /// Spotify's scripting only knows repeat on/off; "one" repeats the context too.
+    func setRepeatMode(_ mode: RepeatMode) async throws { _ = try await bridge.run("set repeating to \(mode != .off)") }
+    func setVolume(_ volume: Double) async throws { _ = try await bridge.run(PlayerScripts.volume(volume)) }
 }
 
 struct MusicProvider: MediaProvider {
     private static let nowPlayingScript = PlayerScripts.nowPlaying(
         durationProperty: "duration",
-        artworkExpression: "persistent ID of current track"
+        artworkExpression: "persistent ID of current track",
+        extras: ["favorited of current track", "shuffle enabled", "song repeat", "sound volume"]
     )
     private static let artworkScript = "return raw data of artwork 1 of current track"
 
@@ -150,7 +189,7 @@ struct MusicProvider: MediaProvider {
         runner: any ScriptRunner = AppleScriptRunner.shared,
         appChecker: any RunningApplicationChecking = WorkspaceRunningApplicationChecker()
     ) {
-        bridge = AppleScriptBridge(source: .music, runner: runner, appChecker: appChecker)
+        bridge = AppleScriptBridge(bundleIdentifier: "com.apple.Music", runner: runner, appChecker: appChecker)
     }
 
     func isRunning() async -> Bool { await bridge.isRunning() }
@@ -169,4 +208,9 @@ struct MusicProvider: MediaProvider {
         guard track.artworkID != nil, let output = try await bridge.run(Self.artworkScript) else { return nil }
         return output.data.isEmpty ? nil : output.data
     }
+
+    func setLiked(_ liked: Bool) async throws { _ = try await bridge.run("set favorited of current track to \(liked)") }
+    func setShuffling(_ shuffling: Bool) async throws { _ = try await bridge.run("set shuffle enabled to \(shuffling)") }
+    func setRepeatMode(_ mode: RepeatMode) async throws { _ = try await bridge.run("set song repeat to \(mode.rawValue)") }
+    func setVolume(_ volume: Double) async throws { _ = try await bridge.run(PlayerScripts.volume(volume)) }
 }

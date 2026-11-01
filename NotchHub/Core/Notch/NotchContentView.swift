@@ -39,7 +39,7 @@ struct NotchContentView: View {
         case .shelf:
             ShelfModuleView(store: services.shelf, clipboard: services.clipboard)
         case .media:
-            MediaModuleView(media: services.media, audio: services.audio)
+            MediaModuleView(media: services.media, audio: services.audio, showsLyrics: model.settings.showsLyrics)
         case .timer:
             TimerModuleView(timer: services.timer)
         case .calendar:

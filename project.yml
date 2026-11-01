@@ -47,7 +47,7 @@ targets:
         NSLocationUsageDescription: NotchHub, çentikte bulunduğun yerin hava durumunu göstermek için yaklaşık konumunu kullanır.
         NSLocationWhenInUseUsageDescription: NotchHub, çentikte bulunduğun yerin hava durumunu göstermek için yaklaşık konumunu kullanır.
         NHIssueURL: $(NH_ISSUE_URL)
-        NSAppleEventsUsageDescription: NotchHub, Spotify ve Music oynatmasını çentikten denetler.
+        NSAppleEventsUsageDescription: NotchHub, Spotify, Music ve tarayıcıdaki YouTube oynatmasını çentikten denetler.
         CFBundleURLTypes:
           - CFBundleURLName: $(PRODUCT_BUNDLE_IDENTIFIER)
             CFBundleURLSchemes: [notchhub]

@@ -1,10 +1,13 @@
 import CoreAudio
 import Foundation
 
-/// Performs intercepted media keys: CoreAudio writes on a serial background queue, brightness on the main actor
-/// after the tap callback has returned.
+/// Performs intercepted media keys and HUD scroll/drag levels: CoreAudio writes on a serial background queue,
+/// brightness on the main actor after the tap callback has returned.
 @MainActor
-final class SystemMediaKeyController: MediaKeyControlling {
+final class SystemMediaKeyController: MediaKeyControlling, HUDLevelSetting {
+    /// Set by the integrator: the "Ses tuşu adımı" setting, read once per key press.
+    var volumeStep: @MainActor () -> VolumeKeyStep = { .system }
+
     private let brightness: DisplayServicesBrightnessReader
     private let audioQueue = DispatchQueue(label: "\(AppIdentity.logSubsystem).media-keys", qos: .userInteractive)
 
@@ -35,6 +38,37 @@ final class SystemMediaKeyController: MediaKeyControlling {
         }
     }
 
+    func canSetLevel(for kind: HUDKind) -> Bool {
+        switch kind {
+        case .volume: capabilities(for: .volume).canSetVolume
+        case .brightness: capabilities(for: .brightness).canSetBrightness
+        case .keyboardBacklight: false
+        }
+    }
+
+    func setLevel(_ level: Double, for kind: HUDKind, completion: @escaping @MainActor @Sendable (HUDReading?) -> Void) {
+        switch kind {
+        case .volume:
+            guard let id = CoreAudioReader.defaultOutputDevice() else {
+                completion(nil)
+                return
+            }
+            audioQueue.async {
+                let reading = CoreAudioVolumeWriter.setLevel(level, on: id)
+                Task { @MainActor in completion(reading) }
+            }
+        case .brightness:
+            let target = MediaKeyPolicy.brightnessLevel(level)
+            guard brightness.setBrightness(target) else {
+                completion(brightness.brightness().map { HUDReading(kind: .brightness, level: $0) })
+                return
+            }
+            completion(HUDReading(kind: .brightness, level: target))
+        case .keyboardBacklight:
+            completion(nil)
+        }
+    }
+
     // MARK: - Private
 
     private func performVolume(_ command: MediaKeyCommand, completion: @escaping @MainActor @Sendable (HUDReading?) -> Void) {
@@ -42,8 +76,9 @@ final class SystemMediaKeyController: MediaKeyControlling {
             completion(nil)
             return
         }
+        let step = volumeStep()
         audioQueue.async {
-            let reading = CoreAudioVolumeWriter.perform(command, on: id)
+            let reading = CoreAudioVolumeWriter.perform(command, on: id, step: step)
             Task { @MainActor in completion(reading) }
         }
     }
@@ -55,7 +90,7 @@ final class SystemMediaKeyController: MediaKeyControlling {
                 completion(nil)
                 return
             }
-            let target = MediaKeyPolicy.stepped(current, up: up, isFine: isFine)
+            let target = MediaKeyPolicy.brightnessLevel(MediaKeyPolicy.stepped(current, up: up, isFine: isFine))
             guard brightness.setBrightness(target) else {
                 completion(HUDReading(kind: .brightness, level: current))
                 return

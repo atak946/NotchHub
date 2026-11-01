@@ -66,6 +66,21 @@ private final class FixedController: MediaKeyControlling {
 }
 
 @MainActor
+private final class RecordingLevels: HUDLevelSetting {
+    var canSet = true
+    /// The level the hardware reports back; `nil` echoes the requested one.
+    var readBack: Double?
+    private(set) var written: [Double] = []
+
+    func canSetLevel(for kind: HUDKind) -> Bool { canSet }
+
+    func setLevel(_ level: Double, for kind: HUDKind, completion: @escaping @MainActor @Sendable (HUDReading?) -> Void) {
+        written.append(level)
+        completion(HUDReading(kind: kind, level: readBack ?? level))
+    }
+}
+
+@MainActor
 struct SystemHUDTests {
     private static let neverSleep: NotchHUDCenter.Sleeper = { _ in try await Task.sleep(for: .seconds(3600)) }
     private static let noSleep: NotchHUDCenter.Sleeper = { _ in }
@@ -223,5 +238,164 @@ struct SystemHUDTests {
 
         #expect(consumed)
         #expect(hud.center.current == reading)
+    }
+
+    // MARK: - Volume step setting
+
+    @Test func volumeStepDefaultsToTheSystemGridAndPersists() {
+        let hud = makeHUD()
+        #expect(hud.volumeStep == .system)
+
+        hud.volumeStep = .percent5
+
+        #expect(defaults.string(forKey: SystemHUD.volumeStepKey) == "percent5")
+        #expect(makeHUD().volumeStep == .percent5)
+    }
+
+    @Test func unknownStoredStepFallsBackToTheSystemGrid() {
+        defaults.set("percent7", forKey: SystemHUD.volumeStepKey)
+        #expect(makeHUD().volumeStep == .system)
+    }
+
+    // MARK: - Output device
+
+    @Test func volumeReadingsCarryTheHeadphones() {
+        let airPods = HUDOutputDevice(name: "AirPods", systemImage: "airpods", batteryPercent: 70)
+        let hud = makeHUD()
+        hud.outputDevice = { airPods }
+        hud.start()
+
+        volume.emit(HUDReading(kind: .volume, level: 0.25))
+
+        #expect(hud.center.current == HUDReading(kind: .volume, level: 0.25, output: airPods))
+    }
+
+    @Test func brightnessReadingsNeverCarryAnOutput() async {
+        let hud = makeHUD(brightness: 0.4)
+        hud.outputDevice = { HUDOutputDevice(name: "AirPods", systemImage: "airpods", batteryPercent: nil) }
+        hud.start()
+
+        keys.press(.brightnessUp)
+        await settle()
+
+        #expect(hud.center.current?.output == nil)
+    }
+
+    // MARK: - Scroll and drag
+
+    private func makeAdjustableHUD(levels: RecordingLevels) -> SystemHUD {
+        SystemHUD(
+            defaults: defaults,
+            center: NotchHUDCenter(sleep: Self.neverSleep),
+            volume: volume,
+            keys: keys,
+            brightness: FakeBrightness(value: 0.5),
+            sleep: Self.noSleep,
+            levels: levels
+        )
+    }
+
+    @Test func draggingWritesTheLevelAndHoldsTheHUD() {
+        let levels = RecordingLevels()
+        let hud = makeAdjustableHUD(levels: levels)
+        hud.start()
+        volume.emit(HUDReading(kind: .volume, level: 0.6))
+        #expect(hud.isAdjustableOnScreen)
+
+        hud.setDragging(true)
+        hud.adjust(to: 0.8)
+
+        #expect(levels.written == [0.8])
+        #expect(hud.center.current == HUDReading(kind: .volume, level: 0.8))
+        #expect(hud.center.isHeld)
+
+        hud.setDragging(false)
+        #expect(!hud.center.isHeld)
+    }
+
+    @Test func consecutiveScrollsBuildOnTheLastWrite() {
+        let levels = RecordingLevels()
+        // The hardware lags behind: every read-back still says 0.25.
+        levels.readBack = 0.25
+        let hud = makeAdjustableHUD(levels: levels)
+        hud.start()
+        volume.emit(HUDReading(kind: .volume, level: 0.25))
+
+        hud.adjust(byScroll: 1, isPrecise: false, isInverted: false)
+        hud.adjust(byScroll: 1, isPrecise: false, isInverted: false)
+
+        #expect(levels.written == [0.25 + 1.0 / 16, 0.25 + 2.0 / 16])
+    }
+
+    @Test func scrollingUpWhileMutedUnmutesTheBar() {
+        let levels = RecordingLevels()
+        let hud = makeAdjustableHUD(levels: levels)
+        hud.start()
+        volume.emit(HUDReading(kind: .volume, level: 0.5, isMuted: true))
+
+        hud.adjust(to: 0.6)
+
+        #expect(hud.center.current?.isMuted == false)
+    }
+
+    @Test func nothingIsWrittenWhenTheSettingIsOffOrTheOutputCannotBeSet() {
+        let levels = RecordingLevels()
+        let hud = makeAdjustableHUD(levels: levels)
+        hud.start()
+        volume.emit(HUDReading(kind: .volume, level: 0.6))
+
+        hud.isInteractive = false
+        hud.adjust(to: 0.9)
+        #expect(!hud.isAdjustableOnScreen)
+        #expect(defaults.object(forKey: SystemHUD.interactiveKey) as? Bool == false)
+
+        hud.isInteractive = true
+        levels.canSet = false
+        hud.adjust(byScroll: 3, isPrecise: false, isInverted: false)
+
+        #expect(levels.written.isEmpty)
+        #expect(hud.center.current == HUDReading(kind: .volume, level: 0.6))
+    }
+
+    @Test func keyboardBacklightIsNeverAdjustable() async {
+        let levels = RecordingLevels()
+        let hud = makeAdjustableHUD(levels: levels)
+        hud.start()
+
+        keys.press(.illuminationUp)
+        await settle()
+        hud.adjust(to: 0.4)
+
+        #expect(!hud.isAdjustableOnScreen)
+        #expect(levels.written.isEmpty)
+    }
+
+    @Test func heldCenterDoesNotAutoHideUntilReleased() async {
+        let center = NotchHUDCenter(sleep: Self.noSleep)
+        center.show(HUDReading(kind: .volume, level: 0.3))
+
+        center.setHeld(true)
+        await settle()
+        #expect(center.current != nil)
+
+        center.setHeld(false)
+        await settle()
+        #expect(center.current == nil)
+    }
+
+    @Test func holdIsIgnoredWithoutAReading() {
+        let center = NotchHUDCenter(sleep: Self.noSleep)
+        center.setHeld(true)
+        #expect(!center.isHeld)
+    }
+
+    @Test func everyShowIsCountedEvenWithoutAChange() {
+        let center = NotchHUDCenter(sleep: Self.neverSleep)
+        let reading = HUDReading(kind: .volume, level: 1)
+
+        center.show(reading)
+        center.show(reading)
+
+        #expect(center.showCount == 2)
     }
 }

@@ -32,6 +32,37 @@ struct EnergyPolicyTests {
         #expect(MediaPollPolicy.interval(anyPlayerRunning: true, isPlaying: true) == .seconds(5))
     }
 
+    @Test func browserTabsPollFasterAndWakeAtTheTrackEnd() {
+        let web = { (remaining: TimeInterval?) in
+            MediaPollPolicy.interval(anyPlayerRunning: true, isPlaying: true, hasPushEvents: false, remaining: remaining)
+        }
+        #expect(web(nil) == .seconds(2))
+        #expect(web(120) == .seconds(2))
+        // 1.2 s left: poll 0.6 s after the expected end.
+        #expect(web(1.2) == .milliseconds(1800))
+        // Right at the end it still waits the minimum, never spins.
+        #expect(web(0.01) == .milliseconds(610))
+        #expect(web(0) == .seconds(2))
+        #expect(web(-3) == .seconds(2))
+        #expect(web(.infinity) == .seconds(2))
+        // Paused tabs keep the slow pace.
+        #expect(MediaPollPolicy.interval(anyPlayerRunning: true, isPlaying: false, hasPushEvents: false, remaining: 1) == .seconds(15))
+    }
+
+    @Test func pushingPlayersIgnoreTheTrackEnd() {
+        #expect(MediaPollPolicy.interval(anyPlayerRunning: true, isPlaying: true, hasPushEvents: true, remaining: 1) == .seconds(5))
+    }
+
+    @Test func onlyTrackKeyReleasesTriggerARead() {
+        let next = (17 << 16) | (0xB << 8)
+        #expect(MediaKeyChange.isTrackKeyUp(subtype: 8, data1: next))
+        #expect(MediaKeyChange.isTrackKeyUp(subtype: 8, data1: (16 << 16) | (0xB << 8)))
+        // Key-down, other subtypes and volume keys (0) do not.
+        #expect(!MediaKeyChange.isTrackKeyUp(subtype: 8, data1: (17 << 16) | (0xA << 8)))
+        #expect(!MediaKeyChange.isTrackKeyUp(subtype: 7, data1: next))
+        #expect(!MediaKeyChange.isTrackKeyUp(subtype: 8, data1: (0 << 16) | (0xB << 8)))
+    }
+
     // MARK: - Meeting
 
     @Test func meetingPollsOnlyWithMicrophone() {

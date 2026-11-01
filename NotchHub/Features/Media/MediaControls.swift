@@ -101,16 +101,25 @@ struct MediaEqualizerView: View {
     }
 }
 
-/// Opens a player app explicitly at the user's request.
+/// Opens a player app (or a web player's site) explicitly at the user's request.
 enum MediaAppLauncher {
     @MainActor
     static func isInstalled(_ source: MediaSource) -> Bool {
-        NSWorkspace.shared.urlForApplication(withBundleIdentifier: source.bundleIdentifier) != nil
+        source.isWebPlayer || appURL(for: source) != nil
     }
 
     @MainActor
     static func open(_ source: MediaSource) {
-        guard let url = NSWorkspace.shared.urlForApplication(withBundleIdentifier: source.bundleIdentifier) else { return }
+        if let webURL = source.webURL {
+            NSWorkspace.shared.open(webURL)
+            return
+        }
+        guard let url = appURL(for: source) else { return }
         NSWorkspace.shared.openApplication(at: url, configuration: NSWorkspace.OpenConfiguration())
+    }
+
+    @MainActor
+    private static func appURL(for source: MediaSource) -> URL? {
+        source.bundleIdentifier.flatMap(NSWorkspace.shared.urlForApplication(withBundleIdentifier:))
     }
 }
