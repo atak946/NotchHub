@@ -48,8 +48,9 @@ verified with an EdDSA signature before it is installed. The check can be turned
 Builds from source without `SU_FEED_URL` / `SU_PUBLIC_ED_KEY` in `Config/Local.xcconfig` have updates
 disabled.
 
-Maintainers publish a release with `tools/release.sh <version>`. One-time key setup is
-`tools/setup-sparkle-keys.sh`.
+Maintainers publish a release with `tools/release.sh <version>`. Write and commit the notes in
+`docs/release-notes/<version>.md` first; they become the GitHub release body and appear in the in-app
+update window. One-time key setup is `tools/setup-sparkle-keys.sh`.
 
 ## CLI, URL scheme and socket
 

@@ -4,7 +4,7 @@
 #   tools/release.sh 1.3.0            bump, build, notarize, sign appcast, commit, tag, push, release
 #   tools/release.sh 1.3.0 --dry-run  same build and appcast, but no commit, tag, push or release
 #
-# Prerequisites: a clean git tree, `gh auth login`, Config/Local.xcconfig with SU_FEED_URL and
+# Prerequisites: committed release notes in docs/release-notes/<version>.md, a clean git tree, `gh auth login`, Config/Local.xcconfig with SU_FEED_URL and
 # SU_PUBLIC_ED_KEY, and the Sparkle EdDSA private key in the login Keychain (tools/setup-sparkle-keys.sh).
 set -euo pipefail
 
@@ -17,6 +17,7 @@ readonly SPARKLE_TOOLS_DIR="$DERIVED_DATA/sparkle-tools"
 readonly DIST="dist"
 readonly UPDATES_DIR="$DIST/updates"
 readonly APPCAST_NAME="appcast.xml"
+readonly NOTES_DIR="docs/release-notes"
 
 VERSION=""
 DRY_RUN=false
@@ -64,6 +65,14 @@ require_new_tag() {
   if git rev-parse -q --verify "refs/tags/v$VERSION" >/dev/null; then
     die "tag v$VERSION already exists"
   fi
+}
+
+# Notes are written by hand in docs/release-notes/<version>.md; they go to the GitHub release
+# and, embedded in the appcast, to Sparkle's update window.
+require_release_notes() {
+  NOTES="$NOTES_DIR/$VERSION.md"
+  [[ -s "$NOTES" ]] || die "write the release notes in $NOTES first"
+  git ls-files --error-unmatch "$NOTES" >/dev/null 2>&1 || die "commit $NOTES before releasing"
 }
 
 require_gh_auth() {
@@ -156,7 +165,8 @@ generate_appcast() {
   gh release download --repo "$REPO" --pattern "$APPCAST_NAME" --dir "$UPDATES_DIR" >/dev/null 2>&1 \
     || print "    no published appcast yet; starting a new one"
   cp "$DMG" "$UPDATES_DIR/"
-  "$SPARKLE_BIN/generate_appcast" --download-url-prefix "$DOWNLOAD_PREFIX" "$UPDATES_DIR" \
+  cp "$NOTES" "$UPDATES_DIR/${DMG:t:r}.md"
+  "$SPARKLE_BIN/generate_appcast" --download-url-prefix "$DOWNLOAD_PREFIX" --embed-release-notes "$UPDATES_DIR" \
     || die "generate_appcast failed"
   cp "$UPDATES_DIR/$APPCAST_NAME" "$DIST/$APPCAST_NAME"
 }
@@ -174,7 +184,7 @@ publish() {
   git push --follow-tags
   step "Creating the GitHub release"
   gh release create "v$VERSION" "$DMG" "$DIST/$APPCAST_NAME" \
-    --repo "$REPO" --title "NotchHub $VERSION" --generate-notes
+    --repo "$REPO" --title "NotchHub $VERSION" --notes-file "$NOTES"
 }
 
 main() {
@@ -182,6 +192,7 @@ main() {
   require_tools
   require_clean_tree
   require_new_tag
+  require_release_notes
   require_gh_auth
   require_update_config
   resolve_repo
