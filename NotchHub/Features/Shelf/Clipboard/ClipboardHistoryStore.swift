@@ -40,6 +40,11 @@ final class ClipboardHistoryStore {
     @ObservationIgnored private var isStarted = false
     @ObservationIgnored private var hasLoaded = false
     @ObservationIgnored private(set) var pollTask: Task<Void, Never>?
+    /// Latest image capture; decoding, PNG encoding, hashing and the file write run off the main actor.
+    /// Captures are chained so entries keep the copy order. Tests await it after `poll()`.
+    @ObservationIgnored private(set) var imageCaptureTask: Task<Void, Never>?
+    /// Bumped by `clear()` so a capture still in flight is dropped instead of reappearing.
+    @ObservationIgnored private var captureGeneration = 0
     @ObservationIgnored private let logger = Logger(subsystem: AppIdentity.logSubsystem, category: "Clipboard")
 
     init(
@@ -140,6 +145,7 @@ final class ClipboardHistoryStore {
 
     /// "Geçmişi temizle": drops every entry and the storage folder.
     func clear() {
+        captureGeneration += 1
         entries = []
         do {
             try storage.removeAll()
@@ -170,13 +176,14 @@ final class ClipboardHistoryStore {
             logger.debug("Skipped a sensitive clipboard change")
             return
         }
-        let entry: ClipboardEntry? = switch ClipboardCaptureKind.preferred(for: types) {
-        case .text: makeTextEntry()
-        case .image: makeImageEntry()
-        case .none: nil
+        switch ClipboardCaptureKind.preferred(for: types) {
+        case .text:
+            if let entry = makeTextEntry() { insert(entry) }
+        case .image:
+            captureImage()
+        case .none:
+            break
         }
-        guard let entry else { return }
-        insert(entry)
     }
 
     private func makeTextEntry() -> ClipboardEntry? {
@@ -184,27 +191,51 @@ final class ClipboardHistoryStore {
         return ClipboardEntry(kind: .text(text), capturedAt: now(), fingerprint: ClipboardImageProcessor.fingerprint(text: text))
     }
 
-    private func makeImageEntry() -> ClipboardEntry? {
-        guard let raw = pasteboard.readImageData(), let png = ClipboardImageProcessor.downscaledPNG(from: raw) else {
+    /// Reads the pasteboard on the main actor, then processes the image in the background.
+    private func captureImage() {
+        guard let raw = pasteboard.readImageData() else {
             logger.notice("Clipboard image could not be decoded")
-            return nil
+            return
         }
-        guard policy.acceptsImage(byteCount: png.count) else {
-            logger.notice("Clipboard image exceeds the size budget")
-            return nil
+        let capturedAt = now()
+        let generation = captureGeneration
+        let previous = imageCaptureTask
+        imageCaptureTask = Task { [weak self, policy] in
+            await previous?.value
+            let image = await Task.detached(priority: .userInitiated) {
+                ClipboardProcessedImage.make(from: raw, policy: policy)
+            }.value
+            await self?.finishImageCapture(image, capturedAt: capturedAt, generation: generation)
         }
-        let fingerprint = ClipboardImageProcessor.fingerprint(imageData: png)
-        if let existing = entries.first(where: { $0.fingerprint == fingerprint }) {
-            return ClipboardEntry(kind: existing.kind, capturedAt: now(), fingerprint: fingerprint)
+    }
+
+    private func finishImageCapture(_ result: ClipboardProcessedImage.Result, capturedAt: Date, generation: Int) async {
+        let image: ClipboardProcessedImage
+        switch result {
+        case .undecodable:
+            return logger.notice("Clipboard image could not be decoded")
+        case .tooLarge:
+            return logger.notice("Clipboard image exceeds the size budget")
+        case .ready(let ready):
+            image = ready
+        }
+        guard generation == captureGeneration else { return }
+        if let existing = entries.first(where: { $0.fingerprint == image.fingerprint }) {
+            return insert(ClipboardEntry(kind: existing.kind, capturedAt: capturedAt, fingerprint: image.fingerprint))
         }
         let fileName = "\(UUID().uuidString).png"
+        let storage = storage
+        let png = image.png
         do {
-            try storage.writeImage(png, fileName: fileName)
+            try await Task.detached(priority: .userInitiated) {
+                try storage.writeImage(png, fileName: fileName)
+            }.value
         } catch {
             logger.error("Cannot store clipboard image: \(error.localizedDescription, privacy: .public)")
-            return nil
+            return
         }
-        return ClipboardEntry(kind: .image(fileName: fileName, byteCount: png.count), capturedAt: now(), fingerprint: fingerprint)
+        guard generation == captureGeneration else { return storage.deleteImage(fileName: fileName) }
+        insert(ClipboardEntry(kind: .image(fileName: fileName, byteCount: png.count), capturedAt: capturedAt, fingerprint: image.fingerprint))
     }
 
     private func insert(_ entry: ClipboardEntry) {

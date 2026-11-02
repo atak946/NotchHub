@@ -100,13 +100,14 @@ struct ClipboardHistoryStoreTests {
         store.stop()
     }
 
-    @Test func capturesImagesAsFilesAndClearRemovesThem() throws {
+    @Test func capturesImagesAsFilesAndClearRemovesThem() async throws {
         let fixture = try ClipboardFixture()
         defer { fixture.cleanUp() }
         let store = fixture.startedStore()
 
         fixture.pasteboard.simulateCopy(image: try ShelfFixture.pngData(side: 4))
         store.poll()
+        await store.imageCaptureTask?.value
         let entry = try #require(store.entries.first)
         let url = try #require(store.imageURL(for: entry))
 
@@ -121,7 +122,7 @@ struct ClipboardHistoryStoreTests {
         store.stop()
     }
 
-    @Test func sameImageTwiceKeepsOneFile() throws {
+    @Test func sameImageTwiceKeepsOneFile() async throws {
         let fixture = try ClipboardFixture()
         defer { fixture.cleanUp() }
         let store = fixture.startedStore()
@@ -131,11 +132,49 @@ struct ClipboardHistoryStoreTests {
         store.poll()
         fixture.pasteboard.simulateCopy(image: png)
         store.poll()
+        await store.imageCaptureTask?.value
 
         let entry = try #require(store.entries.first)
         let url = try #require(store.imageURL(for: entry))
         #expect(store.entries.count == 1)
         #expect(FileManager.default.fileExists(atPath: url.path(percentEncoded: false)))
+        store.stop()
+    }
+
+    @Test func imageCaptureLeavesPollAndKeepsCopyOrder() async throws {
+        let fixture = try ClipboardFixture()
+        defer { fixture.cleanUp() }
+        let store = fixture.startedStore()
+        let first = try ShelfFixture.pngData(side: 4)
+        let second = try ShelfFixture.pngData(side: 6)
+
+        fixture.pasteboard.simulateCopy(image: first)
+        store.poll()
+        #expect(store.entries.isEmpty)
+        fixture.pasteboard.simulateCopy(image: second)
+        store.poll()
+        await store.imageCaptureTask?.value
+
+        let expected = try [second, first].map { raw in
+            try ClipboardImageProcessor.fingerprint(imageData: #require(ClipboardImageProcessor.downscaledPNG(from: raw)))
+        }
+        #expect(store.entries.map(\.fingerprint) == expected)
+        store.stop()
+    }
+
+    @Test func clearDropsAnImageCaptureInFlight() async throws {
+        let fixture = try ClipboardFixture()
+        defer { fixture.cleanUp() }
+        let store = fixture.startedStore()
+
+        fixture.pasteboard.simulateCopy(image: try ShelfFixture.pngData(side: 4))
+        store.poll()
+        store.clear()
+        await store.imageCaptureTask?.value
+
+        #expect(store.entries.isEmpty)
+        let files = (try? FileManager.default.contentsOfDirectory(atPath: fixture.storage.directory.path(percentEncoded: false))) ?? []
+        #expect(!files.contains { $0.hasSuffix(".png") })
         store.stop()
     }
 

@@ -37,3 +37,22 @@ enum ClipboardImageProcessor {
         SHA256.hash(data: data).map { String(format: "%02x", $0) }.joined()
     }
 }
+
+/// A captured image after the off-main work: downscaled PNG plus its fingerprint.
+struct ClipboardProcessedImage: Sendable {
+    enum Result: Sendable {
+        case ready(ClipboardProcessedImage)
+        case undecodable
+        case tooLarge
+    }
+
+    let png: Data
+    let fingerprint: String
+
+    /// CPU-heavy (decode, resize, encode, hash); call it off the main actor.
+    static func make(from raw: Data, policy: ClipboardHistoryPolicy) -> Result {
+        guard let png = ClipboardImageProcessor.downscaledPNG(from: raw) else { return .undecodable }
+        guard policy.acceptsImage(byteCount: png.count) else { return .tooLarge }
+        return .ready(ClipboardProcessedImage(png: png, fingerprint: ClipboardImageProcessor.fingerprint(imageData: png)))
+    }
+}
