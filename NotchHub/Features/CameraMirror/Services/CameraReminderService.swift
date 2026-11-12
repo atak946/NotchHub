@@ -9,7 +9,7 @@ import OSLog
 final class CameraReminderService {
     static let enabledKey = "cameraMirror.reminderEnabled"
     static let leadTimeKey = "cameraMirror.reminderLeadTime"
-    static let alertDuration: Duration = .seconds(30)
+    static let alertDuration: Duration = NotchAlert.importantDuration
     /// Fired events are remembered this long past their start, then pruned.
     private static let firedRetention: TimeInterval = 24 * 60 * 60
     private static let fireSlack: TimeInterval = 0.25

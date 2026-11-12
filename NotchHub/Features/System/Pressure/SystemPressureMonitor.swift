@@ -202,7 +202,7 @@ final class SystemPressureMonitor {
             subtitle: subtitle,
             style: isCritical ? .urgent : .reminder,
             coalescingKey: key,
-            autoDismissAfter: isCritical ? nil : Self.elevatedAlertDuration,
+            autoDismissAfter: isCritical ? NotchAlert.importantDuration : Self.elevatedAlertDuration,
             actionTitle: String(localized: "Etkinlik Monitörü"),
             action: { [weak self] in self?.openActivityMonitor() }
         ))
