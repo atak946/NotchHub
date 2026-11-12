@@ -14,6 +14,8 @@ final class NotchViewModel {
     private(set) var mediaControlPresses: [MediaControlAction: Int] = [:]
     /// Pointer is over the collapsed meeting mic button.
     var isMicMuteHovered = false
+    /// The collapsed "+N" status pill in the hosting view's coordinates (top-left origin); nil when not shown.
+    var overflowPillFrame: CGRect?
     private var selectedModule: NotchModule?
     /// Set by the controller: expands the panel on the given module.
     @ObservationIgnored var onOpenModule: ((NotchModule) -> Void)?

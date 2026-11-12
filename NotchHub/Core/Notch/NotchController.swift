@@ -16,6 +16,7 @@ final class NotchController {
     private let dropCatcher: DropCatcherPanel
     private let mediaControls: NotchMediaControlsCoordinator
     private let micMute: NotchMicMuteCoordinator
+    private let overflowPill: NotchOverflowPillCoordinator
     private var monitors: [Any] = []
     private var openTask: Task<Void, Never>?
     private var closeTask: Task<Void, Never>?
@@ -42,6 +43,8 @@ final class NotchController {
         self.dropCatcher = DropCatcherPanel(contentRect: geometry.collapsedRect)
         self.mediaControls = NotchMediaControlsCoordinator(model: model, alerts: alerts)
         self.micMute = NotchMicMuteCoordinator(model: model, alerts: alerts)
+        let panel = self.panel
+        self.overflowPill = NotchOverflowPillCoordinator(model: model, alerts: alerts, panelFrame: { panel.frame })
 
         let hostingView = NSHostingView(rootView: NotchRootView(model: model, alerts: alerts, displayID: displayID))
         hostingView.frame = CGRect(origin: .zero, size: geometry.panelRect.size)
@@ -55,9 +58,14 @@ final class NotchController {
             self?.openShelfForDrop()
         }
         dropCatcher.onClick = { [weak self] in
+            self?.selectStatusIfOnOverflowPill()
             self?.expand(pinned: true)
         }
         mediaControls.onOpenPanel = { [weak self] in
+            self?.expand(pinned: true)
+        }
+        overflowPill.onOpenStatus = { [weak self] in
+            self?.model.select(.status)
             self?.expand(pinned: true)
         }
         installMonitors()
@@ -80,6 +88,7 @@ final class NotchController {
         panel.orderFrontRegardless()
         mediaControls.setHostVisible(true)
         micMute.setHostVisible(true)
+        overflowPill.setHostVisible(true)
     }
 
     func hide() {
@@ -90,6 +99,7 @@ final class NotchController {
         dropCatcher.orderOut(nil)
         mediaControls.setHostVisible(false)
         micMute.setHostVisible(false)
+        overflowPill.setHostVisible(false)
     }
 
     func toggle() {
@@ -127,6 +137,7 @@ final class NotchController {
         dropCatcher.close()
         mediaControls.tearDown()
         micMute.tearDown()
+        overflowPill.tearDown()
     }
 
     // MARK: - State
@@ -375,8 +386,17 @@ final class NotchController {
             try? await Task.sleep(for: delay)
             guard !Task.isCancelled else { return }
             self?.openTask = nil
+            self?.selectStatusIfOnOverflowPill()
             self?.expand()
         }
+    }
+
+    /// The "+N" pill stands for status glyphs that did not fit, so opening from it shows the Status tab.
+    private func selectStatusIfOnOverflowPill() {
+        guard settings.isEnabled(.status), NotchGeometry.isOnOverflowPill(
+            NSEvent.mouseLocation, pillFrame: model.overflowPillFrame, panelFrame: panel.frame
+        ) else { return }
+        model.select(.status)
     }
 
     private func scheduleClose() {
