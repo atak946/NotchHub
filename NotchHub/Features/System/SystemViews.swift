@@ -22,7 +22,8 @@ struct SystemStatusTiles: View {
 }
 
 /// Compact glyphs beside the closed notch: meeting timer, mic / camera dots, VPN and offline dots.
-/// Renders `EmptyView` when nothing is active. At most ~40 + 3 × 14 pt wide.
+/// Renders `EmptyView` when nothing is active. Emits one subview per glyph (no stack of its own),
+/// so the compact wing can lay them out and fold the ones that do not fit.
 struct SystemCompactIndicators: View {
     let monitors: SystemMonitors
 
@@ -32,7 +33,7 @@ struct SystemCompactIndicators: View {
 
     var body: some View {
         if monitors.hasCompactIndicator {
-            HStack(spacing: 3) {
+            Group {
                 MeetingModeCompactIndicator(controller: monitors.meetingMode)
                 MicCameraCompactIndicator(monitor: monitors.micCamera)
                 VPNCompactIndicator(monitor: monitors.vpn)

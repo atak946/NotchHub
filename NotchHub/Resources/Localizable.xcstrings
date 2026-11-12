@@ -963,6 +963,28 @@
         }
       }
     },
+    "%lld gösterge daha" : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld more indicator"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld more indicators"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "%lld bildirim daha": {
       "localizations": {
         "en": {

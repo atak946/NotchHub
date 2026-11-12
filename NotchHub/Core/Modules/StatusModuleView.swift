@@ -27,16 +27,14 @@ struct StatusModuleView: View {
 }
 
 /// Small glyphs beside the notch while the panel is closed (mic, VPN, docker, unread, remote session…).
+/// One subview per glyph in priority order; `CompactGlyphRow` lays them out and folds the overflow.
 struct StatusCompactIndicators: View {
     let services: ModuleServices
 
     var body: some View {
-        HStack(spacing: 4) {
-            SystemCompactIndicators(monitors: services.system)
-            DevOpsCompactIndicators(monitors: services.devOps)
-            InsightsCompactIndicators(insights: services.insights)
-            ProfilesCompactIndicators(profiles: services.profiles)
-        }
-        .fixedSize()
+        SystemCompactIndicators(monitors: services.system)
+        DevOpsCompactIndicators(monitors: services.devOps)
+        InsightsCompactIndicators(insights: services.insights)
+        ProfilesCompactIndicators(profiles: services.profiles)
     }
 }
