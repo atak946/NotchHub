@@ -17,6 +17,7 @@ final class SettingsStore {
         static let knownModules = "knownModules"
         static let alertsEnabled = "alertsEnabled"
         static let showTrackChangeAlerts = "showTrackChangeAlerts"
+        static let alertDuration = "alertDuration"
         static let showsCompactMediaControls = "showsCompactMediaControls"
         static let showsMediaVisualizer = "showsMediaVisualizer"
         static let detectsBrowserMedia = WebPlayerSettings.enabledKey
@@ -59,6 +60,11 @@ final class SettingsStore {
         didSet { defaults.set(showTrackChangeAlerts, forKey: Keys.showTrackChangeAlerts) }
     }
 
+    /// Scales how long every alert stays on screen.
+    var alertDuration: AlertDurationPreference {
+        didSet { defaults.set(alertDuration.rawValue, forKey: Keys.alertDuration) }
+    }
+
     /// Previous / play-pause / next beside the closed notch while a track is active.
     var showsCompactMediaControls: Bool {
         didSet { defaults.set(showsCompactMediaControls, forKey: Keys.showsCompactMediaControls) }
@@ -93,6 +99,8 @@ final class SettingsStore {
         theme = defaults.string(forKey: Keys.theme).flatMap(AppTheme.init) ?? .dark
         alertsEnabled = defaults.object(forKey: Keys.alertsEnabled) as? Bool ?? true
         showTrackChangeAlerts = defaults.object(forKey: Keys.showTrackChangeAlerts) as? Bool ?? true
+        alertDuration = defaults.string(forKey: Keys.alertDuration)
+            .flatMap(AlertDurationPreference.init(rawValue:)) ?? .standard
         showsCompactMediaControls = defaults.object(forKey: Keys.showsCompactMediaControls) as? Bool ?? true
         showsMediaVisualizer = defaults.object(forKey: Keys.showsMediaVisualizer) as? Bool ?? true
         detectsBrowserMedia = defaults.bool(forKey: Keys.detectsBrowserMedia)

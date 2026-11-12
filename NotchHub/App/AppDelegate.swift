@@ -64,6 +64,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ notification: Notification) {
         guard !Self.isRunningTests, !ScreenshotRenderer.runIfRequested() else { return }
 
+        alerts.durationScale = { [settings] in settings.alertDuration.scale }
         fullScreenDetector.start()
         services.start()
         alertRouter.start()

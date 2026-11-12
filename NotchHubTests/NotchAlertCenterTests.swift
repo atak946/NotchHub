@@ -101,7 +101,10 @@ struct NotchAlertCenterTests {
     }
 
     @Test func hoverPreventsAutoDismiss() async {
-        let center = NotchAlertCenter(sleep: { _ in })
+        // Short sleeps return at once; the hover hold limit never elapses.
+        let center = NotchAlertCenter(sleep: { duration in
+            if duration >= AlertTiming.maxHoverHold { try await Task.sleep(for: .seconds(3600)) }
+        })
         center.post(alert("A"))
         center.isHovered = true
 
@@ -147,5 +150,77 @@ struct NotchAlertCenterTests {
         center.dismiss()
 
         #expect(center.countdown == nil)
+    }
+
+    @Test func hoverHeldTooLongDismissesTheAlert() async {
+        let center = NotchAlertCenter(sleep: { duration in
+            if duration < AlertTiming.maxHoverHold { try await Task.sleep(for: .seconds(3600)) }
+        })
+        center.post(alert("A"))
+        center.isHovered = true
+
+        for _ in 0..<20 where center.current != nil {
+            await Task.yield()
+        }
+
+        #expect(center.current == nil)
+    }
+
+    @Test func hoverHoldLimitSparesPersistentAlerts() async {
+        let center = NotchAlertCenter(sleep: { _ in })
+        center.post(NotchAlert(module: .calendar, systemImage: "calendar", title: "Toplantı", autoDismissAfter: nil))
+        center.isHovered = true
+
+        for _ in 0..<20 {
+            await Task.yield()
+        }
+
+        #expect(center.current?.title == "Toplantı")
+    }
+
+    @Test func durationScaleStretchesTheCountdown() {
+        let start = ContinuousClock.now
+        let center = NotchAlertCenter(sleep: Self.neverSleep, now: { start })
+        center.durationScale = { 1.6 }
+
+        center.post(alert("A"))
+
+        #expect(center.countdown?.total == NotchAlert.defaultDuration * 1.6)
+    }
+
+    @Test func busyQueueShortensTheCurrentAlert() {
+        let start = ContinuousClock.now
+        let center = NotchAlertCenter(sleep: Self.neverSleep, now: { start })
+        center.post(NotchAlert(module: .timer, systemImage: "timer", title: "A", autoDismissAfter: .seconds(12)))
+
+        center.post(alert("B"))
+        #expect(center.countdown?.remaining(at: start) == .seconds(12))
+
+        center.post(alert("C"))
+        #expect(center.countdown?.remaining(at: start) == .seconds(6))
+    }
+
+    @Test func coalescedChainEndsAfterItsLifetime() {
+        let start = ContinuousClock.now
+        nonisolated(unsafe) var current = start
+        let center = NotchAlertCenter(sleep: Self.neverSleep, now: { current })
+        center.post(alert("Message 1", key: "chat"))
+
+        current = start.advanced(by: .seconds(18))
+        center.post(alert("Message 2", key: "chat"))
+
+        #expect(center.countdown?.total == .seconds(2))
+    }
+
+    @Test func coalescedReplacementEarlyInTheChainGetsFullDuration() {
+        let start = ContinuousClock.now
+        nonisolated(unsafe) var current = start
+        let center = NotchAlertCenter(sleep: Self.neverSleep, now: { current })
+        center.post(alert("Message 1", key: "chat"))
+
+        current = start.advanced(by: .seconds(2))
+        center.post(alert("Message 2", key: "chat"))
+
+        #expect(center.countdown?.total == NotchAlert.defaultDuration)
     }
 }

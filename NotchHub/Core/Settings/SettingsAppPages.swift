@@ -138,6 +138,13 @@ struct NotchAlertsSettingsSection: View {
             Toggle("Çentikten animasyonlu uyarılar", isOn: $settings.alertsEnabled)
             Toggle("Parça değişimlerini göster", isOn: $settings.showTrackChangeAlerts)
                 .disabled(!settings.alertsEnabled)
+            Picker("Ekranda kalma süresi", selection: $settings.alertDuration) {
+                ForEach(AlertDurationPreference.allCases) { preference in
+                    Text(preference.title).tag(preference)
+                }
+            }
+            .disabled(!settings.alertsEnabled)
+            .help("Kuyrukta bekleyen uyarılar varken süreler ayrıca kısalır.")
         }
     }
 }

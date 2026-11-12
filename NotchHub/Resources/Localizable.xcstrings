@@ -963,21 +963,21 @@
         }
       }
     },
-    "%lld gösterge daha" : {
-      "localizations" : {
-        "en" : {
-          "variations" : {
-            "plural" : {
-              "one" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "%lld more indicator"
+    "%lld gösterge daha": {
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld more indicator"
                 }
               },
-              "other" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "%lld more indicators"
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld more indicators"
                 }
               }
             }
@@ -3055,6 +3055,16 @@
         }
       }
     },
+    "Dahili kamera": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Built-in camera"
+          }
+        }
+      }
+    },
     "Dahili mikrofon": {
       "localizations": {
         "en": {
@@ -3601,6 +3611,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Screenshot Folder"
+          }
+        }
+      }
+    },
+    "Ekranda kalma süresi": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Time on screen"
           }
         }
       }
@@ -5365,12 +5385,32 @@
         }
       }
     },
+    "Kuyrukta bekleyen uyarılar varken süreler ayrıca kısalır.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Alerts are also shortened while others are waiting in the queue."
+          }
+        }
+      }
+    },
     "Kırmızı": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Red"
+          }
+        }
+      }
+    },
+    "Kısa": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Short"
           }
         }
       }
@@ -8823,6 +8863,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Remote Management"
+          }
+        }
+      }
+    },
+    "Uzun": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Long"
           }
         }
       }
