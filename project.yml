@@ -8,8 +8,8 @@ options:
 settings:
   base:
     SWIFT_VERSION: "6.0"
-    MARKETING_VERSION: "1.6.1"
-    CURRENT_PROJECT_VERSION: "12"
+    MARKETING_VERSION: "1.6.2"
+    CURRENT_PROJECT_VERSION: "13"
     SWIFT_STRICT_CONCURRENCY: complete
 
 packages:
