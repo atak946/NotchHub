@@ -106,6 +106,11 @@ final class MeetingModeController {
         scheduleSettleIfNeeded()
     }
 
+    /// Screenshot mode only: sets a meeting session directly, without detection, debounce or media control.
+    func setDemoSession(_ session: MeetingSession?) {
+        self.session = session
+    }
+
     // MARK: - Private
 
     private func apply(_ inMeeting: Bool, since: Date) {

@@ -25,6 +25,8 @@ enum ScreenshotPlan {
         [
             panel("hero", module: .media, size: heroSize),
             notch("collapsed", size: compactSize) { $0.startTimer() },
+            // Not in the README: a regression check that crowded wings fold into "+N" instead of spilling.
+            notch("collapsed-busy", size: compactSize) { $0.startBusyMeeting(now: Date()) },
             panel("panel-calendar", module: .calendar, usesHostingView: true),
             panel("panel-shelf", module: .shelf, usesHostingView: true),
             panel("panel-notes", module: .notes, usesHostingView: true),

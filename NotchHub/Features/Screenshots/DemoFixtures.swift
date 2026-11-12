@@ -105,6 +105,9 @@ enum DemoFixtures {
         [String(localized: "Tasarım"), String(localized: "Sunum")]
     }
     static var microphoneName: String { String(localized: "Dahili mikrofon") }
+    static var cameraName: String { String(localized: "Dahili kamera") }
+    /// Elapsed meeting time on the crowded collapsed shot (23:55).
+    static let meetingElapsed: TimeInterval = 23 * 60 + 55
 
     // MARK: Weather
 

@@ -53,9 +53,24 @@ final class DemoStage {
         services.timer.start(duration: DemoFixtures.timerMinutes)
     }
 
+    /// A crowded right wing: timer (still running from the "collapsed" shot), meeting clock and both
+    /// privacy dots, to check the "+N" folding.
+    func startBusyMeeting(now: Date) {
+        services.system.meetingMode.setDemoSession(MeetingSession(
+            start: now.addingTimeInterval(-DemoFixtures.meetingElapsed),
+            source: String(localized: "Toplantı")
+        ))
+        services.system.micCamera.apply(CaptureSnapshot(
+            activeMicrophones: [DemoFixtures.microphoneName],
+            activeCameras: [DemoFixtures.cameraName]
+        ))
+    }
+
     func reset() {
         alerts.dismissAll()
         services.hud.center.hide()
+        services.system.meetingMode.setDemoSession(nil)
+        services.system.micCamera.apply(CaptureSnapshot(activeMicrophones: [DemoFixtures.microphoneName], activeCameras: []))
         model.isExpanded = false
     }
 
