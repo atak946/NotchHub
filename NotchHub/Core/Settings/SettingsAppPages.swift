@@ -174,12 +174,21 @@ struct ShortcutsSettingsPage: View {
     private static let panelHotKey = "⌥⌘N"
     private static let shortcutsAppURL = URL(string: "shortcuts://")
 
+    @Bindable var settings: SettingsStore
     private let logger = Logger(subsystem: AppIdentity.logSubsystem, category: "Settings")
 
     var body: some View {
         Section("Klavye kısayolları") {
             LabeledContent("Paneli aç/kapat", value: Self.panelHotKey)
             LabeledContent("Mikrofonu sustur/aç", value: MicMuteHotKey.displayName)
+            VStack(alignment: .leading, spacing: 2) {
+                LabeledContent("Çentiği göster/gizle") {
+                    HotKeyRecorderField(shortcut: $settings.notchToggleShortcut)
+                }
+                Text("Tıklayıp istediğiniz tuş birleşimine basın. Gizliyken uyarılar da duraklar; aynı kısayolla geri getirin.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
         }
         Section("Kestirmeler uygulaması") {
             Text("NotchHub eylemleri Kestirmeler uygulamasında ve Siri'de görünür: zamanlayıcı başlat, not ekle, profil çalıştır, uyarı göster, modül aç, rafı aç ve mikrofonu sustur.")

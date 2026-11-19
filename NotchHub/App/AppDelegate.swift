@@ -32,6 +32,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         supportActions: supportActions
     )
     private lazy var micMuteHotKey = MicMuteHotKey(controller: services.system.micMute)
+    private lazy var notchVisibilityHotKey = NotchVisibilityHotKey(settings: settings)
 
     // MARK: Updates (Sparkle; inert unless the build defines a feed and key)
     private(set) lazy var updater: UpdaterService = {
@@ -74,6 +75,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         )
         registerHotKey()
         micMuteHotKey.start()
+        notchVisibilityHotKey.start()
         updater.start()
         statusMenu.install()
         permissions.onGranted = { [weak self] permission in
@@ -88,6 +90,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         crashReports.recordCleanExit()
         hotKey?.unregister()
         micMuteHotKey.stop()
+        notchVisibilityHotKey.stop()
         services.stop()
     }
 

@@ -10994,6 +10994,96 @@
           }
         }
       }
+    },
+    "Çentiği göster/gizle": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Show/Hide Notch"
+          }
+        }
+      }
+    },
+    "Tıklayıp istediğiniz tuş birleşimine basın. Gizliyken uyarılar da duraklar; aynı kısayolla geri getirin.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Click, then press the key combination you want. Alerts pause while the notch is hidden; press the shortcut again to bring it back."
+          }
+        }
+      }
+    },
+    "Tuşlara basın…": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Press keys…"
+          }
+        }
+      }
+    },
+    "Kısayol ata": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Set Shortcut"
+          }
+        }
+      }
+    },
+    "Kısayolu kaldır": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Remove Shortcut"
+          }
+        }
+      }
+    },
+    "Yeni kısayol kaydetmek için tıklayın": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Click to record a new shortcut"
+          }
+        }
+      }
+    },
+    "Kısayol: %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Shortcut: %@"
+          }
+        }
+      }
+    },
+    "⌃, ⌥ veya ⌘ ile birlikte basın": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Press together with ⌃, ⌥ or ⌘"
+          }
+        }
+      }
+    },
+    "%@ zaten kullanılıyor": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ is already in use"
+          }
+        }
+      }
     }
   },
   "version": "1.0"

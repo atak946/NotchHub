@@ -306,6 +306,7 @@ extension SettingsSearchCatalog {
             SettingsSearchTerm("Klavye kısayolları", "Keyboard Shortcuts"),
             SettingsSearchTerm("Paneli aç/kapat", "Toggle Panel"),
             SettingsSearchTerm("Mikrofonu sustur/aç", "Mute/Unmute Microphone"),
+            SettingsSearchTerm("Çentiği göster/gizle", "Show/Hide Notch"),
             SettingsSearchTerm("Kestirmeler uygulaması", "Shortcuts App"),
             SettingsSearchTerm("Kestirmeler'i Aç", "Open Shortcuts"),
         ],

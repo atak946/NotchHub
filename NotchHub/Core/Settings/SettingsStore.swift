@@ -22,6 +22,7 @@ final class SettingsStore {
         static let showsMediaVisualizer = "showsMediaVisualizer"
         static let detectsBrowserMedia = WebPlayerSettings.enabledKey
         static let showsLyrics = "showsLyrics"
+        static let notchToggleShortcut = "notchToggleShortcut"
     }
 
     @ObservationIgnored private let defaults: UserDefaults
@@ -85,6 +86,17 @@ final class SettingsStore {
         didSet { defaults.set(showsLyrics, forKey: Keys.showsLyrics) }
     }
 
+    /// Global shortcut that shows / hides the notch; `nil` while unassigned.
+    var notchToggleShortcut: HotKeyShortcut? {
+        didSet {
+            if let data = notchToggleShortcut.flatMap({ try? JSONEncoder().encode($0) }) {
+                defaults.set(data, forKey: Keys.notchToggleShortcut)
+            } else {
+                defaults.removeObject(forKey: Keys.notchToggleShortcut)
+            }
+        }
+    }
+
     /// Session-only: hides every panel until resumed.
     var isPaused = false
 
@@ -105,6 +117,8 @@ final class SettingsStore {
         showsMediaVisualizer = defaults.object(forKey: Keys.showsMediaVisualizer) as? Bool ?? true
         detectsBrowserMedia = defaults.bool(forKey: Keys.detectsBrowserMedia)
         showsLyrics = defaults.object(forKey: Keys.showsLyrics) as? Bool ?? true
+        notchToggleShortcut = defaults.data(forKey: Keys.notchToggleShortcut)
+            .flatMap { try? JSONDecoder().decode(HotKeyShortcut.self, from: $0) }
 
         if let stored = defaults.stringArray(forKey: Keys.enabledModules) {
             let known = defaults.stringArray(forKey: Keys.knownModules).map { Set($0.compactMap(NotchModule.init)) }

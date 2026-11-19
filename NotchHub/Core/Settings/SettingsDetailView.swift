@@ -112,7 +112,7 @@ struct SettingsDetailView: View {
         case .devOps: DevOpsSettingsSection(monitors: services.devOps)
         case .profiles: ProfilesSettingsSection(profiles: services.profiles)
         case .integrations: IntegrationsSettingsSection(service: services.externalAlerts)
-        case .shortcuts: ShortcutsSettingsPage()
+        case .shortcuts: ShortcutsSettingsPage(settings: settings)
         case .automations: AutomationsSettingsSection(automations: services.automations)
         default:
             AccessibilityAccessSection(insights: services.insights)
