@@ -1,33 +1,32 @@
 import SwiftUI
 
-/// Mic glyph on the collapsed right wing during meetings: green when live, red with a slash when muted.
+/// Bare mic glyph on the collapsed right wing during meetings: green when live, orange with a slash when muted.
 /// Clicks arrive through `NotchMicMuteCoordinator`'s catcher, so this view only draws.
 struct MicMuteWingButton: View {
-    private static let glyphSize: CGFloat = 18
+    private static let symbolSize: CGFloat = 13
 
     let isMuted: Bool
     let isHovered: Bool
 
     var body: some View {
-        let tint: Color = isMuted ? .red : .green
-        ZStack {
-            Circle()
-                .fill(tint.opacity(isHovered ? 0.45 : 0.28))
-            Image(systemName: isMuted ? "mic.slash.fill" : "mic.fill")
-                .font(.system(size: 9, weight: .bold))
-                .foregroundStyle(isMuted ? .red : .green)
-                .contentTransition(.symbolEffect(.replace))
-        }
-        .frame(width: Self.glyphSize, height: Self.glyphSize)
-        .scaleEffect(isHovered ? 1.1 : 1)
-        .animation(.easeOut(duration: 0.15), value: isHovered)
-        .animation(.easeOut(duration: 0.2), value: isMuted)
-        .frame(width: NotchGeometry.micMuteButtonWidth)
-        .help(isMuted ? "Mikrofonu aç (\(MicMuteHotKey.displayName))" : "Mikrofonu sustur (\(MicMuteHotKey.displayName))")
-        .accessibilityElement()
-        .accessibilityLabel(isMuted ? "Mikrofon kapalı" : "Mikrofon açık")
-        .accessibilityAddTraits(.isButton)
+        Image(systemName: isMuted ? "mic.slash.fill" : "mic.fill")
+            .font(.system(size: Self.symbolSize, weight: .semibold))
+            .foregroundStyle(MicMuteTint.color(isMuted: isMuted))
+            .contentTransition(.symbolEffect(.replace))
+            .scaleEffect(isHovered ? 1.15 : 1)
+            .animation(.easeOut(duration: 0.15), value: isHovered)
+            .animation(.easeOut(duration: 0.2), value: isMuted)
+            .frame(width: NotchGeometry.micMuteButtonWidth)
+            .help(isMuted ? "Mikrofonu aç (\(MicMuteHotKey.displayName))" : "Mikrofonu sustur (\(MicMuteHotKey.displayName))")
+            .accessibilityElement()
+            .accessibilityLabel(isMuted ? "Mikrofon kapalı" : "Mikrofon açık")
+            .accessibilityAddTraits(.isButton)
     }
+}
+
+/// Mic state colors: green while live, orange while muted.
+enum MicMuteTint {
+    static func color(isMuted: Bool) -> Color { isMuted ? .orange : .green }
 }
 
 /// Small mute toggle overlaid on the Mic & Camera status tile.
@@ -39,7 +38,7 @@ struct MicMuteTileButton: View {
 
     var body: some View {
         let isMuted = controller.isMuted
-        let tint: Color = isMuted ? .red : .green
+        let tint = MicMuteTint.color(isMuted: isMuted)
         Button {
             controller.toggle()
         } label: {
