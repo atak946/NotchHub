@@ -12,11 +12,13 @@ struct NotificationMirrorServiceTests {
     private let activator = InsightsFakeActivator()
 
     private func makeService(
-        trust: InsightsFakeTrust = InsightsFakeTrust(trusted: true), canPost: Bool = true
+        trust: InsightsFakeTrust = InsightsFakeTrust(trusted: true), canPost: Bool = true,
+        frontmost: FrontmostAppInfo = .none
     ) -> NotificationMirrorService {
         let service = NotificationMirrorService(
             alerts: alerts, permission: AccessibilityPermission(checker: trust), reader: reader,
-            observer: observer, activator: activator, clock: clock, defaults: defaults
+            observer: observer, activator: activator, clock: clock, defaults: defaults,
+            frontmostApp: { frontmost }
         )
         service.shouldPostAlert = { canPost }
         return service
@@ -36,6 +38,15 @@ struct NotificationMirrorServiceTests {
         #expect(service.hidesNativeBanners)
         #expect(service.scope == .allApps)
         #expect(service.keywords == NotificationMirrorPolicy.defaultKeywords)
+    }
+
+    @Test func bannerFromFrontmostAppIsLeftAlone() async {
+        let service = makeService(frontmost: FrontmostAppInfo(name: "WhatsApp", bundleID: nil))
+        await service.poll()
+        reader.show([InsightsBanners.make("front")])
+        await service.poll()
+        #expect(alerts.current == nil)
+        #expect(reader.dismissedIDs.isEmpty)
     }
 
     @Test func bannerOnScreenAtStartupIsBaselined() async {

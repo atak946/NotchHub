@@ -17,7 +17,7 @@ enum NotificationMirrorScope: String, CaseIterable, Identifiable, Sendable {
 
 /// What to do with a banner seen for the first time.
 enum NotificationMirrorDecision: Equatable, Sendable {
-    /// Leave it alone: own notification, out of scope, or notch alerts are off/paused.
+    /// Leave it alone: own notification, out of scope, the app is already in front, or notch alerts are off/paused.
     case ignore
     /// Post a notch alert, then close the macOS banner when `dismissNative`.
     case mirror(dismissNative: Bool)
@@ -34,6 +34,14 @@ struct MirroredAlertContent: Equatable, Sendable {
     let coalescingKey: String
     /// Canonical messaging key when the banner came from a watched messaging app.
     let messagingKey: String?
+}
+
+/// The app the user is looking at when a banner arrives.
+struct FrontmostAppInfo: Equatable, Sendable {
+    let name: String?
+    let bundleID: String?
+
+    static let none = FrontmostAppInfo(name: nil, bundleID: nil)
 }
 
 /// Pure decisions of the notification mirror, kept free of AX and alert plumbing for tests.
@@ -57,9 +65,11 @@ enum NotificationMirrorPolicy {
         scope: NotificationMirrorScope,
         keywords: [String],
         canPost: Bool,
-        hidesNative: Bool
+        hidesNative: Bool,
+        frontmost: FrontmostAppInfo = .none
     ) -> NotificationMirrorDecision {
         guard !isOwnNotification(app: banner.app) else { return .ignore }
+        guard !isFrontmost(app: banner.app, frontmost: frontmost) else { return .ignore }
         if scope == .messagingOnly, !matches(app: banner.app, keywords: keywords) { return .ignore }
         guard canPost else { return .ignore }
         return .mirror(dismissNative: hidesNative)
@@ -69,6 +79,20 @@ enum NotificationMirrorPolicy {
         let names = ownAppNames + [Bundle.main.object(forInfoDictionaryKey: "CFBundleDisplayName") as? String]
             .compactMap { $0 }
         return names.contains { $0.caseInsensitiveCompare(app.trimmingCharacters(in: .whitespaces)) == .orderedSame }
+    }
+
+    /// The banner's app is the one already open in front of the user, so a notch alert would only repeat it.
+    /// Matches by bundle id when the banner app is known, otherwise by (canonical) name.
+    static func isFrontmost(app: String, frontmost: FrontmostAppInfo) -> Bool {
+        if let frontID = frontmost.bundleID, let bannerID = KnownApps.bundleID(forName: app),
+           frontID.caseInsensitiveCompare(bannerID) == .orderedSame {
+            return true
+        }
+        guard let frontName = frontmost.name?.trimmingCharacters(in: .whitespaces), !frontName.isEmpty else {
+            return false
+        }
+        if frontName.caseInsensitiveCompare(app.trimmingCharacters(in: .whitespaces)) == .orderedSame { return true }
+        return MessagingApp.canonicalKey(for: frontName) == MessagingApp.canonicalKey(for: app)
     }
 
     /// Case-insensitive "contains", so "zoom.us" and "Zoom Workplace" both match "zoom".

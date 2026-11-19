@@ -1,3 +1,4 @@
+import AppKit
 import Foundation
 import Observation
 import OSLog
@@ -77,6 +78,7 @@ final class NotificationMirrorService {
     @ObservationIgnored private let activator: any InsightsAppActivating
     @ObservationIgnored private let ledger: NotificationMirrorLedger
     @ObservationIgnored private let clock: any InsightsClock
+    @ObservationIgnored private let frontmostApp: @MainActor () -> FrontmostAppInfo
     @ObservationIgnored private let defaults: UserDefaults
     @ObservationIgnored private var seen = BoundedIDSet(capacity: NotificationMirrorService.maxSeenIDs)
     @ObservationIgnored private var hasBaseline = false
@@ -98,8 +100,10 @@ final class NotificationMirrorService {
         clock: any InsightsClock = SystemInsightsClock(),
         defaults: UserDefaults = .standard,
         power: (any PowerConditionsProviding)? = nil,
-        privacy: NotificationPrivacySettings? = nil
+        privacy: NotificationPrivacySettings? = nil,
+        frontmostApp: @escaping @MainActor () -> FrontmostAppInfo = NotificationMirrorService.systemFrontmostApp
     ) {
+        self.frontmostApp = frontmostApp
         self.privacy = privacy ?? NotificationPrivacySettings(defaults: defaults)
         self.alerts = alerts
         self.permission = permission
@@ -201,9 +205,11 @@ final class NotificationMirrorService {
             return
         }
         let canPost = shouldPostAlert?() ?? false
+        let frontmost = fresh.isEmpty ? FrontmostAppInfo.none : frontmostApp()
         for banner in fresh {
             let decision = NotificationMirrorPolicy.decision(
-                for: banner, scope: scope, keywords: keywords, canPost: canPost, hidesNative: hidesNativeBanners
+                for: banner, scope: scope, keywords: keywords, canPost: canPost, hidesNative: hidesNativeBanners,
+                frontmost: frontmost
             )
             guard case .mirror(let dismissNative) = decision else { continue }
             post(banner)
@@ -264,6 +270,11 @@ final class NotificationMirrorService {
         hasBaseline = false
         hasBannerWindow = false
         quietPolls = 0
+    }
+
+    static func systemFrontmostApp() -> FrontmostAppInfo {
+        let app = NSWorkspace.shared.frontmostApplication
+        return FrontmostAppInfo(name: app?.localizedName, bundleID: app?.bundleIdentifier)
     }
 
     /// `nil` idles the loop while mirroring is off; enabling it kicks the loop again.

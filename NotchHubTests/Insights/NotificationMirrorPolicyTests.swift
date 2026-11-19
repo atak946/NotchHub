@@ -79,6 +79,22 @@ struct NotificationMirrorPolicyTests {
         #expect(decide(whatsapp, .allApps, canPost: false) == .ignore)
     }
 
+    @Test func ignoresBannersFromTheAppAlreadyInFront() {
+        let whatsapp = InsightsBanners.make("1")
+        let zoom = InsightsBanners.make("2", app: "zoom.us")
+        func decide(_ banner: NotificationBanner, _ front: FrontmostAppInfo) -> NotificationMirrorDecision {
+            NotificationMirrorPolicy.decision(
+                for: banner, scope: .allApps, keywords: keywords, canPost: true, hidesNative: true, frontmost: front
+            )
+        }
+        #expect(decide(whatsapp, FrontmostAppInfo(name: "WhatsApp", bundleID: nil)) == .ignore)
+        #expect(decide(whatsapp, FrontmostAppInfo(name: "whatsapp ", bundleID: nil)) == .ignore)
+        #expect(decide(whatsapp, FrontmostAppInfo(name: "Başka", bundleID: KnownApps.bundleID(forName: "WhatsApp"))) == .ignore)
+        #expect(decide(zoom, FrontmostAppInfo(name: "Zoom Workplace", bundleID: nil)) == .ignore)
+        #expect(decide(whatsapp, FrontmostAppInfo(name: "Safari", bundleID: "com.apple.Safari")) == .mirror(dismissNative: true))
+        #expect(decide(whatsapp, .none) == .mirror(dismissNative: true))
+    }
+
     @Test func keywordsAreNormalized() {
         #expect(NotificationMirrorPolicy.normalizedKeywords([" Zoom ", "zoom", "", "Signal"]) == ["zoom", "signal"])
     }

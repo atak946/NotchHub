@@ -75,6 +75,7 @@ final class UnreadBadgeMonitor {
     @ObservationIgnored private let clock: any InsightsClock
     @ObservationIgnored private let defaults: UserDefaults
     @ObservationIgnored private let mirrorLedger: NotificationMirrorLedger
+    @ObservationIgnored private let frontmostApp: @MainActor () -> FrontmostAppInfo
     @ObservationIgnored private var coalescer = UnreadAlertCoalescer()
     @ObservationIgnored private var previousCounts: [String: Int]?
     @ObservationIgnored private let loop: PowerAwareLoop
@@ -88,8 +89,10 @@ final class UnreadBadgeMonitor {
         clock: any InsightsClock = SystemInsightsClock(),
         defaults: UserDefaults = .standard,
         mirrorLedger: NotificationMirrorLedger = NotificationMirrorLedger(),
-        power: (any PowerConditionsProviding)? = nil
+        power: (any PowerConditionsProviding)? = nil,
+        frontmostApp: @escaping @MainActor () -> FrontmostAppInfo = NotificationMirrorService.systemFrontmostApp
     ) {
+        self.frontmostApp = frontmostApp
         self.alerts = alerts
         self.mirrorLedger = mirrorLedger
         self.permission = permission
@@ -193,9 +196,13 @@ final class UnreadBadgeMonitor {
         let ordered = watchedApps.map { UnreadAppCount(app: $0, count: current[$0] ?? 0) }
         if ordered != counts { counts = ordered }
         guard alertsEnabled else { return }
+        guard !increases.isEmpty else { return }
         // The notification mirror already named the sender; skip the duplicate "· 1 yeni" alert.
+        // Nor alert for the app already open in front of the user.
+        let frontmost = frontmostApp()
         increases
             .filter { !mirrorLedger.suppressesBadgeAlert(forApp: $0.app, at: now) }
+            .filter { !NotificationMirrorPolicy.isFrontmost(app: $0.app, frontmost: frontmost) }
             .forEach(postAlert)
     }
 
