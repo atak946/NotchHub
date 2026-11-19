@@ -40,7 +40,12 @@ struct ShelfFixture {
 
     func makeStore() -> ShelfStore {
         let clock = clock
-        return ShelfStore(defaults: defaults, now: { clock.now }, storageDirectory: storageDirectory)
+        return ShelfStore(
+            defaults: defaults,
+            now: { clock.now },
+            storageDirectory: storageDirectory,
+            dropsDirectory: root.appending(path: "Drops", directoryHint: .isDirectory)
+        )
     }
 
     /// A fresh store that has loaded the persisted state (as after `start()`).

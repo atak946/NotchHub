@@ -31,6 +31,7 @@ final class ShelfStore {
     @ObservationIgnored private let defaults: UserDefaults
     @ObservationIgnored private let now: @Sendable () -> Date
     @ObservationIgnored private let storage: ShelfPayloadStorage
+    @ObservationIgnored let dropsDirectory: URL
     @ObservationIgnored private let bookmarker: any ShelfBookmarking
     @ObservationIgnored private var bookmarks: [ShelfItem.ID: Data] = [:]
     @ObservationIgnored private var hasLoaded = false
@@ -41,12 +42,14 @@ final class ShelfStore {
         defaults: UserDefaults = .standard,
         now: @escaping @Sendable () -> Date = Date.init,
         storageDirectory: URL = ShelfPayloadStorage.defaultDirectory,
-        bookmarker: any ShelfBookmarking = FileBookmarker()
+        bookmarker: any ShelfBookmarking = FileBookmarker(),
+        dropsDirectory: URL = ShelfDroppedFiles.directory
     ) {
         self.defaults = defaults
         self.now = now
         self.storage = ShelfPayloadStorage(directory: storageDirectory)
         self.bookmarker = bookmarker
+        self.dropsDirectory = dropsDirectory
         retention = defaults.string(forKey: Keys.retention).flatMap(ShelfRetention.init) ?? .oneDay
     }
 
@@ -198,7 +201,7 @@ final class ShelfStore {
     private func discardResources(of item: ShelfItem) {
         bookmarks[item.id] = nil
         switch item.kind {
-        case .file: break
+        case .file(let url): ShelfDroppedFiles.removeCopy(at: url, in: dropsDirectory)
         case .text: storage.delete(item.id, type: .text)
         case .image: storage.delete(item.id, type: .image)
         }

@@ -256,4 +256,48 @@ struct ShelfStoreTests {
         }
         #expect(store.items.map(\.text) == ["dropped"])
     }
+
+    @Test func handleDropAcceptsFileOnlyProviders() async throws {
+        let fixture = try ShelfFixture()
+        defer { fixture.cleanUp() }
+        let store = fixture.makeStore()
+        let json = try fixture.makeFile("data.json", contents: "{\"a\":1}")
+        let provider = NSItemProvider()
+        provider.registerFileRepresentation(forTypeIdentifier: "public.json", fileOptions: [], visibility: .all) { completion in
+            completion(json, false, nil)
+            return nil
+        }
+
+        #expect(store.handleDrop(providers: [provider]))
+
+        for _ in 0..<100 where store.items.isEmpty {
+            try await Task.sleep(for: .milliseconds(20))
+        }
+        #expect(store.items.map(\.displayName) == ["data.json"])
+        #expect(store.items.first?.fileURL.map { FileManager.default.fileExists(atPath: $0.path) } == true)
+    }
+
+    @Test func handleDropAcceptsUnknownDataTypes() async throws {
+        let fixture = try ShelfFixture()
+        defer { fixture.cleanUp() }
+        let store = fixture.makeStore()
+        let provider = NSItemProvider()
+        provider.registerDataRepresentation(forTypeIdentifier: "com.example.custom-blob", visibility: .all) { completion in
+            completion(Data([1, 2, 3]), nil)
+            return nil
+        }
+
+        #expect(store.handleDrop(providers: [provider]))
+
+        for _ in 0..<100 where store.items.isEmpty {
+            try await Task.sleep(for: .milliseconds(20))
+        }
+        #expect(store.items.count == 1)
+        let copy = try #require(store.items.first?.fileURL)
+        #expect(FileManager.default.fileExists(atPath: copy.path(percentEncoded: false)))
+
+        store.removeAll()
+
+        #expect(!FileManager.default.fileExists(atPath: copy.deletingLastPathComponent().path(percentEncoded: false)))
+    }
 }
