@@ -21,7 +21,7 @@ enum MediaVisualizerPlacement: Equatable, Sendable {
     case hidden
     /// Next to the artwork.
     case beside
-    /// A small badge on the artwork's corner, when the media controls leave no room beside it.
+    /// A small badge on the artwork's corner, when the wing leaves no room beside it.
     case overlay
 }
 
@@ -44,12 +44,13 @@ enum MediaVisualizerLayout {
     /// Room the visualizer needs beside the artwork.
     static var besideWidth: CGFloat { besideGap + barsWidth }
 
-    static func placement(isEnabled: Bool, wingWidth: CGFloat, showsMediaControls: Bool) -> MediaVisualizerPlacement {
+    static func placement(isEnabled: Bool, wingWidth: CGFloat) -> MediaVisualizerPlacement {
         guard isEnabled, wingWidth > 0 else { return .hidden }
-        var reserved = artworkSize
-        if showsMediaControls {
-            reserved += NotchGeometry.mediaControlsWidth + NotchGeometry.mediaControlsNotchInset
-        }
-        return wingWidth - reserved >= besideWidth ? .beside : .overlay
+        return wingWidth - artworkSize >= besideWidth ? .beside : .overlay
+    }
+
+    /// Left-wing width taken by the artwork and, when shown beside it, the bars.
+    static func occupiedWidth(for placement: MediaVisualizerPlacement) -> CGFloat {
+        placement == .beside ? artworkSize + besideWidth : artworkSize
     }
 }

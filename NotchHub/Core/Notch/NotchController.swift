@@ -325,7 +325,8 @@ final class NotchController {
         let isOpenTrigger = geometry.shouldOpen(
             at: point,
             wingWidth: model.wingWidth,
-            excludingMediaControls: mediaControls.isInteractive
+            excludingMediaControls: mediaControls.isInteractive,
+            afterMicMute: mediaControls.afterMicMute
         ) && !micMute.blocksOpen(at: point)
         guard alerts.current == nil, !isCameraMirrorShown, isOpenTrigger else {
             openTask?.cancel()

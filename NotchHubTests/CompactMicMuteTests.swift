@@ -32,13 +32,17 @@ struct CompactMicMuteTests {
         #expect(!geometry.isOnMicMuteButton(CGPoint(x: 880, y: 960), wingWidth: wing))
     }
 
-    @Test func doesNotOverlapMediaControls() throws {
+    @Test func mediaControlsFollowTheButtonWithoutOverlap() throws {
         let geometry = physical()
         let mic = try #require(geometry.micMuteButtonRect(wingWidth: wing))
-        let media = try #require(geometry.mediaControlsRect(wingWidth: wing))
+        let media = try #require(geometry.mediaControlsRect(wingWidth: wing, afterMicMute: true))
         #expect(!mic.intersects(media))
         #expect(!mic.intersects(geometry.collapsedRect))
-        #expect(media.maxX <= geometry.collapsedRect.minX)
+        #expect(media.minX == mic.maxX + NotchGeometry.mediaControlsMicGap)
+        #expect(media.maxX <= geometry.collapsedRect(wingWidth: wing).maxX)
+        #expect(geometry.mediaControlAction(at: CGPoint(x: mic.midX, y: 960), wingWidth: wing, afterMicMute: true) == nil)
+        #expect(geometry.mediaControlAction(at: CGPoint(x: media.midX, y: 960), wingWidth: wing, afterMicMute: true)
+            == .playPause)
     }
 
     @Test func noButtonWhenWingTooNarrow() {

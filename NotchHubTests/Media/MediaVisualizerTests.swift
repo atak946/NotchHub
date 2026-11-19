@@ -197,22 +197,26 @@ struct MediaVisualizerPolicyTests {
 
     @Test func fitsBesideArtworkInCompactWing() {
         let placement = MediaVisualizerLayout.placement(
-            isEnabled: true, wingWidth: NotchGeometry.compactWingWidth, showsMediaControls: false
+            isEnabled: true, wingWidth: NotchGeometry.compactWingWidth
         )
         #expect(placement == .beside)
         #expect(MediaVisualizerLayout.artworkSize + MediaVisualizerLayout.besideWidth <= NotchGeometry.compactWingWidth)
     }
 
-    @Test func overlaysArtworkWhenMediaControlsFillTheWing() {
+    @Test func sitsBesideArtworkNowThatMediaControlsMovedRight() {
         let placement = MediaVisualizerLayout.placement(
-            isEnabled: true, wingWidth: NotchGeometry.mediaControlsWingWidth, showsMediaControls: true
+            isEnabled: true, wingWidth: NotchGeometry.mediaControlsWingWidth
         )
-        #expect(placement == .overlay)
+        #expect(placement == .beside)
+    }
+
+    @Test func overlaysArtworkWhenWingIsTooNarrow() {
+        #expect(MediaVisualizerLayout.placement(isEnabled: true, wingWidth: MediaVisualizerLayout.artworkSize) == .overlay)
     }
 
     @Test func hiddenWhenDisabledOrNoWing() {
-        #expect(MediaVisualizerLayout.placement(isEnabled: false, wingWidth: 104, showsMediaControls: false) == .hidden)
-        #expect(MediaVisualizerLayout.placement(isEnabled: true, wingWidth: 0, showsMediaControls: false) == .hidden)
+        #expect(MediaVisualizerLayout.placement(isEnabled: false, wingWidth: 104) == .hidden)
+        #expect(MediaVisualizerLayout.placement(isEnabled: true, wingWidth: 0) == .hidden)
     }
 }
 

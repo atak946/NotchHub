@@ -10,6 +10,8 @@ final class NotchViewModel {
     var attentionCount = 0
     /// Collapsed media control under the pointer, set by the controller from geometry.
     var hoveredMediaControl: MediaControlAction?
+    /// The pointer is (or just was) over the media controls, so they show instead of the status glyphs.
+    var isMediaControlsRevealed = false
     /// Press counters that drive the bounce feedback of the collapsed media controls.
     private(set) var mediaControlPresses: [MediaControlAction: Int] = [:]
     /// Pointer is over the collapsed meeting mic button.

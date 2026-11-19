@@ -1,16 +1,21 @@
 import AppKit
 import Observation
 
-/// Drives the collapsed media controls for one notch: keeps the click catcher over the controls
-/// rect, routes clicks to `MediaService` and mirrors the hovered button into the view model.
+/// Drives the collapsed media controls for one notch: reveals them while the pointer is over their
+/// rect, keeps the click catcher there, routes clicks to `MediaService` and mirrors the hovered button
+/// into the view model.
 @MainActor
 final class NotchMediaControlsCoordinator {
+    /// How long the controls linger after the pointer leaves, so a small overshoot does not flicker.
+    static let hideDelay: Duration = .milliseconds(450)
+
     private let model: NotchViewModel
     private let alerts: NotchAlertCenter
     private let catcher = MediaControlsCatcherPanel()
     /// Whether the owning notch panel is on screen; the catcher only shows alongside it.
     private var isHostVisible = false
     private var isTornDown = false
+    private var hideTask: Task<Void, Never>?
 
     /// Called for a click that lands on the notch itself rather than a control.
     var onOpenPanel: (() -> Void)?
@@ -39,14 +44,22 @@ final class NotchMediaControlsCoordinator {
     }
 
     func updateHover(at point: CGPoint) {
-        let hovered = isInteractive ? model.geometry.mediaControlAction(at: point, wingWidth: model.wingWidth) : nil
+        let isInZone = isInteractive && revealRect?.contains(point) == true
+        let hovered = isInZone
+            ? model.geometry.mediaControlAction(at: point, wingWidth: model.wingWidth, afterMicMute: afterMicMute)
+            : nil
         if model.hoveredMediaControl != hovered {
             model.hoveredMediaControl = hovered
         }
+        isInZone ? reveal() : scheduleHide()
     }
+
+    /// Whether the mic button sits before the controls.
+    var afterMicMute: Bool { model.showsMicMuteButton }
 
     func tearDown() {
         isTornDown = true
+        hideTask?.cancel()
         onOpenPanel = nil
         catcher.onClick = nil
         catcher.orderOut(nil)
@@ -55,8 +68,37 @@ final class NotchMediaControlsCoordinator {
 
     // MARK: - Private
 
+    private var revealRect: CGRect? {
+        model.geometry.mediaControlsRevealRect(wingWidth: model.wingWidth, afterMicMute: afterMicMute)
+    }
+
+    private func reveal() {
+        hideTask?.cancel()
+        hideTask = nil
+        if !model.isMediaControlsRevealed { model.isMediaControlsRevealed = true }
+    }
+
+    private func scheduleHide() {
+        guard model.isMediaControlsRevealed, hideTask == nil else { return }
+        hideTask = Task { [weak self] in
+            try? await Task.sleep(for: Self.hideDelay)
+            guard !Task.isCancelled, let self else { return }
+            self.hideTask = nil
+            self.model.isMediaControlsRevealed = false
+        }
+    }
+
+    private func hideNow() {
+        hideTask?.cancel()
+        hideTask = nil
+        if model.isMediaControlsRevealed { model.isMediaControlsRevealed = false }
+    }
+
     private func handleClick(at point: CGPoint) {
-        let route = model.geometry.clickRoute(at: point, wingWidth: model.wingWidth, mediaControlsActive: isInteractive)
+        reveal()
+        let route = model.geometry.clickRoute(
+            at: point, wingWidth: model.wingWidth, mediaControlsActive: isInteractive, afterMicMute: afterMicMute
+        )
         switch route {
         case .mediaControl(let action):
             perform(action)
@@ -82,6 +124,7 @@ final class NotchMediaControlsCoordinator {
             _ = model.geometry
             _ = model.wingWidth
             _ = model.showsMediaControls
+            _ = model.showsMicMuteButton
             _ = model.isExpanded
             _ = alerts.current?.id
         } onChange: { [weak self] in
@@ -95,9 +138,12 @@ final class NotchMediaControlsCoordinator {
 
     private func updateCatcher() {
         guard !isTornDown else { return }
-        guard isHostVisible, isInteractive, let rect = model.geometry.mediaControlsRect(wingWidth: model.wingWidth) else {
+        guard isHostVisible, isInteractive, let rect = model.geometry.mediaControlsRect(
+            wingWidth: model.wingWidth, afterMicMute: afterMicMute
+        ) else {
             catcher.orderOut(nil)
             if model.hoveredMediaControl != nil { model.hoveredMediaControl = nil }
+            hideNow()
             return
         }
         if catcher.frame != rect {

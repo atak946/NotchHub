@@ -1,8 +1,9 @@
 import SwiftUI
 
 /// Live indicators beside the hardware notch while the panel is closed:
-/// left wing = now playing (plus media controls when enabled), or overflow status glyphs when no media;
-/// right wing = meeting mic button, timer and status glyphs.
+/// left wing = now playing artwork, plus overflow status glyphs in the room it leaves;
+/// right wing = meeting mic button, timer and status glyphs; the media controls replace the glyphs
+/// while the pointer is over them.
 ///
 /// The wings keep their width (wider would cover menu bar extras). Glyphs that do not fit move to an
 /// empty left wing, and the rest fold into a "+N" pill (see `CompactGlyphSplit`).
@@ -33,15 +34,14 @@ struct CompactWingsView: View {
         let rightGlyphs = glyphs.prefix(split.right)
         let leftGlyphs = glyphs.dropFirst(split.right).prefix(split.left)
         return HStack(spacing: 0) {
-            HStack(spacing: isLeftWingFree ? CompactGlyphSplit.spacing : nil) {
-                if isLeftWingFree {
-                    ForEach(leftGlyphs) { $0 }
-                    if split.overflow > 0, split.pillInLeftWing {
-                        overflowPill(count: split.overflow)
-                    }
-                    Spacer(minLength: 0)
-                } else {
-                    mediaWing(wingWidth: wingWidth)
+            HStack(spacing: CompactGlyphSplit.spacing) {
+                if hasLeftMedia {
+                    MediaCompactView(media: model.services.media, visualizer: visualizerPlacement(wingWidth: wingWidth))
+                }
+                Spacer(minLength: 0)
+                ForEach(leftGlyphs) { $0 }
+                if split.overflow > 0, split.pillInLeftWing {
+                    overflowPill(count: split.overflow)
                 }
             }
             .frame(width: wingWidth)
@@ -49,7 +49,7 @@ struct CompactWingsView: View {
 
             Spacer(minLength: model.geometry.notchSize.width)
 
-            HStack(spacing: Self.micButtonSpacing) {
+            HStack(spacing: NotchGeometry.mediaControlsMicGap) {
                 if model.showsMicMuteButton {
                     // Leading edge must match NotchGeometry.micMuteButtonRect (the click hit rect).
                     MicMuteWingButton(
@@ -59,41 +59,39 @@ struct CompactWingsView: View {
                     .padding(.leading, NotchGeometry.micMuteNotchInset)
                     .transition(.opacity)
                 }
-                Spacer(minLength: 0)
-                HStack(spacing: CompactGlyphSplit.spacing) {
-                    ForEach(rightGlyphs) { $0 }
-                    if split.overflow > 0, !split.pillInLeftWing {
-                        overflowPill(count: split.overflow)
+                ZStack(alignment: .leading) {
+                    HStack(spacing: CompactGlyphSplit.spacing) {
+                        Spacer(minLength: 0)
+                        ForEach(rightGlyphs) { $0 }
+                        if split.overflow > 0, !split.pillInLeftWing {
+                            overflowPill(count: split.overflow)
+                        }
+                    }
+                    .opacity(isControlsRevealed ? 0 : 1)
+                    .blur(radius: isControlsRevealed ? 3 : 0)
+                    .animation(.easeOut(duration: 0.18), value: isControlsRevealed)
+                    if model.showsMediaControls {
+                        // Leading edge must match NotchGeometry.mediaControlsRect (the click hit rects).
+                        CompactMediaControlsView(
+                            isPlaying: model.services.media.nowPlaying?.isPlaying ?? false,
+                            isRevealed: isControlsRevealed,
+                            hovered: model.hoveredMediaControl,
+                            presses: model.mediaControlPresses,
+                            artwork: model.services.media.artwork
+                        )
+                        .padding(.leading, model.showsMicMuteButton ? 0 : NotchGeometry.mediaControlsNotchInset)
                     }
                 }
-                .fixedSize()
             }
             .frame(width: wingWidth)
             .padding(.trailing, 6)
         }
     }
 
-    @ViewBuilder
-    private func mediaWing(wingWidth: CGFloat) -> some View {
-        let services = model.services
-        if services.hasCompactMedia {
-            MediaCompactView(media: services.media, visualizer: MediaVisualizerLayout.placement(
-                isEnabled: model.settings.showsMediaVisualizer,
-                wingWidth: wingWidth,
-                showsMediaControls: model.showsMediaControls
-            ))
-        }
-        Spacer(minLength: 0)
-        if model.showsMediaControls {
-            // Trailing edge must match NotchGeometry.mediaControlsRect (the click hit rects).
-            CompactMediaControlsView(
-                isPlaying: services.media.nowPlaying?.isPlaying ?? false,
-                hovered: model.hoveredMediaControl,
-                presses: model.mediaControlPresses
-            )
-            .padding(.trailing, NotchGeometry.mediaControlsNotchInset)
-            .transition(.opacity)
-        }
+    private var hasLeftMedia: Bool { model.services.hasCompactMedia }
+
+    private func visualizerPlacement(wingWidth: CGFloat) -> MediaVisualizerPlacement {
+        MediaVisualizerLayout.placement(isEnabled: model.settings.showsMediaVisualizer, wingWidth: wingWidth)
     }
 
     private func overflowPill(count: Int) -> some View {
@@ -120,20 +118,22 @@ struct CompactWingsView: View {
         .allowsHitTesting(false)
     }
 
-    private static let micButtonSpacing: CGFloat = 6
-
-    /// The left wing hosts glyphs only while nothing is playing.
-    private var isLeftWingFree: Bool {
-        !model.services.hasCompactMedia && !model.showsMediaControls
-    }
-
+    /// Room for glyphs in the left wing: all of it with no media, otherwise what the artwork leaves.
     private func leftGlyphWidth(wingWidth: CGFloat) -> CGFloat {
-        isLeftWingFree ? wingWidth : 0
+        guard hasLeftMedia else { return wingWidth }
+        let occupied = MediaVisualizerLayout.occupiedWidth(for: visualizerPlacement(wingWidth: wingWidth))
+        return max(wingWidth - occupied - CompactGlyphSplit.spacing, 0)
     }
 
+    /// Room for glyphs in the right wing after the mic button (the controls only cover them on hover).
     private func rightGlyphWidth(wingWidth: CGFloat) -> CGFloat {
         guard model.showsMicMuteButton else { return wingWidth }
-        return wingWidth - NotchGeometry.micMuteNotchInset - NotchGeometry.micMuteButtonWidth - Self.micButtonSpacing
+        return wingWidth - NotchGeometry.micMuteNotchInset - NotchGeometry.micMuteButtonWidth
+            - NotchGeometry.mediaControlsMicGap
+    }
+
+    private var isControlsRevealed: Bool {
+        model.showsMediaControls && model.isMediaControlsRevealed
     }
 
     /// Status glyphs in priority order, one subview each.
