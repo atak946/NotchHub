@@ -36,6 +36,10 @@ final class NotchAlertCenter {
     /// User preference multiplier for alert durations (Settings › Notifications).
     @ObservationIgnored var durationScale: @MainActor () -> Double = { 1 }
 
+    /// Muting (see `AlertMuteService`): a rejected alert goes to `onSuppressed` instead of the notch.
+    @ObservationIgnored var shouldPresent: @MainActor (NotchAlert) -> Bool = { _ in true }
+    @ObservationIgnored var onSuppressed: @MainActor (NotchAlert) -> Void = { _ in }
+
     @ObservationIgnored private var dismissTask: Task<Void, Never>?
     @ObservationIgnored private var hoverHoldTask: Task<Void, Never>?
     /// When the current chain of same-key alerts started.
@@ -52,6 +56,10 @@ final class NotchAlertCenter {
     }
 
     func post(_ alert: NotchAlert) {
+        guard shouldPresent(alert) else {
+            onSuppressed(alert)
+            return
+        }
         if let key = alert.coalescingKey {
             if current?.coalescingKey == key {
                 show(alert, continuingChain: true)
@@ -82,6 +90,14 @@ final class NotchAlertCenter {
     func dismissAll() {
         queue = []
         dismiss()
+    }
+
+    /// Muting just began: takes down what may no longer show; queued alerts count as suppressed.
+    func discardSuppressed() {
+        let suppressed = queue.filter { !shouldPresent($0) }
+        queue = queue.filter(shouldPresent)
+        suppressed.forEach(onSuppressed)
+        if let current, !shouldPresent(current) { dismiss() }
     }
 
     func performAction() {

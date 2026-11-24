@@ -67,7 +67,8 @@ final class LiveIntentRoutes: IntentRouting {
             style: style,
             autoDismissAfter: style.pulses ? NotchAlert.importantDuration : NotchAlert.defaultDuration,
             appBundleID: Self.alertAppBundleID,
-            appName: Self.alertAppName
+            appName: Self.alertAppName,
+            muteBehavior: .hold
         ))
     }
 

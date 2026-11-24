@@ -173,7 +173,8 @@ final class FocusGuardService {
             coalescingKey: Self.alertKey,
             autoDismissAfter: Self.alertDuration,
             actionTitle: hasReturnTarget ? String(localized: "İşe dön") : nil,
-            action: action
+            action: action,
+            muteBehavior: .always
         ))
     }
 

@@ -128,7 +128,8 @@ final class DiagnosticsReporter {
             systemImage: "doc.on.clipboard",
             title: String(localized: "Tanılama raporu kopyalandı"),
             subtitle: subtitle,
-            style: .success
+            style: .success,
+            muteBehavior: .always
         ))
     }
 }

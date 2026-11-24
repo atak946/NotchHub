@@ -34,8 +34,11 @@ extension SettingsSearchCatalog {
             SettingsSearchTerm("Görünüm", "Appearance"),
             SettingsSearchTerm("Tema", "Theme"),
             SettingsSearchTerm("Panel Sekmeleri", "Panel Tabs"),
+            SettingsSearchTerm("Menü Çubuğu", "Menu Bar"),
+            SettingsSearchTerm("Simgeleri kutuda topla", "Collect Icons in a Box"),
+            SettingsSearchTerm("Simgeleri çubuktaki gibi göster", "Show Icons as in the Menu Bar"),
         ],
-        synonyms: ["çentik", "notch", "hover", "gecikme", "delay", "tam ekran", "fullscreen", "monitör", "monitor", "display", "harici ekran", "external display", "koyu", "dark", "theme", "sekme", "tab", "modül", "module"]
+        synonyms: ["çentik", "notch", "hover", "gecikme", "delay", "tam ekran", "fullscreen", "monitör", "monitor", "display", "harici ekran", "external display", "koyu", "dark", "theme", "sekme", "tab", "modül", "module", "gizli simgeler", "hidden icons", "menü simgesi", "menu bar icon", "bartender"]
     )
 
     static let hud = SettingsSearchEntry(
@@ -58,8 +61,13 @@ extension SettingsSearchCatalog {
             SettingsSearchTerm("Çentik Uyarıları", "Notch Alerts"),
             SettingsSearchTerm("Çentikten animasyonlu uyarılar", "Animated alerts from the notch"),
             SettingsSearchTerm("Parça değişimlerini göster", "Show Track Changes"),
+            SettingsSearchTerm("Sessiz Mod", "Quiet Mode"),
+            SettingsSearchTerm("Bildirimleri sustur", "Mute Notifications"),
+            SettingsSearchTerm("Toplantılarda sustur", "Mute in Meetings"),
+            SettingsSearchTerm("Odak (Pomodoro) sırasında sustur", "Mute During Focus (Pomodoro)"),
+            SettingsSearchTerm("Toplantı hatırlatıcıları ve biten zamanlayıcılar yine gösterilsin", "Still Show Meeting Reminders and Finished Timers"),
         ],
-        synonyms: ["uyarı", "alert", "banner", "animasyon", "animation", "şarkı değişimi", "track change"]
+        synonyms: ["uyarı", "alert", "banner", "animasyon", "animation", "şarkı değişimi", "track change", "sessiz", "mute", "rahatsız etme", "do not disturb", "odak", "focus"]
     )
 
     static let shelf = SettingsSearchEntry(

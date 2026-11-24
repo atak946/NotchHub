@@ -190,7 +190,8 @@ final class MicMuteController {
             subtitle: deviceName,
             style: .info,
             coalescingKey: Self.feedbackAlertKey,
-            autoDismissAfter: Self.feedbackDuration
+            autoDismissAfter: Self.feedbackDuration,
+            muteBehavior: .always
         ))
     }
 }

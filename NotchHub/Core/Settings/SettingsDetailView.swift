@@ -55,7 +55,9 @@ struct SettingsDetailView: View {
         case .general: GeneralSettingsPage(settings: settings, language: language, updater: updater)
         case .notch: NotchAppearanceSettingsPage(settings: settings)
         case .hud: SystemHUDSettingsSection(hud: services.hud)
-        default: NotchAlertsSettingsSection(settings: settings)
+        default:
+            NotchAlertsSettingsSection(settings: settings)
+            MuteSettingsSection(mute: services.mute)
         }
     }
 

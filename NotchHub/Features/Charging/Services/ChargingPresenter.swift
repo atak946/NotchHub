@@ -150,7 +150,8 @@ final class ChargingPresenter {
             coalescingKey: Self.alertKey,
             autoDismissAfter: content.duration,
             appName: String(localized: "Pil"),
-            battery: content.glyph
+            battery: content.glyph,
+            muteBehavior: event.kind.isWarning ? .always : .drop
         ))
         logger.info("Posted power presentation")
     }

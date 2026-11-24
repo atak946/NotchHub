@@ -33,6 +33,7 @@ struct StatusCompactIndicators: View {
 
     var body: some View {
         SystemCompactIndicators(monitors: services.system)
+        MuteCompactIndicator(mute: services.mute)
         DevOpsCompactIndicators(monitors: services.devOps)
         InsightsCompactIndicators(insights: services.insights)
         ProfilesCompactIndicators(profiles: services.profiles)

@@ -47,6 +47,8 @@ struct NotchAlert: Identifiable {
     let timestampText: String?
     /// Power alerts: an animated battery ring replaces the leading icon.
     let battery: AlertBatteryGlyph?
+    /// What happens to the alert while notifications are muted.
+    let muteBehavior: AlertMuteBehavior
     /// Private text (e.g. a message body) kept only in memory until the user reveals it; `subtitle`
     /// carries the placeholder meanwhile. Private so no view can render it by accident.
     private let concealedSubtitle: String?
@@ -70,7 +72,8 @@ struct NotchAlert: Identifiable {
         battery: AlertBatteryGlyph? = nil,
         concealedSubtitle: String? = nil,
         secondaryActionTitle: String? = nil,
-        secondaryAction: (@MainActor () -> Void)? = nil
+        secondaryAction: (@MainActor () -> Void)? = nil,
+        muteBehavior: AlertMuteBehavior = .drop
     ) {
         self.module = module
         self.systemImage = systemImage
@@ -89,6 +92,7 @@ struct NotchAlert: Identifiable {
         self.concealedSubtitle = concealedSubtitle.flatMap(Self.cleaned)
         self.secondaryActionTitle = secondaryActionTitle
         self.secondaryAction = secondaryAction
+        self.muteBehavior = muteBehavior
     }
 
     /// The alert hides private text that the user can reveal.

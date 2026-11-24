@@ -112,7 +112,8 @@ final class CrashReportMonitor {
             actionTitle: String(localized: "Bildir"),
             action: { [weak self] in self?.report(report, file: file) },
             secondaryActionTitle: String(localized: "Yoksay"),
-            secondaryAction: {}
+            secondaryAction: {},
+            muteBehavior: .hold
         )
     }
 
@@ -136,7 +137,8 @@ final class CrashReportMonitor {
             style: .info,
             autoDismissAfter: NotchAlert.importantDuration,
             actionTitle: String(localized: "Raporu Finder'da göster"),
-            action: { [weak self] in self?.revealer.reveal(file.url) }
+            action: { [weak self] in self?.revealer.reveal(file.url) },
+            muteBehavior: .always
         ))
     }
 

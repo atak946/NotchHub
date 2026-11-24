@@ -219,7 +219,8 @@ final class UnreadBadgeMonitor {
             actionTitle: String(localized: "Aç"),
             action: { [weak self] in self?.open(app: app) },
             appBundleID: KnownApps.bundleID(forName: app),
-            appName: Self.displayName(for: app)
+            appName: Self.displayName(for: app),
+            muteBehavior: .hold
         ))
     }
 

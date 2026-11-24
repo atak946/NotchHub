@@ -5,9 +5,9 @@ extension SettingsCategory {
     var subtitle: LocalizedStringResource {
         switch self {
         case .general: "Dil, başlangıç, güncellemeler ve destek."
-        case .notch: "Çentiğin davranışı, ekranlar, tema ve panel sekmeleri."
+        case .notch: "Çentiğin davranışı, ekranlar, tema, panel sekmeleri ve menü çubuğu."
         case .hud: "Ses ve parlaklık göstergesi çentikte."
-        case .alerts: "Çentikten çıkan animasyonlu uyarılar."
+        case .alerts: "Çentikten çıkan animasyonlu uyarılar ve sessiz mod."
         case .shelf: "Dosya rafı ve pano geçmişi."
         case .media: "Kapalı çentikte medya kontrolleri ve müzik dalgası."
         case .timer: "Pomodoro süreleri ve aşama geçişleri."

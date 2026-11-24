@@ -10193,16 +10193,6 @@
         }
       }
     },
-    "Çentikten çıkan animasyonlu uyarılar.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Animated alerts from the notch."
-          }
-        }
-      }
-    },
     "Çentiği olmayan ekranlarda sanal çentik": {
       "localizations": {
         "en": {
@@ -10219,16 +10209,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Your notch is now a control center: file shelf, media, timer, meetings and notes, one tap away."
-          }
-        }
-      }
-    },
-    "Çentiğin davranışı, ekranlar, tema ve panel sekmeleri.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Notch behavior, displays, theme and panel tabs."
           }
         }
       }
@@ -11101,6 +11081,376 @@
           "stringUnit": {
             "state": "translated",
             "value": "%@ is already in use"
+          }
+        }
+      }
+    },
+    "1 saat": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1 Hour"
+          }
+        }
+      }
+    },
+    "Yarına kadar": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Until Tomorrow"
+          }
+        }
+      }
+    },
+    "Ben açana kadar": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Until I Turn It Off"
+          }
+        }
+      }
+    },
+    "Bildirimler susturuldu": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Notifications muted"
+          }
+        }
+      }
+    },
+    "%@ saatine kadar susturuldu": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Muted until %@"
+          }
+        }
+      }
+    },
+    "Toplantı sırasında susturuldu": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Muted during the meeting"
+          }
+        }
+      }
+    },
+    "Odak sırasında susturuldu": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Muted during focus"
+          }
+        }
+      }
+    },
+    "Susturulurken %lld bildirim geldi": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld notifications arrived while muted"
+          }
+        }
+      }
+    },
+    "Sessiz Mod": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quiet Mode"
+          }
+        }
+      }
+    },
+    "Bildirimleri sustur": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mute Notifications"
+          }
+        }
+      }
+    },
+    "Bildirimleri Sustur": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mute Notifications"
+          }
+        }
+      }
+    },
+    "Susturmayı kapat": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unmute"
+          }
+        }
+      }
+    },
+    "Sustur": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mute"
+          }
+        }
+      }
+    },
+    "Toplantılarda sustur": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mute in Meetings"
+          }
+        }
+      }
+    },
+    "Toplantı algılama, Toplantı sayfasından açık olmalı.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Meeting detection must be on in the Meeting page."
+          }
+        }
+      }
+    },
+    "Odak (Pomodoro) sırasında sustur": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mute During Focus (Pomodoro)"
+          }
+        }
+      }
+    },
+    "Toplantı hatırlatıcıları ve biten zamanlayıcılar yine gösterilsin": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Still Show Meeting Reminders and Finished Timers"
+          }
+        }
+      }
+    },
+    "Susturulurken gelen bildirimler bellekte tutulur ve sonunda özetlenir. Güvenlik ve pil uyarıları her zaman gösterilir. macOS afişlerini yalnızca Bildirimler sayfasındaki \"macOS bildirimlerini gizle\" açıkken gizler; tamamen engellemek için macOS Odak'ı kullan.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Notifications that arrive while muted are kept in memory and summarized afterwards. Security and battery alerts are always shown. macOS banners are only hidden while \"Hide macOS Notifications\" is on in the Notifications page; use macOS Focus to block them completely."
+          }
+        }
+      }
+    },
+    "Susturulurken gelenler": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Arrived While Muted"
+          }
+        }
+      }
+    },
+    "Listeyi temizle": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Clear List"
+          }
+        }
+      }
+    },
+    "Gizli menü çubuğu simgeleri": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hidden menu bar icons"
+          }
+        }
+      }
+    },
+    "Gizli simgeler ayracı": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hidden icons divider"
+          }
+        }
+      }
+    },
+    "Simgeleri düzenle": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Arrange Icons"
+          }
+        }
+      }
+    },
+    "Simgeleri menü çubuğunda gösterir; ⌘ ile ayracın soluna sürüklediğin simgeler gizlenir.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Shows the icons in the menu bar; the ones you ⌘-drag left of the divider are hidden."
+          }
+        }
+      }
+    },
+    "Gizli simge yok. Düzenle'ye basıp simgeleri ⌘ ile ayracın soluna sürükle.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No hidden icons. Click Arrange, then ⌘-drag icons left of the divider."
+          }
+        }
+      }
+    },
+    "Menü Çubuğu": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Menu Bar"
+          }
+        }
+      }
+    },
+    "Simgeleri kutuda topla": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Collect Icons in a Box"
+          }
+        }
+      }
+    },
+    "Menü çubuğuna bir ok ekler; solundaki simgeler gizlenir ve oka basınca aşağı açılan kutuda görünür. Neyin gizleneceğini kutudaki Düzenle ile, simgeleri ⌘ basılıyken ayracın soluna veya sağına sürükleyerek seç.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Adds an arrow to the menu bar; icons left of it are hidden and appear in a box that drops down when you click it. Choose what to hide with Arrange in that box: ⌘-drag icons left or right of the divider."
+          }
+        }
+      }
+    },
+    "Simgeleri okumak ve açmak için Erişilebilirlik izni gerekir.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Accessibility access is needed to read and open the icons."
+          }
+        }
+      }
+    },
+    "Çentiğin davranışı, ekranlar, tema, panel sekmeleri ve menü çubuğu.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Notch behavior, displays, theme, panel tabs and the menu bar."
+          }
+        }
+      }
+    },
+    "Çentikten çıkan animasyonlu uyarılar ve sessiz mod.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Animated alerts from the notch and quiet mode."
+          }
+        }
+      }
+    },
+    "Sağ tıkla": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Right-Click"
+          }
+        }
+      }
+    },
+    "Simgeleri çubuktaki gibi göster": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Show Icons as in the Menu Bar"
+          }
+        }
+      }
+    },
+    "CPU/RAM değeri ve VPN işareti gibi canlı görünümler için Ekran Kaydı izni gerekir. Görüntüler yalnızca kutu açıkken alınır ve bu Mac'ten çıkmaz. İzin verdikten sonra NotchHub'ı yeniden aç.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Live looks such as CPU/RAM values and VPN badges need Screen Recording access. Pictures are only taken while the box is open and never leave this Mac. Reopen NotchHub after granting access."
+          }
+        }
+      }
+    },
+    "Canlı simgeler için izin ver": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Allow Live Icons"
+          }
+        }
+      }
+    },
+    "Ekran Kaydı iznini açar. İzin verdikten sonra NotchHub'ı yeniden aç.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Opens Screen Recording access. Reopen NotchHub after granting it."
+          }
+        }
+      }
+    },
+    "Ekran Kaydı izni": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Screen Recording access"
           }
         }
       }

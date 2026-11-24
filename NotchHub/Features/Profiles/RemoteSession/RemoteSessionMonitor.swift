@@ -155,7 +155,8 @@ final class RemoteSessionMonitor {
             coalescingKey: Self.alertKey,
             autoDismissAfter: NotchAlert.importantDuration,
             actionTitle: canOpenAnyDesk ? String(localized: "AnyDesk'i göster") : nil,
-            action: action
+            action: action,
+            muteBehavior: .always
         ))
     }
 

@@ -12,6 +12,7 @@ final class AppMenuController: NSObject, NSMenuDelegate {
     private let updater: UpdaterService
     private let micMute: MicMuteController?
     private let supportActions: SupportActions
+    private let muteMenu: MuteMenuBuilder
 
     /// SwiftUI's `openSettings`, captured by a `SettingsActionCapture` in the notch panel or the menu bar item.
     private var openSettingsAction: OpenSettingsAction?
@@ -21,6 +22,7 @@ final class AppMenuController: NSObject, NSMenuDelegate {
         windowManager: NotchWindowManager,
         updater: UpdaterService,
         micMute: MicMuteController?,
+        mute: AlertMuteService,
         supportActions: SupportActions
     ) {
         self.settings = settings
@@ -28,6 +30,7 @@ final class AppMenuController: NSObject, NSMenuDelegate {
         self.updater = updater
         self.micMute = micMute
         self.supportActions = supportActions
+        muteMenu = MuteMenuBuilder(mute: mute)
         super.init()
     }
 
@@ -94,6 +97,7 @@ final class AppMenuController: NSObject, NSMenuDelegate {
                 action: #selector(toggleMicMute), key: "m", modifiers: [.command, .option]
             ).isEnabled = micMute.isAvailable
         }
+        menu.addItem(muteMenu.makeItem())
         menu.addItem(.separator())
         addItem(to: menu, String(localized: "Ayarlar…"), action: #selector(openSettings), key: ",")
         addItem(to: menu, String(localized: "Kurulum sihirbazı…"), action: #selector(openOnboarding))

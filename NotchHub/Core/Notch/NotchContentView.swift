@@ -29,7 +29,7 @@ struct NotchContentView: View {
                 WeatherHeaderView(weather: model.services.weather)
                     .layoutPriority(1)
                 HeaderClock()
-                NotchMenuButton { model.onOpenAppMenu?($0) }
+                NotchMenuButton(isMuted: model.services.mute.isMuted) { model.onOpenAppMenu?($0) }
             }
             .frame(maxWidth: .infinity, alignment: .trailing)
         }

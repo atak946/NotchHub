@@ -31,6 +31,9 @@ final class ModuleServices {
     /// Charging / unplug / low-battery presentations in the notch; runs regardless of module toggles.
     let charging: ChargingPresenter
 
+    /// Mutes alerts by hand, in meetings and during Pomodoro focus; runs regardless of module toggles.
+    let mute: AlertMuteService
+
     private let settings: SettingsStore
     private var runningModules: Set<NotchModule> = []
 
@@ -65,6 +68,12 @@ final class ModuleServices {
         )
         cameraMirror = CameraMirror.live(settings: settings, alerts: alerts, calendar: core.calendar)
         charging = ChargingPresenter(alerts: alerts, defaults: defaults)
+        mute = AlertMuteService(
+            alerts: alerts,
+            isInMeeting: { [meetingMode = system.meetingMode] in meetingMode.hasCompactIndicator },
+            isInFocus: { [timer = core.timer] in timer.state == .running(.work) },
+            defaults: defaults
+        )
         // Native banners are only taken over (and closed) while notch alerts can actually be shown.
         insights.mirror.shouldPostAlert = { [weak settings] in
             guard let settings else { return false }
@@ -93,6 +102,7 @@ final class ModuleServices {
                 || devOps.hasCompactIndicator
                 || insights.hasCompactIndicator
                 || profiles.hasCompactIndicator
+                || mute.isMuted
         )
     }
 
@@ -103,6 +113,7 @@ final class ModuleServices {
         cameraMirror.start()
         weather.start()
         charging.start()
+        mute.start()
         applyModuleStates()
         trackModuleToggles()
     }
@@ -115,6 +126,7 @@ final class ModuleServices {
         cameraMirror.stop()
         weather.stop()
         charging.stop()
+        mute.stop()
         for module in runningModules {
             stop(module)
         }

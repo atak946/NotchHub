@@ -77,7 +77,8 @@ final class AlertRouter {
             },
             appBundleID: app?.bundleID,
             appName: app?.name,
-            timestampText: event.start.formatted(date: .omitted, time: .shortened)
+            timestampText: event.start.formatted(date: .omitted, time: .shortened),
+            muteBehavior: .timeSensitive
         ))
     }
 
@@ -95,7 +96,8 @@ final class AlertRouter {
                 title: String(localized: "\(phase.title) başladı"),
                 subtitle: String(localized: "Önceki aşama bitti"),
                 style: .success,
-                coalescingKey: "timer"
+                coalescingKey: "timer",
+                muteBehavior: .timeSensitive
             ))
         case .finished(let phase):
             let next = timer.isPomodoro ? timer.upcomingPhase : nil
@@ -114,7 +116,8 @@ final class AlertRouter {
                     } else {
                         timer.cancel()
                     }
-                }
+                },
+                muteBehavior: .timeSensitive
             ))
         case .idle, .paused:
             break

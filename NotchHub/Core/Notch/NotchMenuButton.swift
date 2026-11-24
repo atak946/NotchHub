@@ -2,6 +2,7 @@ import SwiftUI
 
 /// Gear at the end of the panel header; opens the app menu (settings, pause, quit…).
 struct NotchMenuButton: View {
+    let isMuted: Bool
     /// Receives the button's frame in the hosting view's coordinates, where the menu hangs from.
     let onOpen: (CGRect) -> Void
 
@@ -19,6 +20,13 @@ struct NotchMenuButton: View {
                 .background {
                     if isHovered {
                         RoundedRectangle(cornerRadius: 7).fill(.quaternary.opacity(0.6))
+                    }
+                }
+                .overlay(alignment: .topTrailing) {
+                    if isMuted {
+                        Image(systemName: "bell.slash.fill")
+                            .font(.system(size: 7, weight: .bold))
+                            .foregroundStyle(.orange)
                     }
                 }
                 .contentShape(.rect)

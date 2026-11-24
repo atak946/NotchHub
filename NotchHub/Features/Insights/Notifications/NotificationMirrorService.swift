@@ -245,7 +245,8 @@ final class NotificationMirrorService {
             appBundleID: bundleID,
             appName: MessagingApp.displayName(for: app),
             sender: content.messagingKey == nil ? nil : content.title,
-            concealedSubtitle: content.concealedSubtitle
+            concealedSubtitle: content.concealedSubtitle,
+            muteBehavior: .hold
         ))
     }
 

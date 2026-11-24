@@ -29,6 +29,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         windowManager: windowManager,
         updater: updater,
         micMute: services.system.micMute,
+        mute: services.mute,
         supportActions: supportActions
     )
     private lazy var statusMenu = StatusMenuController(appMenu: appMenu)

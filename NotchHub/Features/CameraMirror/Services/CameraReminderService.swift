@@ -129,7 +129,8 @@ final class CameraReminderService {
             actionTitle: String(localized: "Kamerayı kontrol et"),
             action: { onCheckCamera() },
             appName: "Kamera",
-            timestampText: event.start.formatted(date: .omitted, time: .shortened)
+            timestampText: event.start.formatted(date: .omitted, time: .shortened),
+            muteBehavior: .timeSensitive
         ))
     }
 }

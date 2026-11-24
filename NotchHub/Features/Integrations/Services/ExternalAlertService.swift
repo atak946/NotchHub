@@ -229,7 +229,8 @@ final class ExternalAlertService {
             autoDismissAfter: request.autoDismissAfter,
             actionTitle: action?.title,
             action: action?.perform,
-            appName: source == .url ? Self.externalSourceLabel : nil
+            appName: source == .url ? Self.externalSourceLabel : nil,
+            muteBehavior: .hold
         ))
         record(ReceivedAlert(title: request.title, style: request.style, source: source, receivedAt: now()))
         logger.info("External alert posted via \(source.rawValue, privacy: .public)")
