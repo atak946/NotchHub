@@ -19,14 +19,15 @@ enum ScreenshotPlan {
     static let panelSize = CGSize(width: 960, height: 310)
     static let compactSize = CGSize(width: 860, height: 76)
     static let settingsScale: CGFloat = 1.5
+    static let menuBarBoxSize = CGSize(width: 860, height: 210)
     static let alertSize = CGSize(width: 860, height: 150)
 
     static var shots: [Shot] {
         [
             panel("hero", module: .media, size: heroSize),
-            notch("collapsed", size: compactSize) { $0.startTimer() },
+            notch("collapsed", size: compactSize, usesHostingView: true) { $0.startTimer() },
             // Not in the README: a regression check that crowded wings fold into "+N" instead of spilling.
-            notch("collapsed-busy", size: compactSize) { $0.startBusyMeeting(now: Date()) },
+            notch("collapsed-busy", size: compactSize, usesHostingView: true) { $0.startBusyMeeting(now: Date()) },
             panel("panel-calendar", module: .calendar, usesHostingView: true),
             panel("panel-shelf", module: .shelf, usesHostingView: true),
             panel("panel-notes", module: .notes, usesHostingView: true),
@@ -38,9 +39,15 @@ enum ScreenshotPlan {
                 stage.alerts.revealContent()
             },
             notch("alert-charging", size: alertSize) { $0.alerts.post(chargingAlert()) },
-            notch("hud-volume", size: compactSize) { stage in
+            notch("hud-volume", size: compactSize, usesHostingView: true) { stage in
                 stage.services.hud.center.show(HUDReading(kind: .volume, level: DemoFixtures.volumeLevel))
             },
+            Shot(name: "menu-bar-box", size: menuBarBoxSize, usesHostingView: true) { stage in
+                stage.services.menuBar.setDemo(items: DemoMenuBarIcons.items(), icons: DemoMenuBarIcons.icons())
+            } content: { stage in
+                AnyView(DemoMenuBarBoxScene(stage: stage, size: menuBarBoxSize))
+            },
+            settings("settings-alerts", category: .alerts),
             settings("settings-general", category: .general),
             settings("settings-notifications", category: .notifications),
             settings("settings-search", category: .notifications, query: DemoFixtures.settingsSearchQuery),

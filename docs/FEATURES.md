@@ -19,6 +19,8 @@ Fare çentiğe gelince panel aşağı doğru genişler; uzaklaşınca kapanır.
 | Çentiksiz ekran | Harici monitörde üst ortada sanal çentik | MVP |
 | Çoklu ekran | Aktif ekranı takip et veya sabit ekran seç | MVP |
 | Tam ekran davranışı | Tam ekran uygulamada otomatik gizlen (ayarlanabilir) | MVP |
+| Menü çubuğu kutusu | Menü çubuğu simgelerini gizler; oka basınca aşağı açılan kutuda gösterir (Ayarlar › Çentik ve Görünüm, varsayılan kapalı, Erişilebilirlik izni gerekir) | v1.10 |
+| Sessiz mod | Bildirimleri elle sustur; toplantılarda ve odak sırasında otomatik susturma ayardan açılır (varsayılan kapalı); gelenler sonunda özetlenir | v1.10 |
 
 ## 2. Dosya Rafı (Shelf)
 

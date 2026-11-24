@@ -76,9 +76,9 @@ göstergeler durur. `⌥⌘N` ile aç / kapat, `⌘1…6` ile sekme değiştir. 
       sunucusu.
     </td>
     <td width="50%" valign="top">
-      <img src="docs/images/tr/collapsed.png" alt="Kapak, medya kontrolleri, zamanlayıcı ve turuncu mikrofon noktasıyla kapalı çentik">
+      <img src="docs/images/tr/collapsed.png" alt="Kapak, görselleştirici, parça adı, zamanlayıcı ve turuncu mikrofon noktasıyla kapalı çentik">
       <h3>🎵 Kapalıyken de canlı</h3>
-      Renklendirilmiş görselleştiricili kapak, oynatma kontrolleri, zamanlayıcı ve gizlilik noktası, tam
+      Renklendirilmiş görselleştiricili kapak, parça adı, oynatma kontrolleri, zamanlayıcı ve gizlilik noktası, tam
       çentiğin yanında.
     </td>
   </tr>
@@ -92,6 +92,29 @@ Mesaj bildirimleri çentiğe yansıtılabilir. Mesaj metni, **Göster**'e basana
   <img src="docs/images/tr/alert-message-hidden.png" alt="Ayşe Demir'den içeriği gizlenmiş yansıtılmış mesaj" width="49%">
   <img src="docs/images/tr/alert-message-revealed.png" alt="Aynı mesajın içeriği gösterilmiş hâli" width="49%">
 </p>
+
+### 🔕 İstediğinde sessiz
+
+Bildirimleri bir saatliğine, yarına kadar veya sen açana kadar sustur. Sessiz mod istersen toplantılarda ya da
+Pomodoro odağında kendiliğinden başlar. Bu sırada gelen mesajlar tutulur ve sonunda özetlenir; güvenlik ve pil
+uyarıları her zaman gösterilir.
+
+<p align="center">
+  <img src="docs/images/tr/settings-alerts.png" alt="Sessiz mod seçenekleriyle Uyarılar ayarları" width="760">
+</p>
+
+### 🧹 Derli toplu menü çubuğu
+
+Menü çubuğu simgelerini tek bir oktan aşağı açılan kutuda topla; Windows görev çubuğundaki gizli simgeler gibi.
+Simgeler CPU değeri veya VPN işareti gibi canlı görünümlerini koruyabilir. Birine tıkla, penceresi veya menüsü
+okun altında açılsın. Neyin gizleneceğini simgeleri <kbd>⌘</kbd> ile ayracın soluna veya sağına sürükleyerek
+seç. Birkaç uygulamanın açılması için simgesi kısa süre menü çubuğunda görünür.
+
+<p align="center">
+  <img src="docs/images/tr/menu-bar-box.png" alt="Okunun altında açılmış menü çubuğu kutusu; canlı CPU, RAM ve pil değerleriyle" width="760">
+</p>
+
+Kutu varsayılan olarak kapalıdır. Ayarlar › Çentik ve Görünüm'den açabilirsin.
 
 ### 🔋 Pil ve ses, çentik usulü
 
@@ -143,19 +166,22 @@ kalır.
 | **Takvimler** | Sıradaki toplantı, günün ajandası ve toplantı hatırlatmaları |
 | **Otomasyon** (Apple Events) | Spotify ve Müzik'i okumak ve kontrol etmek |
 | **Bildirimler** | Zamanlayıcı ve Pomodoro bildirimleri |
-| **Erişilebilirlik** | Dock okunmamış rozetleri, zaman takibi için pencere başlıkları ve yansıtma için bildirimleri okumak (isteğe bağlı kapatmak) |
+| **Erişilebilirlik** | Dock okunmamış rozetleri, zaman takibi için pencere başlıkları ve yansıtma için bildirimleri okumak (isteğe bağlı kapatmak), kutudaki menü çubuğu simgelerini listelemek ve açmak |
 | **Konum** (isteğe bağlı) | Bulunduğun şehrin hava durumu (ya da elle şehir seç) ve ağ değişikliği uyarıları için Wi-Fi adı |
+| **Ekran Kaydı** (isteğe bağlı) | Kutudaki menü çubuğu simgelerinin canlı görünümü |
 | **Giriş öğesi** | "Girişte başlat" |
 
 Mikrofon ve kameranın *kullanımda olması* CoreAudio / CoreMediaIO durumundan anlaşılır. NotchHub asla ses
-veya görüntü kaydetmez.
+veya video kaydetmez. Ekran Kaydı izniyle yalnızca menü çubuğu simgelerinin görüntüsünü, yalnızca kutu açıkken
+alır ve saklamaz; bu sırada macOS kayıt göstergesini çıkarabilir.
 
 ## 🛡️ Gizlilik
 
 - **Yalnızca yerel.** Raf öğeleri, notlar, zaman takibi ve ayarlar Mac'inde kalır. Takvim gizli bilgileri
   (ICS bağlantıları, Microsoft jetonları) Anahtar Zinciri'nde tutulur.
 - **Yansıtılan bildirimler** Erişilebilirlik API'siyle okunur, çentikte gösterilir ve sonra unutulur.
-  Yansıtmayı mesajlaşma uygulamalarıyla sınırlayabilir veya mesaj metnini gizleyebilirsin.
+  Yansıtmayı mesajlaşma uygulamalarıyla sınırlayabilir veya mesaj metnini gizleyebilirsin. Sessiz modda tutulan
+  bildirimler bir sonraki susturmaya ya da NotchHub kapanana kadar bellekte kalır.
 - **Telemetri yok.** Analitik ve takip yok. Hakkında otomatik olarak hiçbir şey gönderilmez.
 - **Ağ istekleri yalnızca kullandığın özellikler için yapılır:**
   - [Open-Meteo](https://open-meteo.com)'dan hava durumu, koordinatlar yaklaşık 1 km'ye yuvarlanır (kapatılabilir);

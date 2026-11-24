@@ -5,12 +5,13 @@ struct DemoDesktop<Content: View>: View {
     static var menuBarHeight: CGFloat { DemoStage.geometry.notchSize.height }
 
     let size: CGSize
+    var showsChevron = false
     @ViewBuilder let content: Content
 
     var body: some View {
         ZStack(alignment: .top) {
             DemoWallpaper()
-            DemoMenuBar()
+            DemoMenuBar(showsChevron: showsChevron)
                 .frame(height: Self.menuBarHeight)
             content
         }
@@ -61,10 +62,15 @@ struct DemoWallpaper: View {
 
 /// Generic menu bar: an Apple logo on the left, status glyphs on the right; no real app or clock data.
 struct DemoMenuBar: View {
+    var showsChevron = false
+
     var body: some View {
         HStack(spacing: 14) {
             Image(systemName: "apple.logo")
             Spacer()
+            if showsChevron {
+                Image(systemName: "chevron.down")
+            }
             Image(systemName: "wifi")
             Image(systemName: "battery.75percent")
             Image(systemName: "magnifyingglass")

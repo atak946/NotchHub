@@ -76,9 +76,9 @@ one.
       local LLM server.
     </td>
     <td width="50%" valign="top">
-      <img src="docs/images/en/collapsed.png" alt="The closed notch with artwork, media controls, a timer and an orange microphone dot">
+      <img src="docs/images/en/collapsed.png" alt="The closed notch with artwork, a visualizer, the track name, a timer and an orange microphone dot">
       <h3>🎵 Alive while closed</h3>
-      Artwork with a tinted visualizer, playback controls, the timer and the privacy dot, right beside the
+      Artwork with a tinted visualizer, the track name, playback controls, the timer and the privacy dot, right beside the
       notch.
     </td>
   </tr>
@@ -92,6 +92,29 @@ Message banners can be mirrored into the notch. Message text can stay hidden unt
   <img src="docs/images/en/alert-message-hidden.png" alt="A mirrored message from Ayşe Demir with its content hidden" width="49%">
   <img src="docs/images/en/alert-message-revealed.png" alt="The same message with its content revealed" width="49%">
 </p>
+
+### 🔕 Quiet when you need it
+
+Mute notifications for an hour, until tomorrow or until you turn them back on. Quiet mode can also start by
+itself in meetings or during Pomodoro focus. Messages that arrive meanwhile are kept and summarized
+afterwards; security and battery alerts always come through.
+
+<p align="center">
+  <img src="docs/images/en/settings-alerts.png" alt="Alerts settings with the quiet mode options" width="760">
+</p>
+
+### 🧹 A tidy menu bar
+
+Collect menu bar icons in a box that drops down from a single arrow, like the hidden icons of the Windows
+taskbar. Icons can keep their live look, such as a CPU reading or a VPN badge. Click one and its window or
+menu opens below the arrow. Choose what to hide by <kbd>⌘</kbd>-dragging icons across the divider. A few
+apps need their icon back in the menu bar for a moment to open.
+
+<p align="center">
+  <img src="docs/images/en/menu-bar-box.png" alt="The menu bar box open below its arrow, with live CPU, RAM and battery values" width="760">
+</p>
+
+The box is off by default. Turn it on in Settings › Notch & Appearance.
 
 ### 🔋 Battery and volume, the notch way
 
@@ -144,19 +167,22 @@ stays off.
 | **Calendars** | Next meeting, today's agenda and meeting reminders |
 | **Automation** (Apple Events) | Reading and controlling Spotify and Music |
 | **Notifications** | Timer and Pomodoro notifications |
-| **Accessibility** | Dock unread badges, window titles for time tracking, and reading (and optionally closing) notification banners for mirroring |
+| **Accessibility** | Dock unread badges, window titles for time tracking, and reading (and optionally closing) notification banners for mirroring, and listing and opening menu bar icons in the box |
 | **Location** (optional) | Weather for your current city (or pick a city instead), and the Wi-Fi name for network-change alerts |
+| **Screen Recording** (optional) | The live look of menu bar icons in the box |
 | **Login item** | "Launch at login" |
 
 Microphone and camera *use* is detected from CoreAudio / CoreMediaIO state. NotchHub never records audio or
-video.
+video. With Screen Recording, it only takes pictures of menu bar icons, only while the box is open, and never
+saves them; macOS may show its recording indicator meanwhile.
 
 ## 🛡️ Privacy
 
 - **Local only.** Shelf items, notes, time tracking and settings stay on your Mac. Calendar secrets (ICS
   links, Microsoft tokens) are kept in the Keychain.
 - **Mirrored notifications** are read through the Accessibility API, shown in the notch and then forgotten.
-  You can limit mirroring to messaging apps or hide message text.
+  You can limit mirroring to messaging apps or hide message text. In quiet mode, held notifications stay in
+  memory until the next mute or until NotchHub quits.
 - **No telemetry.** No analytics and no tracking. Nothing is sent about you automatically.
 - **Network calls happen only for features you use:**
   - weather from [Open-Meteo](https://open-meteo.com), with coordinates rounded to about 1 km (it can be turned off);
