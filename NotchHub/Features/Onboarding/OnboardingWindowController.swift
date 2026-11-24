@@ -43,7 +43,7 @@ final class OnboardingWindowController: NSObject, NSWindowDelegate {
     // MARK: NSWindowDelegate
 
     func windowWillClose(_ notification: Notification) {
-        // Closing early also counts as seen; the wizard stays reachable from the menu bar.
+        // Closing early also counts as seen; the wizard stays reachable from the app menu.
         stateStore.markCompleted()
         stopLiveChecks()
         window = nil

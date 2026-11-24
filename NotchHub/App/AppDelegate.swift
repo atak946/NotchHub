@@ -24,13 +24,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         self?.windowManager.present(module)
     }
     private var hotKey: GlobalHotKey?
-    private lazy var statusMenu = StatusMenuController(
+    private lazy var appMenu = AppMenuController(
         settings: settings,
         windowManager: windowManager,
         updater: updater,
         micMute: services.system.micMute,
         supportActions: supportActions
     )
+    private lazy var statusMenu = StatusMenuController(appMenu: appMenu)
     private lazy var micMuteHotKey = MicMuteHotKey(controller: services.system.micMute)
     private lazy var notchVisibilityHotKey = NotchVisibilityHotKey(settings: settings)
 
@@ -69,6 +70,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         fullScreenDetector.start()
         services.start()
         alertRouter.start()
+        windowManager.appMenu = appMenu
+        windowManager.onReachabilityChange = { [weak self] isReachable in
+            self?.statusMenu.setVisible(!isReachable)
+        }
         windowManager.start()
         IntentServicesBridge.shared.configure(
             LiveIntentRoutes(services: services, settings: settings, alerts: alerts, panel: windowManager)
@@ -77,7 +82,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         micMuteHotKey.start()
         notchVisibilityHotKey.start()
         updater.start()
-        statusMenu.install()
         permissions.onGranted = { [weak self] permission in
             if permission == .calendar { self?.services.calendar.refresh() }
         }
@@ -92,6 +96,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         micMuteHotKey.stop()
         notchVisibilityHotKey.stop()
         services.stop()
+    }
+
+    /// Opening the app again (Finder, Spotlight) shows Settings: there is no Dock icon to fall back on.
+    func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
+        appMenu.openSettings()
+        return false
     }
 
     /// `notchhub://alert?...` and `notchhub://open?module=...` from scripts and the CLI.

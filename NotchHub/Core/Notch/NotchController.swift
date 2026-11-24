@@ -7,10 +7,12 @@ import SwiftUI
 final class NotchController {
     private static let escapeKeyCode: UInt16 = 53
     private static let closeDelay: Duration = .milliseconds(120)
+    private static let appMenuGap: CGFloat = 6
 
     let displayID: CGDirectDisplayID
     private let settings: SettingsStore
     private let alerts: NotchAlertCenter
+    private weak var appMenu: AppMenuController?
     private let model: NotchViewModel
     private let panel: NotchPanel
     private let dropCatcher: DropCatcherPanel
@@ -22,6 +24,8 @@ final class NotchController {
     private var closeTask: Task<Void, Never>?
     /// Opened by keyboard, reminder or click: stays open until the pointer visits and leaves, or a click outside.
     private var isPinnedOpen = false
+    /// The app menu hangs outside the panel; reaching for it must not close the panel.
+    private var isAppMenuOpen = false
     private var isTornDown = false
 
     var isExpanded: Bool { model.isExpanded }
@@ -32,12 +36,14 @@ final class NotchController {
         displayID: CGDirectDisplayID,
         settings: SettingsStore,
         services: ModuleServices,
-        alerts: NotchAlertCenter
+        alerts: NotchAlertCenter,
+        appMenu: AppMenuController?
     ) {
         let geometry = screen.notchGeometry
         self.displayID = displayID
         self.settings = settings
         self.alerts = alerts
+        self.appMenu = appMenu
         self.model = NotchViewModel(geometry: geometry, settings: settings, services: services)
         self.panel = NotchPanel(contentRect: geometry.panelRect)
         self.dropCatcher = DropCatcherPanel(contentRect: geometry.collapsedRect)
@@ -46,13 +52,18 @@ final class NotchController {
         let panel = self.panel
         self.overflowPill = NotchOverflowPillCoordinator(model: model, alerts: alerts, panelFrame: { panel.frame })
 
-        let hostingView = NSHostingView(rootView: NotchRootView(model: model, alerts: alerts, displayID: displayID))
+        let rootView = NotchRootView(model: model, alerts: alerts, displayID: displayID)
+            .background { appMenu?.settingsActionCapture }
+        let hostingView = NSHostingView(rootView: rootView)
         hostingView.frame = CGRect(origin: .zero, size: geometry.panelRect.size)
         panel.contentView = hostingView
         panel.setFrame(geometry.panelRect, display: true)
 
         model.onOpenModule = { [weak self] module in
             self?.open(module, makeKey: false)
+        }
+        model.onOpenAppMenu = { [weak self] rect in
+            self?.openAppMenu(under: rect)
         }
         dropCatcher.onDragEnter = { [weak self] in
             self?.openShelfForDrop()
@@ -129,6 +140,7 @@ final class NotchController {
         monitors.forEach(NSEvent.removeMonitor)
         monitors.removeAll()
         model.onOpenModule = nil
+        model.onOpenAppMenu = nil
         dropCatcher.onDragEnter = nil
         dropCatcher.onClick = nil
         panel.orderOut(nil)
@@ -166,6 +178,23 @@ final class NotchController {
             // re-ordering hands key status back to the frontmost app's window.
             panel.orderOut(nil)
             panel.orderFrontRegardless()
+        }
+    }
+
+    /// Hangs the app menu under the header's gear, right-aligned with it. Blocks while the menu is open.
+    private func openAppMenu(under rect: CGRect) {
+        guard let view = panel.contentView, let menu = appMenu?.makeNotchMenu() else { return }
+        cancelPendingTasks()
+        isAppMenuOpen = true
+        // SwiftUI measures from the top; AppKit views may not.
+        let top = rect.maxY + Self.appMenuGap
+        let origin = CGPoint(x: rect.maxX - menu.size.width, y: view.isFlipped ? top : view.bounds.height - top)
+        let didSelect = menu.popUp(positioning: nil, at: origin, in: view)
+        isAppMenuOpen = false
+        // Moves over the menu were ignored, so catch up with a pointer that ended outside the panel.
+        let isPointerOutside = model.geometry.shouldClose(at: NSEvent.mouseLocation)
+        if didSelect || (isPointerOutside && !isPinnedOpen && !isHoldingKeyboardFocus) {
+            collapse()
         }
     }
 
@@ -304,7 +333,7 @@ final class NotchController {
 
         if model.isExpanded {
             if geometry.shouldClose(at: point) {
-                if !isPinnedOpen, !isHoldingKeyboardFocus { scheduleClose() }
+                if !isPinnedOpen, !isHoldingKeyboardFocus, !isAppMenuOpen { scheduleClose() }
             } else {
                 isPinnedOpen = false
                 closeTask?.cancel()

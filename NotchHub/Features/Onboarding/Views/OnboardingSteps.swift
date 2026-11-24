@@ -109,7 +109,7 @@ struct OnboardingDoneStep: View {
         VStack(alignment: .leading, spacing: 18) {
             OnboardingHeader(
                 title: "Her şey hazır",
-                subtitle: "Fareyi çentiğe getir ya da kısayolu kullan. Bu sihirbaz menü çubuğundan her zaman açılabilir."
+                subtitle: "Fareyi çentiğe getir ya da kısayolu kullan. Bu sihirbaz çentikteki dişli menüsünden her zaman açılabilir."
             )
             OnboardingCard {
                 VStack(spacing: 10) {

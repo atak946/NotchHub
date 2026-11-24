@@ -3865,12 +3865,12 @@
         }
       }
     },
-    "Fareyi çentiğe getir ya da kısayolu kullan. Bu sihirbaz menü çubuğundan her zaman açılabilir.": {
+    "Fareyi çentiğe getir ya da kısayolu kullan. Bu sihirbaz çentikteki dişli menüsünden her zaman açılabilir.": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Move the pointer to the notch or use the shortcut. You can always open this assistant from the menu bar."
+            "value": "Move the pointer to the notch or use the shortcut. You can always open this assistant from the gear menu in the notch."
           }
         }
       }
@@ -6167,6 +6167,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Quit NotchHub"
+          }
+        }
+      }
+    },
+    "NotchHub menüsü": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "NotchHub menu"
           }
         }
       }

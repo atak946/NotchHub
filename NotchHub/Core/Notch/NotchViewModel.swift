@@ -21,6 +21,8 @@ final class NotchViewModel {
     private var selectedModule: NotchModule?
     /// Set by the controller: expands the panel on the given module.
     @ObservationIgnored var onOpenModule: ((NotchModule) -> Void)?
+    /// Set by the controller: opens the app menu under the given rect (hosting view coordinates).
+    @ObservationIgnored var onOpenAppMenu: ((CGRect) -> Void)?
 
     let settings: SettingsStore
     let services: ModuleServices

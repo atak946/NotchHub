@@ -125,7 +125,7 @@ The full list is in [docs/FEATURES.md](docs/FEATURES.md) (Turkish).
 
 1. Download the latest **NotchHub.dmg** from [Releases](https://github.com/atak946/NotchHub/releases/latest).
 2. Open it and drag **NotchHub** to **Applications**.
-3. Launch NotchHub. It lives in the menu bar and has no Dock icon.
+3. Launch NotchHub. It lives in the notch and has no Dock icon; settings and quit are behind the gear in the panel.
 
 Releases are signed and notarized by Apple. NotchHub checks for updates once a day with
 [Sparkle](https://sparkle-project.org) and offers them in the notch. Every update is verified with an EdDSA

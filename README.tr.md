@@ -125,7 +125,7 @@ Tam liste: [docs/FEATURES.md](docs/FEATURES.md).
 
 1. [Releases](https://github.com/atak946/NotchHub/releases/latest) sayfasından son **NotchHub.dmg**'yi indir.
 2. Aç ve **NotchHub**'ı **Uygulamalar** klasörüne sürükle.
-3. NotchHub'ı başlat. Menü çubuğunda yaşar, Dock ikonu yoktur.
+3. NotchHub'ı başlat. Çentikte yaşar, Dock ikonu yoktur; ayarlar ve çıkış paneldeki dişlidedir.
 
 Sürümler imzalı ve Apple tarafından onaylıdır (notarized). NotchHub günde bir kez
 [Sparkle](https://sparkle-project.org) ile güncelleme denetler ve bulduğunu çentikte sunar. Her güncelleme

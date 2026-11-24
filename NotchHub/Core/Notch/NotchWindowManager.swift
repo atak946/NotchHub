@@ -12,6 +12,10 @@ final class NotchWindowManager {
     private var observers: [NSObjectProtocol] = []
     private var mouseMonitors: [Any] = []
     private var isStarted = false
+    /// Menu behind the header's gear button; set before `start()`.
+    weak var appMenu: AppMenuController?
+    /// Called with whether any notch can be opened, after every layout or visibility change.
+    var onReachabilityChange: ((Bool) -> Void)?
 
     init(
         settings: SettingsStore,
@@ -63,7 +67,7 @@ final class NotchWindowManager {
         activeController()?.open(module, makeKey: false)
     }
 
-    /// Opens the camera mirror on the display under the mouse (menu bar "Ayna").
+    /// Opens the camera mirror on the display under the mouse (app menu "Ayna").
     func openCameraMirror() {
         services.cameraMirror.service.open()
     }
@@ -144,7 +148,8 @@ final class NotchWindowManager {
                     displayID: displayID,
                     settings: settings,
                     services: services,
-                    alerts: alerts
+                    alerts: alerts,
+                    appMenu: appMenu
                 )
             }
         }
@@ -161,6 +166,8 @@ final class NotchWindowManager {
                 controller.show()
             }
         }
+        // Full screen hides the notch only briefly, so it still counts as reachable.
+        onReachabilityChange?(!settings.isPaused && !controllers.isEmpty)
     }
 
     private func targetScreens() -> [NSScreen] {

@@ -1,11 +1,13 @@
 import SwiftUI
 
-/// Expanded panel: module tabs and clock in the row beside the notch, the active module below.
+/// Expanded panel: module tabs, clock and app menu in the row beside the notch, the active module below.
 struct NotchContentView: View {
     let model: NotchViewModel
 
     private static let notchClearance: CGFloat = 16
     private static let headerSpacing: CGFloat = 8
+    /// The weather and the gear bring their own hover padding.
+    private static let trailingSpacing: CGFloat = 4
 
     var body: some View {
         VStack(spacing: Self.headerSpacing) {
@@ -22,9 +24,12 @@ struct NotchContentView: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
             Color.clear
                 .frame(width: model.geometry.notchSize.width + Self.notchClearance)
-            HStack(spacing: Self.headerSpacing) {
+            HStack(spacing: Self.trailingSpacing) {
+                // The side of the notch is narrow: the weather picks its width first, the clock takes the rest.
                 WeatherHeaderView(weather: model.services.weather)
+                    .layoutPriority(1)
                 HeaderClock()
+                NotchMenuButton { model.onOpenAppMenu?($0) }
             }
             .frame(maxWidth: .infinity, alignment: .trailing)
         }
@@ -115,14 +120,22 @@ private struct ModuleTab: View {
 private struct HeaderClock: View {
     var body: some View {
         TimelineView(.everyMinute) { context in
-            HStack(spacing: 6) {
-                Text(context.date, format: .dateTime.weekday(.abbreviated).day().month(.abbreviated))
-                    .foregroundStyle(.secondary)
-                Text(context.date, format: .dateTime.hour().minute())
-                    .foregroundStyle(.primary)
-                    .monospacedDigit()
+            ViewThatFits(in: .horizontal) {
+                label(for: context.date, dateFormat: .dateTime.weekday(.abbreviated).day().month(.abbreviated))
+                label(for: context.date, dateFormat: .dateTime.day().month(.abbreviated))
             }
-            .font(.system(size: 12, weight: .semibold))
         }
+    }
+
+    private func label(for date: Date, dateFormat: Date.FormatStyle) -> some View {
+        HStack(spacing: 6) {
+            Text(date, format: dateFormat)
+                .foregroundStyle(.secondary)
+            Text(date, format: .dateTime.hour().minute())
+                .foregroundStyle(.primary)
+                .monospacedDigit()
+        }
+        .font(.system(size: 12, weight: .semibold))
+        .fixedSize()
     }
 }

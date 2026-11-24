@@ -32,15 +32,10 @@ struct WeatherHeaderView: View {
 
     private func button(for snapshot: WeatherSnapshot) -> some View {
         Button(action: toggleForecast) {
-            HStack(spacing: 4) {
-                Image(systemName: snapshot.condition.symbolName(isDay: snapshot.isDay))
-                    .symbolRenderingMode(.multicolor)
-                Text(verbatim: WeatherTemperatureFormatter.compact(celsius: snapshot.temperature))
-                    .foregroundStyle(.primary)
-                    .monospacedDigit()
-                Text(verbatim: highLowText(snapshot))
-                    .foregroundStyle(.secondary)
-                    .monospacedDigit()
+            // High / low gives way first beside a wide notch.
+            ViewThatFits(in: .horizontal) {
+                label(for: snapshot, showsHighLow: true)
+                label(for: snapshot, showsHighLow: false)
             }
             .font(.system(size: 12, weight: .semibold))
             .padding(.horizontal, 6)
@@ -57,6 +52,22 @@ struct WeatherHeaderView: View {
         .animation(.easeOut(duration: 0.15), value: isHovered)
         .help(snapshot.condition.title(isDay: snapshot.isDay))
         .accessibilityLabel(accessibilityText(snapshot))
+    }
+
+    private func label(for snapshot: WeatherSnapshot, showsHighLow: Bool) -> some View {
+        HStack(spacing: 4) {
+            Image(systemName: snapshot.condition.symbolName(isDay: snapshot.isDay))
+                .symbolRenderingMode(.multicolor)
+            Text(verbatim: WeatherTemperatureFormatter.compact(celsius: snapshot.temperature))
+                .foregroundStyle(.primary)
+                .monospacedDigit()
+            if showsHighLow {
+                Text(verbatim: highLowText(snapshot))
+                    .foregroundStyle(.secondary)
+                    .monospacedDigit()
+            }
+        }
+        .fixedSize()
     }
 
     private func toggleForecast() {

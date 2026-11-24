@@ -1,7 +1,7 @@
 import SwiftUI
 
 /// App-level entry points for the setup wizard and issue reporting, passed through the environment
-/// so the menu bar and Settings can reach them without new init parameters.
+/// so the app menu and Settings can reach them without new init parameters.
 struct SupportActions: Sendable {
     var openOnboarding: @MainActor @Sendable () -> Void = {}
     var reportIssue: @MainActor @Sendable () -> Void = {}
