@@ -15,7 +15,7 @@ Fare çentiğe gelince panel aşağı doğru genişler; uzaklaşınca kapanır.
 | Hover ile açılma | Fare çentik bölgesine girince ~150 ms gecikmeyle panel açılır | MVP |
 | Kapanma | Fare panelden çıkınca veya `Esc` ile kapanır | MVP |
 | Animasyon | Çentikten "akarak" büyüyen yay (spring) animasyonu, yalnızca transform/opacity | MVP |
-| Kompakt mod | Panel kapalıyken çentiğin iki yanında küçük göstergeler (çalan şarkı kapağı, kalan süre) | MVP |
+| Kompakt mod | Panel kapalıyken çentiğin iki yanında küçük göstergeler (çalan şarkının kapağı ve adı, kalan süre); fare medya düğmelerindeyken altta tam ad ve sanatçı | MVP |
 | Çentiksiz ekran | Harici monitörde üst ortada sanal çentik | MVP |
 | Çoklu ekran | Aktif ekranı takip et veya sabit ekran seç | MVP |
 | Tam ekran davranışı | Tam ekran uygulamada otomatik gizlen (ayarlanabilir) | MVP |

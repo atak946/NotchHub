@@ -1,7 +1,7 @@
 import SwiftUI
 
 /// Live indicators beside the hardware notch while the panel is closed:
-/// left wing = now playing artwork, plus overflow status glyphs in the room it leaves;
+/// left wing = now playing artwork, plus the track title or overflow status glyphs in the room it leaves;
 /// right wing = meeting mic button, timer and status glyphs; the media controls replace the glyphs
 /// while the pointer is over them.
 ///
@@ -38,7 +38,11 @@ struct CompactWingsView: View {
                 if hasLeftMedia {
                     MediaCompactView(media: model.services.media, visualizer: visualizerPlacement(wingWidth: wingWidth))
                 }
-                Spacer(minLength: 0)
+                if let track = compactTitleTrack(split: split, wingWidth: wingWidth) {
+                    CompactTrackTitle(track: track)
+                } else {
+                    Spacer(minLength: 0)
+                }
                 ForEach(leftGlyphs) { $0 }
                 if split.overflow > 0, split.pillInLeftWing {
                     overflowPill(count: split.overflow)
@@ -89,6 +93,15 @@ struct CompactWingsView: View {
     }
 
     private var hasLeftMedia: Bool { model.services.hasCompactMedia }
+
+    /// The track to name in the left wing; status glyphs that overflow there come first.
+    private func compactTitleTrack(split: CompactGlyphSplit.Result, wingWidth: CGFloat) -> NowPlaying? {
+        let isWingFree = split.left == 0 && !(split.overflow > 0 && split.pillInLeftWing)
+        guard hasLeftMedia, isWingFree, leftGlyphWidth(wingWidth: wingWidth) >= CompactTrackTitle.minimumWidth else {
+            return nil
+        }
+        return model.services.media.nowPlaying
+    }
 
     private func visualizerPlacement(wingWidth: CGFloat) -> MediaVisualizerPlacement {
         MediaVisualizerLayout.placement(isEnabled: model.settings.showsMediaVisualizer, wingWidth: wingWidth)

@@ -94,6 +94,7 @@ struct NotchRootView: View {
         }
         .frame(width: size.width, height: size.height)
         .overlay(alignment: .top) { hudPill }
+        .overlay(alignment: .top) { trackTitlePill }
         .attentionShake(trigger: ShakeTrigger(
             count: model.attentionCount,
             alertID: reduceMotion ? nil : alerts.current?.id
@@ -177,6 +178,25 @@ struct NotchRootView: View {
                         : .scale(scale: 0.6, anchor: .top).combined(with: .opacity)
                 )
         }
+    }
+
+    /// Names the track while the pointer is on the collapsed media controls, so a skip needs no alert.
+    private var trackTitlePill: some View {
+        let isShown = presentation == .collapsed && model.showsMediaControls && model.isMediaControlsRevealed
+        return ZStack {
+            if isShown, let track = model.services.media.nowPlaying {
+                TrackTitlePill(track: track)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .padding(.top, model.geometry.notchSize.height + NotchGeometry.hudPillGap)
+                    .environment(\.colorScheme, .dark)
+                    .transition(
+                        reduceMotion
+                            ? .opacity
+                            : .scale(scale: 0.6, anchor: .top).combined(with: .opacity)
+                    )
+            }
+        }
+        .animation(reduceMotion ? Self.reducedMotionAnimation : Self.morphAnimation, value: isShown)
     }
 
     private func alertLayout(notchHeight: CGFloat) -> NotchAlertView.Layout {
