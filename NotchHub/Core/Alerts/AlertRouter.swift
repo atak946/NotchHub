@@ -144,7 +144,8 @@ final class AlertRouter {
         let isFirstTrack = lastTrackID == nil
         lastTrackID = trackID
 
-        guard !isFirstTrack, nowPlaying.isPlaying, canPost,
+        // Whoever changed the track by hand already knows; only tell about the ones that came by themselves.
+        guard !isFirstTrack, services.media.didAutoAdvance, nowPlaying.isPlaying, canPost,
               settings.showTrackChangeAlerts, settings.isEnabled(.media)
         else { return }
 

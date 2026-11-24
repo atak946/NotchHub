@@ -21,6 +21,8 @@ final class MediaService {
 
     private(set) var nowPlaying: NowPlaying?
     private(set) var artwork: NSImage?
+    /// The shown track followed the previous one by itself; false after a skip or a manual pick, in any app.
+    @ObservationIgnored private(set) var didAutoAdvance = false
     /// Players for which macOS denied Automation access.
     private(set) var permissionDeniedSources: Set<MediaSource> = []
     /// Web players whose browser has "Allow JavaScript from Apple Events" turned off.
@@ -257,11 +259,20 @@ final class MediaService {
     }
 
     private func apply(_ track: NowPlaying?) {
+        if track?.trackID != nowPlaying?.trackID {
+            didAutoAdvance = isAutoAdvance(to: track)
+        }
         snapshotDate = clock.now
         if track != nowPlaying {
             nowPlaying = track
         }
         updateArtwork(for: track)
+    }
+
+    /// A skip command rewinds the shown track first, so it never looks like a natural end.
+    private func isAutoAdvance(to track: NowPlaying?) -> Bool {
+        guard let track, let previous = nowPlaying, previous.source == track.source else { return false }
+        return PlaybackMath.isNaturalEnd(position: currentPosition, duration: previous.duration)
     }
 
     private func applyOptimistic(_ track: NowPlaying) {

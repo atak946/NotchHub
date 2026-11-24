@@ -22,6 +22,18 @@ enum PlaybackMath {
         return clamp(base + elapsed, duration: duration)
     }
 
+    /// Covers a player's crossfade (up to 12 s in Spotify) and drift between polls.
+    static let naturalEndTolerance: TimeInterval = 15
+
+    /// Whether a track that stopped at `position` ran to its end rather than being skipped.
+    /// Tracks of unknown length never count as finished.
+    static func isNaturalEnd(position: TimeInterval, duration: TimeInterval) -> Bool {
+        guard duration > 0 else { return false }
+        // Short clips would otherwise always sit inside the tolerance.
+        let tolerance = min(naturalEndTolerance, duration / 4)
+        return duration - clamp(position, duration: duration) <= tolerance
+    }
+
     /// Fraction of the track played, in `0...1`.
     static func progress(position: TimeInterval, duration: TimeInterval) -> Double {
         guard duration > 0 else { return 0 }

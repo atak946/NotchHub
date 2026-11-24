@@ -133,4 +133,56 @@ struct MediaServiceTests {
         #expect(service.permissionDeniedSources == [.music])
         #expect(service.nowPlaying?.source == .spotify)
     }
+
+    // MARK: Auto-advance
+
+    @Test func countsATrackThatRanToItsEndAsAutoAdvance() async {
+        let clock = FakeClock()
+        let spotify = FakeMediaProvider(source: .spotify, track: TrackFixture.make(.spotify, title: "First", position: 195))
+        let service = makeService([spotify], clock: clock)
+        await service.refresh()
+        clock.advance(by: 5)
+
+        spotify.update(track: TrackFixture.make(.spotify, title: "Second", position: 0))
+        await service.refresh()
+
+        #expect(service.didAutoAdvance)
+    }
+
+    @Test func aTrackPickedInThePlayerIsNotAutoAdvance() async {
+        let spotify = FakeMediaProvider(source: .spotify, track: TrackFixture.make(.spotify, title: "First", position: 60))
+        let service = makeService([spotify])
+        await service.refresh()
+
+        spotify.update(track: TrackFixture.make(.spotify, title: "Second", position: 0))
+        await service.refresh()
+
+        #expect(!service.didAutoAdvance)
+    }
+
+    @Test func aSkipCommandNearTheEndIsNotAutoAdvance() async {
+        let spotify = FakeMediaProvider(source: .spotify, track: TrackFixture.make(.spotify, title: "First", position: 198))
+        let service = makeService([spotify])
+        await service.refresh()
+
+        spotify.update(track: TrackFixture.make(.spotify, title: "Second", position: 0))
+        service.next()
+        await service.pendingCommand?.value
+
+        #expect(service.nowPlaying?.title == "Second")
+        #expect(!service.didAutoAdvance)
+    }
+
+    @Test func switchingPlayersIsNotAutoAdvance() async {
+        let spotify = FakeMediaProvider(source: .spotify, track: TrackFixture.make(.spotify, position: 199))
+        let music = FakeMediaProvider(source: .music, running: false)
+        let service = makeService([spotify, music])
+        await service.refresh()
+
+        spotify.update(track: nil, running: false)
+        music.update(track: TrackFixture.make(.music, position: 0))
+        await service.refresh()
+
+        #expect(!service.didAutoAdvance)
+    }
 }

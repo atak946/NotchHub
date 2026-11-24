@@ -12,6 +12,17 @@ struct PlaybackMathTests {
         #expect(position == 12.5)
     }
 
+    @Test(arguments: [
+        (position: 100.0, duration: 100.0, isEnd: true),
+        (position: 188.0, duration: 200.0, isEnd: true), // 12 s crossfade
+        (position: 100.0, duration: 200.0, isEnd: false),
+        (position: 0.0, duration: 10.0, isEnd: false), // clip shorter than the tolerance
+        (position: 50.0, duration: 0.0, isEnd: false), // unknown length
+    ])
+    func recognizesANaturalEnd(position: TimeInterval, duration: TimeInterval, isEnd: Bool) {
+        #expect(PlaybackMath.isNaturalEnd(position: position, duration: duration) == isEnd)
+    }
+
     @Test func doesNotAdvanceWhilePaused() {
         let position = PlaybackMath.interpolatedPosition(
             base: 10, snapshotDate: start, now: start.addingTimeInterval(30), isPlaying: false, duration: 100

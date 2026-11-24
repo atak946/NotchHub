@@ -9197,6 +9197,16 @@
         }
       }
     },
+    "Yalnızca parça kendiliğinden değişince gösterilir; elle değiştirince gösterilmez.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Shown only when the next track starts by itself, not when you change it."
+          }
+        }
+      }
+    },
     "Yalnızca Pomodoro odak aşaması sürerken etkindir; ilk %lld saniye yok sayılır.": {
       "localizations": {
         "en": {
