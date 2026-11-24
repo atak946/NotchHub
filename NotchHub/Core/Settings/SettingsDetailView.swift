@@ -53,7 +53,9 @@ struct SettingsDetailView: View {
     private var appPage: some View {
         switch category {
         case .general: GeneralSettingsPage(settings: settings, language: language, updater: updater)
-        case .notch: NotchAppearanceSettingsPage(settings: settings)
+        case .notch:
+            NotchAppearanceSettingsPage(settings: settings)
+            MenuBarSettingsSection(container: services.menuBar, insights: services.insights)
         case .hud: SystemHUDSettingsSection(hud: services.hud)
         default:
             NotchAlertsSettingsSection(settings: settings)

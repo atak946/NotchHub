@@ -72,6 +72,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         services.start()
         alertRouter.start()
         windowManager.appMenu = appMenu
+        services.menuBar.makeMenu = { [appMenu] in appMenu.makeNotchMenu() }
         windowManager.onReachabilityChange = { [weak self] isReachable in
             self?.statusMenu.setVisible(!isReachable)
         }

@@ -34,6 +34,9 @@ final class ModuleServices {
     /// Mutes alerts by hand, in meetings and during Pomodoro focus; runs regardless of module toggles.
     let mute: AlertMuteService
 
+    /// Collects menu bar icons in a drop-down; runs with its own setting, regardless of module toggles.
+    let menuBar: MenuBarContainer
+
     private let settings: SettingsStore
     private var runningModules: Set<NotchModule> = []
 
@@ -74,6 +77,7 @@ final class ModuleServices {
             isInFocus: { [timer = core.timer] in timer.state == .running(.work) },
             defaults: defaults
         )
+        menuBar = MenuBarContainer(permission: insights.permission, defaults: defaults)
         // Native banners are only taken over (and closed) while notch alerts can actually be shown.
         insights.mirror.shouldPostAlert = { [weak settings] in
             guard let settings else { return false }
@@ -114,6 +118,7 @@ final class ModuleServices {
         weather.start()
         charging.start()
         mute.start()
+        menuBar.start()
         applyModuleStates()
         trackModuleToggles()
     }
@@ -127,6 +132,7 @@ final class ModuleServices {
         weather.stop()
         charging.stop()
         mute.stop()
+        menuBar.stop()
         for module in runningModules {
             stop(module)
         }
