@@ -4,6 +4,7 @@ import ApplicationServices
 /// Reads every app's menu bar icons through Accessibility.
 struct MenuBarItemScanner: Sendable {
     static let controlCenterBundleID = "com.apple.controlcenter"
+    private static let xpcExtension = "xpc"
     private static let maxValueLength = 8
     static let messagingTimeout: Float = 0.4
 
@@ -16,7 +17,8 @@ struct MenuBarItemScanner: Sendable {
     @MainActor
     static func runningApps() -> [App] {
         NSWorkspace.shared.runningApplications
-            .filter { $0.activationPolicy != .prohibited || $0.bundleIdentifier == controlCenterBundleID }
+            // Even background-only apps can have an icon; XPC services cannot, and there are many.
+            .filter { $0.bundleURL?.pathExtension != xpcExtension }
             .map { App(pid: $0.processIdentifier, bundleID: $0.bundleIdentifier, name: $0.localizedName ?? "") }
     }
 
@@ -40,6 +42,9 @@ struct MenuBarItemScanner: Sendable {
             AXUIElementSetMessagingTimeout(element, messagingTimeout)
             guard let frame = frame(of: element), frame.width > 0 else { return nil }
             let isSystem = app.bundleID == controlCenterBundleID
+            let identifier = isSystem ? AXAttributes.string(of: element, kAXIdentifierAttribute) : nil
+            // Control Center also lists icons it hosts for other apps; those come from the apps themselves.
+            guard !isSystem || MenuBarItem.isSystemIdentifier(identifier) else { return nil }
             let label = AXAttributes.string(of: element, kAXDescriptionAttribute)
             return MenuBarItem(
                 id: "\(app.pid).\(index)",
@@ -48,7 +53,7 @@ struct MenuBarItemScanner: Sendable {
                 // Titles can hold private text (an agenda item), so only system items use their own label.
                 name: isSystem ? label ?? app.name : app.name,
                 value: isSystem ? nil : shortTitle(of: element),
-                identifier: isSystem ? AXAttributes.string(of: element, kAXIdentifierAttribute) : nil,
+                identifier: identifier,
                 frame: frame,
                 element: element
             )

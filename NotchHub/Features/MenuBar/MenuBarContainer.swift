@@ -346,9 +346,12 @@ final class MenuBarContainer {
         let scanned = await scanner.scan(MenuBarItemScanner.runningApps())
         guard let divider, divider.isHiding, let cocoaFrame = divider.dividerFrame else { return }
         let ownPID = ProcessInfo.processInfo.processIdentifier
-        let hidden = MenuBarLayout.hiddenItems(
-            in: scanned.filter { $0.pid != ownPID },
-            divider: Self.topLeftBased(cocoaFrame)
+        let hidden = MenuBarLayout.hosted(
+            MenuBarLayout.hiddenItems(
+                in: scanned.filter { $0.pid != ownPID },
+                divider: Self.topLeftBased(cocoaFrame)
+            ),
+            by: MenuBarHostWindow.all()
         )
         // Pictures first, so the panel does not flash the apps' own icons.
         isCaptureAllowed = MenuBarIconCapture.isAllowed

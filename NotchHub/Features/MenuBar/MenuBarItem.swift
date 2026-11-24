@@ -22,6 +22,11 @@ struct MenuBarItem: Identifiable, @unchecked Sendable {
         identifier.flatMap { Self.systemSymbols[$0] }
     }
 
+    static func isSystemIdentifier(_ identifier: String?) -> Bool {
+        identifier?.hasPrefix(systemIdentifierPrefix) ?? false
+    }
+
+    private static let systemIdentifierPrefix = "com.apple.menuextra."
     private static let systemSymbols = [
         "com.apple.menuextra.wifi": "wifi",
         "com.apple.menuextra.bluetooth": "wave.3.right",
@@ -48,6 +53,18 @@ enum MenuBarLayout {
         items
             .filter { abs($0.frame.midY - divider.midY) < rowTolerance && $0.frame.midX < divider.minX }
             .sorted { $0.frame.minX < $1.frame.minX }
+    }
+
+    /// Items that really have an icon, one per icon: some apps also report status items that are not shown.
+    static func hosted(_ items: [MenuBarItem], by windows: [MenuBarHostWindow]) -> [MenuBarItem] {
+        var claimed = Set<CGWindowID>()
+        return items.filter { item in
+            guard let window = windows.first(where: { $0.hosts(item.frame) && !claimed.contains($0.id) }) else {
+                return false
+            }
+            claimed.insert(window.id)
+            return true
+        }
     }
 
     /// The chevron has to stay right of the divider, or hiding would push it off screen too.

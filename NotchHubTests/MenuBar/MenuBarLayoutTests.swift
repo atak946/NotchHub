@@ -43,6 +43,22 @@ struct MenuBarLayoutTests {
         #expect(MenuBarLayout.preferredPosition(systemItems: [], screens: screens) == nil)
     }
 
+    @Test func onlyItemsWithTheirOwnIconAreListed() {
+        func window(_ id: CGWindowID, x: CGFloat) -> MenuBarHostWindow {
+            MenuBarHostWindow(id: id, ownerPID: 1, frame: CGRect(x: x, y: 249, width: 38, height: 30), name: nil)
+        }
+        let items = [item("ghost", x: -5900), item("real", x: -5855), item("twin", x: -5855), item("next", x: -5817)]
+        let hosted = MenuBarLayout.hosted(items, by: [window(1, x: -5862), window(2, x: -5824)])
+        #expect(hosted.map(\.id) == ["real", "next"])
+    }
+
+    @Test func onlyControlCentersOwnIconsCountAsSystem() {
+        #expect(MenuBarItem.isSystemIdentifier("com.apple.menuextra.wifi"))
+        #expect(!MenuBarItem.isSystemIdentifier(nil))
+        #expect(!MenuBarItem.isSystemIdentifier(""))
+        #expect(!MenuBarItem.isSystemIdentifier("com.parallels.desktop.console"))
+    }
+
     @Test func hostWindowSharesTheIconsCenter() {
         let window = MenuBarHostWindow(id: 1, ownerPID: 1, frame: CGRect(x: -5364, y: 249, width: 64, height: 30), name: nil)
         #expect(window.hosts(CGRect(x: -5365, y: 252, width: 66, height: 24)))
